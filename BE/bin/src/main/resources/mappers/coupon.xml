@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- name space는 BookRepo의 fully qualified name으로 설정한다. -->
+<mapper namespace="com.ssafy.cafe.model.dao.CouponDao">
+	
+	<insert id="insertCoupon" parameterType="Coupon">
+		INSERT INTO t_coupon (user_id) 
+		VALUES (#{userId})
+	</insert>
+	
+	<update id="updateCoupon" parameterType="Coupon">
+		UPDATE t_coupon
+		SET 
+		use_date = #{useDate}, 
+		is_used = #{isUsed},
+		is_expired = #{isExpired},
+		user_id = #{userId}
+		WHERE id = #{id}
+	</update>
+	
+	<delete id="deleteCouponById" parameterType="int">
+		DELETE FROM t_coupon
+		WHERE id = #{id}
+	</delete>
+	
+	<select id="selectByCouponId" parameterType="int" resultType="Coupon">
+		select * 
+		from t_coupon 
+		where id = #{id}
+	</select>
+	
+	<select id="selectCouponByUserId" parameterType="String" resultType="Coupon">
+		select *
+		from t_coupon
+		where user_id=#{userId}
+		order by id
+	</select>
+</mapper>
