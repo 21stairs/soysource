@@ -1,15 +1,18 @@
 import React from "react";
-// import { Counter } from "./features/counter/Counter";
 import "./App.scss";
-// import { Router } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
 import MyNav from "./components/myNav";
 import Home from "./components/Home";
+import RoomCreate from "./components/roomCreate";
 
 function App() {
   return (
     <div className="App">
       <MyNav />
-      <Home />
+      <Routes>
+        <Route exact={true} path="/" element={<Home />} />
+        <Route exact={true} path="/room" element={<RoomCreate />} />
+      </Routes>
     </div>
   );
 }

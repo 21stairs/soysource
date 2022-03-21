@@ -1,5 +1,6 @@
 import React from "react";
 import "./myNav.scss";
+import { Link } from "react-router-dom";
 
 const myNav = () => {
   return (
@@ -10,21 +11,11 @@ const myNav = () => {
         </a>
         <ul>
           <li>
-            <a href="#">Home</a>
+            <Link to="/">홈</Link>
           </li>
           <li>
-            <a href="#">About</a>
+            <Link to="/room">잰말놀이</Link>
           </li>
-          <li>
-            <a href="#">Portfolio</a>
-          </li>
-          <li>
-            <a href="#">Services</a>
-          </li>
-          <li>
-            <a href="#">Contact</a>
-          </li>
-          <a href="#" id="menu-icon"></a>
         </ul>
       </nav>
     </div>
