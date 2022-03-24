@@ -3,6 +3,11 @@ import firebase from "firebase";
 var firebaseConfig = {
   apiKey: "AIzaSyAeOZNkWf-ssQHySRTw0JsZcZbBEueYknY", // Add API Key
   databaseURL: "https://webrtc-f81d9-default-rtdb.firebaseio.com", // Add databaseURL
+  authDomain: "webrtc-f81d9.firebaseapp.com",
+  projectId: "webrtc-f81d9",
+  storageBucket: "webrtc-f81d9.appspot.com",
+  messagingSenderId: "859269665493",
+  appId: "1:859269665493:web:a097b41a7b24a7ca79c85c"
 };
 
 // Initialize Firebase
