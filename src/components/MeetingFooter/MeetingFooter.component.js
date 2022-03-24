@@ -3,7 +3,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faMicrophone,
   faVideo,
-  faDesktop,
   faVideoSlash,
   faMicrophoneSlash,
 } from "@fortawesome/free-solid-svg-icons";
@@ -13,7 +12,6 @@ const MeetingFooter = (props) => {
   const [streamState, setStreamState] = useState({
     mic: true,
     video: false,
-    screen: false,
   });
   const micClick = () => {
     setStreamState((currentState) => {
@@ -33,18 +31,7 @@ const MeetingFooter = (props) => {
     });
   };
 
-  const onScreenClick = () => {
-    props.onScreenClick(setScreenState);
-  };
 
-  const setScreenState = (isEnabled) => {
-    setStreamState((currentState) => {
-      return {
-        ...currentState,
-        screen: isEnabled,
-      };
-    });
-  };
   useEffect(() => {
     props.onMicClick(streamState.mic);
   }, [streamState.mic]);
@@ -69,14 +56,6 @@ const MeetingFooter = (props) => {
         onClick={onVideoClick}
       >
         <FontAwesomeIcon icon={!streamState.video ? faVideoSlash : faVideo} />
-      </div>
-      <div
-        className="meeting-icons"
-        data-tip="Share Screen"
-        onClick={onScreenClick}
-        disabled={streamState.screen}
-      >
-        <FontAwesomeIcon icon={faDesktop} />
       </div>
       <ReactTooltip />
     </div>
