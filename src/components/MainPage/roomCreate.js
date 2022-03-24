@@ -12,7 +12,7 @@ const roomCreate = () => {
         </Link>
 
         <Link to="/meet/">
-          <button onClick={test}>방 참가하기</button>
+          <button onClick={insertRoomToRTDB}>방 참가하기</button>
         </Link>
       </div>
     </div>
