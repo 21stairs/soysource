@@ -30,7 +30,6 @@ function App(props) {
         const defaultPreference = {
           audio: true,
           video: false,
-          screen: false,
         };
         const userStatusRef = participantRef.push({
           userName,
