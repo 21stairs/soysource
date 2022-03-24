@@ -19,15 +19,10 @@ const roomCreate = () => {
   );
 };
 
-const test = () => {
-  var roomId = firepadRef.key
+const insertRoomToRTDB = () => {
   const roomenter = prompt("방 이름 입력");
-  insertRoomToRTDB(roomenter)
-};
-
-function insertRoomToRTDB(roomenter) {
   const roomRef = firepadRef.child("Room")
   roomRef.set(roomenter)
-}
+};
 
 export default roomCreate;
