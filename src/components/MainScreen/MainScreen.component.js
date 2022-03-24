@@ -6,7 +6,7 @@ import "C:/Users/gitae/git/S06P22D203/src/components/button.css";
 import { connect } from "react-redux";
 import { setMainStream, updateUser } from "../../store/actioncreator";
 import JoMode from '../JoMode/JoMode';
-import WinOneMode from '../WinOneMode/WinoneMode';
+import WinOneMode from '../WinOneMode/WinOneMode';
 
 const MainScreen = (props) => {
   const participantRef = useRef(props.participants);
@@ -44,6 +44,7 @@ const MainScreen = (props) => {
             윤승일 모드
           </button>
           <JoMode />
+          <WinOneMode />
         </div>
       </div>
 
