@@ -1,7 +1,8 @@
 
 .main-scream-total{
     width: 100%;
-    height: 90vh;
+    height: 84vh;
+    background: #3c4043;
 }
 
 .main-screen-left{
@@ -18,6 +19,6 @@
     background-color: #3c4043;
 }
 
-.footer{
-    height: 10vh;
+.footer {
+  height: 10vh;
 }

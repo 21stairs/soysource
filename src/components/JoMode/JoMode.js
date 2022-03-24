@@ -3,7 +3,7 @@ import "./JoMode.css";
 
 /*
 1. 문장이 주어진다.
-2. 버튼을 눌러 문장을 녹음 한다.
+2. 버튼을 눌러 문장을 녹음 한다. wav파일로만
 3. 녹음본을 텍스트로 변환해서 체크
 4. 정답률을 넘었는지 체크, 타이머는 시작버튼을 누르고부터 돌고, 종료 버튼 클릭시 타이머도 종료. (프론트에서 처리해주는게 좋을듯, 시각적으로 보이면 좋을듯)
 5. 걸린 시간 체크
@@ -17,13 +17,11 @@ const JoMode=()=> {
     setCount(0);
     clearInterval(countRef.current);
     countRef.current = setInterval(() => setCount((c) => c + 1), 100);
-    };
+  };
 
   const stopHandler = () => {
     clearInterval(countRef.current);
-    countRef.current = null;
-    
-      
+    countRef.current = null; 
   };
 
   return (
