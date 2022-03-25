@@ -1,6 +1,7 @@
 import React, { useState, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "./roomCreate.scss";
+import firepadRef, { firebase } from "../../server/firebase"
 
 const RoomCreate = () => {
   const id = useRef();
@@ -21,10 +22,19 @@ const RoomCreate = () => {
         <Link to="/meet/">
           <button>방 만들기</button>
         </Link>
-        <button onClick={test}>방 참가하기</button>
+
+        <Link to="/meet/">
+          <button onClick={insertRoomToRTDB}>방 참가하기</button>
+        </Link>
       </div>
     </div>
   );
 };
 
-export default RoomCreate;
+const insertRoomToRTDB = () => {
+  const roomenter = prompt("방 이름 입력");
+  const roomRef = firepadRef.child("Room")
+  roomRef.set(roomenter)
+};
+
+export default roomCreate;

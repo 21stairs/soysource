@@ -1,4 +1,5 @@
 import firebase from "firebase";
+import "firebase/database"
 
 var firebaseConfig = {
   apiKey: "AIzaSyAeOZNkWf-ssQHySRTw0JsZcZbBEueYknY", // Add API Key
@@ -27,4 +28,9 @@ if (roomId) {
   firepadRef = firepadRef.push();
 }
 
+function getReferenece(){
+  var database = firebase.database()
+}
+
+export {firebase};
 export default firepadRef;
