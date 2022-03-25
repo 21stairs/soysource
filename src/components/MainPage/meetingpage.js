@@ -49,9 +49,24 @@ const Meeting = (props) => {
     });
   }, []);
 
+  if(number){
+    console.log("방 참가하기")
+    console.log("입력받은 number : ",number) // 이걸 A라고 하고
+    console.log("현재 firepadRef : ", firepadRef) // 이걸 B라고 하면
+    console.log("현재 firepadRef.parent : ", firepadRef.parent)
+    
+  }else{
+    console.log("방 생성하기")
+  }
+  // 해야 할일은...
+
+  // RealtimeDB에서 A의 값을 갖는 것을 가져옴.
+  // const S = db.database().ref(number).set("무야호1")
+  // write
+  // 그 휘하에 참가자 추가.
   const connectedRef = db.database().ref(".info/connected");
   const participantRef = firepadRef.child("participants");
-
+  
   const isUserSet = !!props.user;
   const isStreamSet = !!props.stream;
 

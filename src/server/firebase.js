@@ -18,19 +18,22 @@ export const db = firebase;
 
 var firepadRef = firebase.database().ref();
 
-export const userName = "zz";
 const urlparams = new URLSearchParams(window.location.search);
 const roomId = urlparams.get("id");
 
 if (roomId) {
+  console.log("(firebase.js) roomId is True")
   firepadRef = firepadRef.child(roomId);
 } else {
+  console.log("(firebase.js) roomId is False")
   firepadRef = firepadRef.push();
 }
 
-function getReferenece(){
-  var database = firebase.database()
-}
+console.log("(firebase.js) firebase is : ", firebase)
+console.log("(firebase.js) firepadRef is : ", firepadRef)
+console.log("(firebase.js) firepadRef.key is : ", firepadRef.key)
 
-export {firebase};
+var firepadRefKey = firepadRef.key
+
+export {firebase,firepadRefKey};
 export default firepadRef;
