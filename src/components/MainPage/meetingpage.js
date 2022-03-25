@@ -1,5 +1,6 @@
 import MainScreen from "../MainScreen/MainScreen.component";
 import firepadRef, { db } from "../../server/firebase";
+import { useLocation } from "react-router-dom";
 
 import React from "react";
 import { useEffect } from "react";
@@ -13,6 +14,8 @@ import {
 } from "../../store/actioncreator";
 
 const Meeting = (props) => {
+  const location = useLocation();
+  const { number } = location.state || "";
   const getUserStream = async () => {
     const localStream = await navigator.mediaDevices.getUserMedia({
       audio: true,
@@ -77,7 +80,11 @@ const Meeting = (props) => {
         props.removeParticipant(snap.key);
       });
     }
-    window.history.replaceState(null, "Meet", "?id=" + firepadRef.key);
+    if (number) {
+      window.history.replaceState(null, "Meet", "?id=" + number);
+    } else {
+      window.history.replaceState(null, "Meet", "?id=" + firepadRef.key);
+    }
   }, [isStreamSet, isUserSet]);
 
   return (
