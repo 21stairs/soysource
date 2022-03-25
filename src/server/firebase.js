@@ -26,19 +26,23 @@ const roomId = urlparams.get("id");
 if (roomId) {
   console.log("(firebase.js) roomId is True");
   firepadRef = firepadRef.child(roomId);
+} else {
+  console.log("초기화 실행");
+  firepadRef = firepadRef.push();
 }
 
 //URL 치지 않고 들어올시 처리
-export function getMetting(number) {
+export const getMetting = (number) => {
   console.log("in");
   console.log(number);
 
   if (number) {
-    firepadRef = firepadRef.child(number);
+    firepadRef = firebase.database().ref(number);
     window.history.replaceState(null, "Meet", "?id=" + number);
   } else {
-    firepadRef = firepadRef.push();
     window.history.replaceState(null, "Meet", "?id=" + firepadRef.key);
   }
-}
+
+  return firepadRef;
+};
 export default firepadRef;

@@ -1,6 +1,6 @@
 import MainScreen from "../MainScreen/MainScreen.component";
-import firepadRef, { db } from "../../server/firebase";
-// import { useLocation } from "react-router-dom";
+import firepadRef, { db, getMetting } from "../../server/firebase";
+import { useLocation } from "react-router-dom";
 
 import React from "react";
 import { useEffect } from "react";
@@ -14,6 +14,10 @@ import {
 } from "../../store/actioncreator";
 
 const Meeting = (props) => {
+  console.log("순서0");
+  const location = useLocation();
+  const { number } = location.state || "";
+
   const getUserStream = async () => {
     const localStream = await navigator.mediaDevices.getUserMedia({
       audio: true,
@@ -51,8 +55,10 @@ const Meeting = (props) => {
       }
     });
   }, []);
+
+  console.log("순서2");
   const connectedRef = db.database().ref(".info/connected");
-  const participantRef = firepadRef.child("participants");
+  const participantRef = getMetting(number).child("participants");
 
   const isUserSet = !!props.user;
   const isStreamSet = !!props.stream;
@@ -60,6 +66,7 @@ const Meeting = (props) => {
   useEffect(() => {
     if (isStreamSet && isUserSet) {
       //자식 노드 추가가 감지 되면 실행
+
       participantRef.on("child_added", (snap) => {
         const preferenceUpdateEvent = participantRef
           .child(snap.key)
