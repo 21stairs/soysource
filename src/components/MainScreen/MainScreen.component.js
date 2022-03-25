@@ -28,7 +28,13 @@ const MainScreen = (props) => {
     participantRef.current = props.participants;
   }, [props.participants]);
 
- 
+  function Mode(Props) {
+    if (Props.mode) {
+      return <JoMode />
+    } else {
+      return <WinOneMode />
+    }
+  }
 
   return (
     <div className="wrapper">
@@ -37,14 +43,7 @@ const MainScreen = (props) => {
           <Participants />
         </div>
         <div className="main-screen-right">
-          <button id='jo' class="w-btn w-btn-blue" type="button" >
-            조준영 모드
-          </button>
-          <button id='winone' class="w-btn w-btn-gra1 w-btn-gra-anim" type="button">
-            윤승일 모드
-          </button>
-          <JoMode />
-          <WinOneMode />
+          <Mode mode={true} />
         </div>
       </div>
 
