@@ -24,6 +24,7 @@ const urlparams = new URLSearchParams(window.location.search);
 const roomId = urlparams.get("id");
 
 if (roomId) {
+  console.log("(firebase.js) roomId is True");
   firepadRef = firepadRef.child(roomId);
 }
 
