@@ -26,10 +26,11 @@
 
   div {
     display: flex;
-    flex-flow: column;
-    height: 100vh;
+    justify-content: center;
+    align-items: center;
+
+    height: 94vh;
     width: 50vw;
-    line-height: 100vh;
     object-fit: cover;
     background-repeat: no-repeat;
     background-size : cover;
@@ -48,6 +49,9 @@
   }
 
   h1{
+    display: table-cell;
+    vertical-align: middle;
+    text-align: center;
     font-size: 400%;
   }
   
