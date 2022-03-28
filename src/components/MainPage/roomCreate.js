@@ -1,7 +1,6 @@
-import React, { useState, useRef } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import React, { useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import "./roomCreate.scss";
-import firepadRef, { firebase, getMetting } from "../../server/firebase";
 const RoomCreate = () => {
   const id = useRef();
   const navigate = useNavigate();
