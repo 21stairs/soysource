@@ -1,6 +1,10 @@
-import {useRef, useState } from "react";
+import React, {useRef, useState, useCallback } from "react";
 import "./JoMode.css";
+import JoModeData from './JoModeData';
+import "../btn.css";
+import ReactDOM from "react-dom"
 
+import useSpeechToText from 'react-hook-speech-to-text';
 /*
 1. 문장이 주어진다.
 2. 버튼을 눌러 문장을 녹음 한다. wav파일로만
@@ -12,34 +16,130 @@ import "./JoMode.css";
 */
 const JoMode=()=> {
   const countRef = useRef(null);
-  const [Count, setCount] = useState(0);
+  const [Count, setCount] = useState(0); //타이머 결과 값
+  const [Problem, setProblem] = useState("시작"); //문제 
+  const [Rate, setRate] = useState(0);
+  const [List, setList] = useState([]);
+
   const startHandler = () => {
+    startSpeechToText();
     setCount(0);
     clearInterval(countRef.current);
     countRef.current = setInterval(() => setCount((c) => c + 1), 100);
+    SetProblem();
   };
 
   const stopHandler = () => {
+    stopSpeechToText();
+
     clearInterval(countRef.current);
-    countRef.current = null; 
+    countRef.current = null;
+    setProblem((c) => c = <h1>{Count}ms</h1>);
+    SetRate(Problem);
   };
 
+  const SetProblem = () => {
+    var rand = Math.floor(Math.random() * 33);
+    setProblem((c) => c = JoModeData.JoModeData[rand]);
+  };
+
+  const SetRate = (problem) => {
+    var recoderProblem = interimResult; //녹음된 문자
+    //공백 제거
+    problem.replace(/ /g, "");
+    recoderProblem.replace(/ /g, "");
+
+    //비교를 위해 배열로 만들어 준다.
+    const proArr = problem.split("");
+    const recArr = recoderProblem.split("");
+    var total = proArr.length;
+    var same = 0;
+    for (let i = 0; i < proArr.length; i++) {
+      for (let j = 0; j < recArr.length; j++) {
+        if (proArr[i] === recArr[j]&&recArr[j]!= null) {
+          proArr[i] = null;
+          recArr[j] = null;
+          same++;
+        }
+      }
+    }
+    var avg = ((same / total)*100).toFixed(2);
+    console.log(avg);
+
+    setRate((e) => e = avg);
+
+  }
+  const RankList = () => {
+    setList((e) => [...e, Count]);
+    console.log(List);
+  }
+
+  const SuccessOrFail = () => {
+    if (Rate > 70) {
+      //1console.log(List.map);
+
+      return (
+        <div>
+          <h1>성공</h1>
+        </div>
+      );
+    } else {
+      return (
+        <div>
+          <h1>실패</h1>
+        </div>
+      );
+    }
+    
+  }
+  //{
+  //   results.map((result) => (
+  //     <li key={result.timestamp}>{result.transcript}</li>
+  //   ))
+  // }
+  
+  /*녹음 ---------------------------------------------------- */
+  const {
+    error,
+    interimResult,
+    results,
+    startSpeechToText,
+    stopSpeechToText,
+  } = useSpeechToText({
+    continuous: true,
+    useLegacyResults: false
+
+  });
+  if (error) return <p>Clome에서 실행 부탁드립니다!!!!🤷‍</p>;
   return (
     <div>
       <div>
-        <h1 className='problem'>경찰청창살쇠창살</h1>
-        <button onClick={startHandler}>시작</button>
-        <button onClick={stopHandler}>종료</button>
-        <h1>결과는 : { Count }초 입니다!!!</h1>
+        <button className="w-btn w-btn-blue" type="button" onClick={startHandler} >시작</button>
+        <button className="w-btn w-btn-gra1 w-btn-gra-anim" type="button" onClick={stopHandler}>종료</button>
+        <h1 className='problem'>{Problem}</h1>
+        <h1 className='rate'>인식률 : {Rate}%</h1>
+        <button onClick={RankList}>리스트에 추가</button>
       </div>
 
+      <div>
+      
+      <h1>
+          {interimResult}
+      </h1>
+    </div>
+      
       <div className='rank'>
-        <h1>1등 : 누구 몇초</h1>
-        <h1>2등 : 누구 몇초</h1>
-        <h1>3등 : 누구 몇초</h1>
+        <h1>
+          <SuccessOrFail />
+        </h1>
+        
       </div>
+      
+      
     </div>
   );
 }
+
+
 
 export default JoMode;
