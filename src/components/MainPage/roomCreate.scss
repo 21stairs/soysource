@@ -23,4 +23,30 @@
     position: relative;
     text-transform: uppercase;
   }
+
+  div {
+    height: 100vh;
+    width: 50vw;
+    line-height: 100vh;
+    object-fit: cover;
+    background-repeat: no-repeat;
+    background-size : cover;
+    opacity: 0.8;
+  }
+
+  div.left {
+    float: left;
+    background-image: url("https://image.freepik.com/free-photo/empty-house-under-construction_293060-783.jpg");
+    
+  }
+  div.right {
+    float: right;
+    background-image: url("https://images.unsplash.com/photo-1536160885591-301854e2ed04?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Nnx8ZG9vcnxlbnwwfHwwfHw%3D&w=1000&q=80");
+    
+  }
+
+  h1{
+    font-size: 400%;
+  }
+  
 }
