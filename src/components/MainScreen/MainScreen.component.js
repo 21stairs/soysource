@@ -2,7 +2,7 @@ import React, { useRef, useEffect } from "react";
 import MeetingFooter from "../MeetingFooter/MeetingFooter.component";
 import Participants from "../Participants/Participants.component";
 import "./MainScreen.css";
-import "C:/Users/gitae/git/S06P22D203/src/components/button.css";
+import "../btn.css"
 import { connect } from "react-redux";
 import { setMainStream, updateUser } from "../../store/actioncreator";
 import JoMode from '../JoMode/JoMode';

@@ -1,7 +1,10 @@
 import React, {useRef, useState, useCallback } from "react";
 import "./JoMode.css";
 import JoModeData from './JoModeData';
-import "C:/Users/gitae/git/S06P22D203/src/components/button.css";
+import "../btn.css";
+import ReactDOM from "react-dom"
+
+import useSpeechToText from 'react-hook-speech-to-text';
 /*
 1. 문장이 주어진다.
 2. 버튼을 눌러 문장을 녹음 한다. wav파일로만
@@ -16,8 +19,10 @@ const JoMode=()=> {
   const [Count, setCount] = useState(0); //타이머 결과 값
   const [Problem, setProblem] = useState("시작"); //문제 
   const [Rate, setRate] = useState(0);
+  const [List, setList] = useState([]);
+
   const startHandler = () => {
-    onRecAudio(); //녹음 시작
+    startSpeechToText();
     setCount(0);
     clearInterval(countRef.current);
     countRef.current = setInterval(() => setCount((c) => c + 1), 100);
@@ -25,118 +30,116 @@ const JoMode=()=> {
   };
 
   const stopHandler = () => {
-    offRecAudio(); //녹음 종료
-    //onSubmitAudioFile();//녹음된 URL 만들고 console 출력
+    stopSpeechToText();
+
     clearInterval(countRef.current);
     countRef.current = null;
     setProblem((c) => c = <h1>{Count}ms</h1>);
-    
+    SetRate(Problem);
   };
 
   const SetProblem = () => {
     var rand = Math.floor(Math.random() * 33);
     setProblem((c) => c = JoModeData.JoModeData[rand]);
   };
+
+  const SetRate = (problem) => {
+    var recoderProblem = interimResult; //녹음된 문자
+    //공백 제거
+    problem.replace(/ /g, "");
+    recoderProblem.replace(/ /g, "");
+
+    //비교를 위해 배열로 만들어 준다.
+    const proArr = problem.split("");
+    const recArr = recoderProblem.split("");
+    var total = proArr.length;
+    var same = 0;
+    for (let i = 0; i < proArr.length; i++) {
+      for (let j = 0; j < recArr.length; j++) {
+        if (proArr[i] === recArr[j]&&recArr[j]!= null) {
+          proArr[i] = null;
+          recArr[j] = null;
+          same++;
+        }
+      }
+    }
+    var avg = ((same / total)*100).toFixed(2);
+    console.log(avg);
+
+    setRate((e) => e = avg);
+
+  }
+  const RankList = () => {
+    setList((e) => [...e, Count]);
+    console.log(List);
+  }
+
+  const SuccessOrFail = () => {
+    if (Rate > 70) {
+      //1console.log(List.map);
+
+      return (
+        <div>
+          <h1>성공</h1>
+        </div>
+      );
+    } else {
+      return (
+        <div>
+          <h1>실패</h1>
+        </div>
+      );
+    }
+    
+  }
+  //{
+  //   results.map((result) => (
+  //     <li key={result.timestamp}>{result.transcript}</li>
+  //   ))
+  // }
   
   /*녹음 ---------------------------------------------------- */
-  const [stream, setStream] = useState();
-  const [media, setMedia] = useState();
-  const [onRec, setOnRec] = useState(true);
-  const [source, setSource] = useState();
-  const [analyser, setAnalyser] = useState();
-  const [audioUrl, setAudioUrl] = useState();
+  const {
+    error,
+    interimResult,
+    results,
+    startSpeechToText,
+    stopSpeechToText,
+  } = useSpeechToText({
+    continuous: true,
+    useLegacyResults: false
 
-  const onRecAudio = () => {
-    // 음원정보를 담은 노드를 생성하거나 음원을 실행또는 디코딩 시키는 일을 한다
-    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    // 자바스크립트를 통해 음원의 진행상태에 직접접근에 사용된다.
-    const analyser = audioCtx.createScriptProcessor(0, 1, 1);
-    setAnalyser(analyser);
-
-    function makeSound(stream) {
-      // 내 컴퓨터의 마이크나 다른 소스를 통해 발생한 오디오 스트림의 정보를 보여준다.
-      const source = audioCtx.createMediaStreamSource(stream);
-      setSource(source);
-      source.connect(analyser);
-      analyser.connect(audioCtx.destination);
-    }
-    // 마이크 사용 권한 획득
-    navigator.mediaDevices.getUserMedia({ audio: true }).then((stream) => {
-      const mediaRecorder = new MediaRecorder(stream);
-      mediaRecorder.start();
-      setStream(stream);
-      setMedia(mediaRecorder);
-      makeSound(stream);
-
-      analyser.onaudioprocess = function (e) {
-        // 3분(180초) 지나면 자동으로 음성 저장 및 녹음 중지
-        if (e.playbackTime > 180) {
-          stream.getAudioTracks().forEach(function (track) {
-            track.stop();
-          });
-          mediaRecorder.stop();
-          // 메서드가 호출 된 노드 연결 해제
-          analyser.disconnect();
-          audioCtx.createMediaStreamSource(stream).disconnect();
-
-          mediaRecorder.ondataavailable = function (e) {
-            setAudioUrl(e.data);
-            setOnRec(true);
-          };
-        } else {
-          setOnRec(false);
-        }
-      };
-    });
-  };
-
-  // 사용자가 음성 녹음을 중지했을 때
-  const offRecAudio = () => {
-    // dataavailable 이벤트로 Blob 데이터에 대한 응답을 받을 수 있음
-    media.ondataavailable = function (e) {
-      setAudioUrl(e.data);
-      setOnRec(true);
-    };
-
-    // 모든 트랙에서 stop()을 호출해 오디오 스트림을 정지
-    stream.getAudioTracks().forEach(function (track) {
-      track.stop();
-    });
-
-    // 미디어 캡처 중지
-    media.stop();
-    // 메서드가 호출 된 노드 연결 해제
-    analyser.disconnect();
-    source.disconnect();
-  };
-
-  const onSubmitAudioFile = useCallback(() => {
-    if (audioUrl) {
-      console.log(URL.createObjectURL(audioUrl)); // 출력된 링크에서 녹음된 오디오 확인 가능
-    }
-
-    // File 생성자를 사용해 파일로 변환
-    const sound = new File([audioUrl], "soundBlob", { lastModified: new Date().getTime(), type: "audio" });
-    console.log(sound); // File 정보 출력
-  }, [audioUrl]);
-
+  });
+  if (error) return <p>Clome에서 실행 부탁드립니다!!!!🤷‍</p>;
   return (
     <div>
       <div>
         <button className="w-btn w-btn-blue" type="button" onClick={startHandler} >시작</button>
         <button className="w-btn w-btn-gra1 w-btn-gra-anim" type="button" onClick={stopHandler}>종료</button>
-        <button onClick={onSubmitAudioFile}>제출</button>
         <h1 className='problem'>{Problem}</h1>
-        <h1 className='rate'>인식률 : {Rate}</h1>
+        <h1 className='rate'>인식률 : {Rate}%</h1>
+        <button onClick={RankList}>리스트에 추가</button>
       </div>
 
+      <div>
+      
+      <h1>
+          {interimResult}
+      </h1>
+    </div>
+      
       <div className='rank'>
-        <h1>1등 : 누구 몇초</h1>
-        <h1>2등 : 누구 몇초</h1>
-        <h1>3등 : 누구 몇초</h1>
+        <h1>
+          <SuccessOrFail />
+        </h1>
+        
       </div>
+      
+      
     </div>
   );
 }
+
+
 
 export default JoMode;
