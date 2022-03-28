@@ -15,9 +15,6 @@ const RoomCreate = () => {
     });
   };
   const insertRoomToRTDB = () => {
-    // const roomenter = prompt("방 이름 입력");
-    // const roomRef = firepadRef.child("Room");
-    // roomRef.set(roomenter);
     navigate("/meet/");
   };
   return (
