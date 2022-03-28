@@ -1,4 +1,5 @@
 import firebase from "firebase";
+import "firebase/database";
 
 var firebaseConfig = {
   apiKey: "AIzaSyAeOZNkWf-ssQHySRTw0JsZcZbBEueYknY", // Add API Key
@@ -7,7 +8,7 @@ var firebaseConfig = {
   projectId: "webrtc-f81d9",
   storageBucket: "webrtc-f81d9.appspot.com",
   messagingSenderId: "859269665493",
-  appId: "1:859269665493:web:a097b41a7b24a7ca79c85c"
+  appId: "1:859269665493:web:a097b41a7b24a7ca79c85c",
 };
 
 // Initialize Firebase
@@ -17,14 +18,31 @@ export const db = firebase;
 
 var firepadRef = firebase.database().ref();
 
-export const userName = "zz";
+export const userName = "temp";
+//URL 치고 들어올시 처리
 const urlparams = new URLSearchParams(window.location.search);
 const roomId = urlparams.get("id");
 
 if (roomId) {
+  console.log("(firebase.js) roomId is True");
   firepadRef = firepadRef.child(roomId);
 } else {
+  console.log("초기화 실행");
   firepadRef = firepadRef.push();
 }
 
+//URL 치지 않고 들어올시 처리
+export const getMetting = (number) => {
+  console.log("in");
+  console.log(number);
+
+  if (number) {
+    firepadRef = firebase.database().ref(number);
+    window.history.replaceState(null, "Meet", "?id=" + number);
+  } else {
+    window.history.replaceState(null, "Meet", "?id=" + firepadRef.key);
+  }
+
+  return firepadRef;
+};
 export default firepadRef;
