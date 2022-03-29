@@ -49,6 +49,7 @@ const JoMode = () => {
     countRef.current = null;
     setProblem((c) => c = <h1>{Count}ms</h1>);
     firepadRef.child("time").set(Count)
+    firepadRef.child("speakedSentence").set(interimResult)
     SetRate(Problem);
   };
 
