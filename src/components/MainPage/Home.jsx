@@ -6,11 +6,11 @@ const test = () => {
     {
       header: 'Web RTC',
       content: '별도의 소프트웨어 없이 음성과 영상 미디어 등의 데이터를 브라우저 끼리 주고 받을 수 있게 만든 기술. 화상으로 서로간의 얼굴을 볼 수 있습니다.',
-      src: './user.png',
+      src: './rtc.png',
       reverse: false
     },
     {
-      header: 'react Hook',
+      header: 'React Hook',
       content: 'react-hook-speech-to-text를 사용했습니다.',
       src: './user.png',
       reverse: true
