@@ -1,7 +1,6 @@
-import React, { useState, useRef } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import React, { useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import "./roomCreate.scss";
-import firepadRef, { firebase, getMetting } from "../../server/firebase";
 const RoomCreate = () => {
   const id = useRef();
   const navigate = useNavigate();
@@ -15,18 +14,17 @@ const RoomCreate = () => {
     });
   };
   const insertRoomToRTDB = () => {
-    // const roomenter = prompt("방 이름 입력");
-    // const roomRef = firepadRef.child("Room");
-    // roomRef.set(roomenter);
     navigate("/meet/");
   };
   return (
-    <div>
-      <div className="room">
-        <button onClick={insertRoomToRTDB}>방 만들기</button>
-        <button onClick={test}>방 참가하기</button>
+      <div class="room">
+        <div class="left" onClick={insertRoomToRTDB}>
+          <h1>방 생성하기</h1>
+        </div>
+        <div class="right" onClick={test}>
+          <h1>방 입장하기</h1>
+        </div>
       </div>
-    </div>
   );
 };
 

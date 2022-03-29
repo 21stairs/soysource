@@ -1,10 +1,14 @@
+<<<<<<< HEAD
 import React, {useCallback, useEffect, useRef, useState } from "react";
+=======
+import React, { useRef, useState, useCallback } from "react";
+>>>>>>> 2a0ee18bbc3c7480029b52e0be157bbe692b6e22
 import "./JoMode.css";
 import JoModeData from './JoModeData';
 import "../btn.css";
 import ReactDOM from "react-dom"
-
 import useSpeechToText from 'react-hook-speech-to-text';
+import firepadRef from '../../server/firebase'
 /*
 1. 문장이 주어진다.
 2. 버튼을 눌러 문장을 녹음 한다. wav파일로만
@@ -14,19 +18,31 @@ import useSpeechToText from 'react-hook-speech-to-text';
 6. 정답률을 넘긴것중 시간 순으로 순위를 매김.
 7. 3, 5, 7 라운드 수 지정해서 누적 시간을 매겨 순위 지정.
 */
-const JoMode=()=> {
+const JoMode = () => {
   const countRef = useRef(null);
   const [Count, setCount] = useState(0); //타이머 결과 값
   const [Problem, setProblem] = useState("시작"); //문제 
   const [Rate, setRate] = useState(0);
   const [List, setList] = useState([]);
 
+  /**
+   * [게임 초기화]
+   * 1. Mode 를 '조준영모드' 으로 설정
+   * 2. 
+   */
+  function initGame() { // 이거 왜 3번 불리는지 질문
+    console.log("firepadRef : ", firepadRef.toString())
+    firepadRef.child("gameMode").set("Jo")
+  }
+
+  initGame()
+
   const startHandler = () => {
     onFlip()//중복 클릭 방지
     startSpeechToText();
     setCount(0);
     clearInterval(countRef.current);
-    countRef.current = setInterval(() => setCount((c) => c + 1), 100);
+    countRef.current = setInterval(() => setCount((c) => c + 1), 100); // 주구장창
     SetProblem();
   };
 
@@ -36,16 +52,20 @@ const JoMode=()=> {
     clearInterval(countRef.current);
     countRef.current = null;
     setProblem((c) => c = <h1>{Count}ms</h1>);
+    firepadRef.child("time").set(Count)
     SetRate(Problem);
   };
 
   const SetProblem = () => {
     var rand = Math.floor(Math.random() * 33);
-    setProblem((c) => c = JoModeData.JoModeData[rand]);
+    const sentence = JoModeData.JoModeData[rand]
+    setProblem((c) => c = sentence);
+    firepadRef.child("currentSentence").set(sentence)
   };
 
   const SetRate = (problem) => {
     var recoderProblem = interimResult; //녹음된 문자
+<<<<<<< HEAD
     
     if (recoderProblem!== undefined) {
       //공백 제거
@@ -64,12 +84,30 @@ const JoMode=()=> {
             recArr[j] = null;
             same++;
           }
+=======
+    //공백 제거
+    problem.replace(/ /g, "");
+    recoderProblem.replace(/ /g, "");
+
+    //비교를 위해 배열로 만들어 준다.
+    const proArr = problem.split("");
+    const recArr = recoderProblem.split("");
+    var total = proArr.length;
+    var same = 0;
+    for (let i = 0; i < proArr.length; i++) {
+      for (let j = 0; j < recArr.length; j++) {
+        if (proArr[i] === recArr[j] && recArr[j] != null) {
+          proArr[i] = null;
+          recArr[j] = null;
+          same++;
+>>>>>>> 2a0ee18bbc3c7480029b52e0be157bbe692b6e22
         }
       }
       var avg = ((same / total) * 100).toFixed(2);
       
       setRate((e) => e = avg);
     }
+<<<<<<< HEAD
     else {
       avg = 0;
       console.log(avg); 
@@ -84,6 +122,17 @@ const JoMode=()=> {
     setList((e) => [...e, Count]);
     console.log(List.length);
   },[Count]);
+=======
+    var avg = ((same / total) * 100).toFixed(2);
+    firepadRef.child("accuracy").set(avg)
+    console.log(avg);
+    setRate((e) => e = avg);
+  }
+  const RankList = () => {
+    setList((e) => [...e, Count]); // list.append(Count)
+    console.log(List);
+  }
+>>>>>>> 2a0ee18bbc3c7480029b52e0be157bbe692b6e22
 
   const SuccessOrFail = () => {
     if (Rate > 70) {
@@ -99,7 +148,7 @@ const JoMode=()=> {
         </div>
       );
     }
-    
+
   }
   //Start와 Stop 중복 클릭 방지를 위한 함수
   const [flipped, setFlipped] = React.useState(true);
@@ -112,7 +161,7 @@ const JoMode=()=> {
   //     <li key={result.timestamp}>{result.transcript}</li>
   //   ))
   // }
-  
+
   /*녹음 ---------------------------------------------------- */
   const {
     error,
@@ -125,7 +174,7 @@ const JoMode=()=> {
     useLegacyResults: false
 
   });
-  if (error) return <p>Clome에서 실행 부탁드립니다!!!!🤷‍</p>;
+  if (error) return <p>Chrome에서 실행 부탁드립니다!!!!🤷‍</p>;
   return (
     <div>
       <div>
@@ -137,19 +186,23 @@ const JoMode=()=> {
       </div>
 
       <div>
-      
-      <h1>
+
+        <h1>
           {interimResult}
-      </h1>
-    </div>
-      
+        </h1>
+      </div>
+
       <div className='rank'>
         <h1>
           <SuccessOrFail />
         </h1>
+<<<<<<< HEAD
+=======
+
+>>>>>>> 2a0ee18bbc3c7480029b52e0be157bbe692b6e22
       </div>
-      
-      
+
+
     </div>
   );
 }
