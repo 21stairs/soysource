@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-import React, {useCallback, useEffect, useRef, useState } from "react";
-=======
 import React, { useRef, useState, useCallback } from "react";
->>>>>>> 2a0ee18bbc3c7480029b52e0be157bbe692b6e22
 import "./JoMode.css";
 import JoModeData from './JoModeData';
 import "../btn.css";
@@ -65,9 +61,8 @@ const JoMode = () => {
 
   const SetRate = (problem) => {
     var recoderProblem = interimResult; //녹음된 문자
-<<<<<<< HEAD
-    
-    if (recoderProblem!== undefined) {
+
+    if (recoderProblem !== undefined) {
       //공백 제거
       problem.replace(/ /g, "");
       recoderProblem.replace(/ /g, "");
@@ -84,55 +79,26 @@ const JoMode = () => {
             recArr[j] = null;
             same++;
           }
-=======
-    //공백 제거
-    problem.replace(/ /g, "");
-    recoderProblem.replace(/ /g, "");
-
-    //비교를 위해 배열로 만들어 준다.
-    const proArr = problem.split("");
-    const recArr = recoderProblem.split("");
-    var total = proArr.length;
-    var same = 0;
-    for (let i = 0; i < proArr.length; i++) {
-      for (let j = 0; j < recArr.length; j++) {
-        if (proArr[i] === recArr[j] && recArr[j] != null) {
-          proArr[i] = null;
-          recArr[j] = null;
-          same++;
->>>>>>> 2a0ee18bbc3c7480029b52e0be157bbe692b6e22
         }
       }
       var avg = ((same / total) * 100).toFixed(2);
-      
+
       setRate((e) => e = avg);
     }
-<<<<<<< HEAD
     else {
       avg = 0;
-      console.log(avg); 
+      console.log(avg);
 
       setRate((e) => e = avg);
     }
 
   }
-  
+
 
   const RankList = useCallback(() => {
     setList((e) => [...e, Count]);
     console.log(List.length);
-  },[Count]);
-=======
-    var avg = ((same / total) * 100).toFixed(2);
-    firepadRef.child("accuracy").set(avg)
-    console.log(avg);
-    setRate((e) => e = avg);
-  }
-  const RankList = () => {
-    setList((e) => [...e, Count]); // list.append(Count)
-    console.log(List);
-  }
->>>>>>> 2a0ee18bbc3c7480029b52e0be157bbe692b6e22
+  }, [Count]);
 
   const SuccessOrFail = () => {
     if (Rate > 70) {
@@ -152,7 +118,7 @@ const JoMode = () => {
   }
   //Start와 Stop 중복 클릭 방지를 위한 함수
   const [flipped, setFlipped] = React.useState(true);
-  const onFlip=()=>{
+  const onFlip = () => {
     setFlipped((current) => !current);
   }
 
@@ -196,16 +162,11 @@ const JoMode = () => {
         <h1>
           <SuccessOrFail />
         </h1>
-<<<<<<< HEAD
-=======
-
->>>>>>> 2a0ee18bbc3c7480029b52e0be157bbe692b6e22
       </div>
-
-
     </div>
   );
 }
+// 힝홍행
 
 
 
