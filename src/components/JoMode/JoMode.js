@@ -4,7 +4,9 @@ import JoModeData from './JoModeData';
 import "../btn.css";
 import ReactDOM from "react-dom"
 import useSpeechToText from 'react-hook-speech-to-text';
-import firepadRef from '../../server/firebase'
+import firepadRef, {db, setFirepadRef} from '../../server/firebase'
+import { rId } from "../MainPage/roomCreate";
+
 /*
 1. 문장이 주어진다.
 2. 버튼을 눌러 문장을 녹음 한다. wav파일로만
@@ -21,14 +23,22 @@ const JoMode = () => {
   const [Rate, setRate] = useState(0);
   const [List, setList] = useState([]);
 
+  var roomRef = ""
   /**
    * [게임 초기화]
    * 1. Mode 를 '조준영모드' 으로 설정
    * 2. 
    */
   function initGame() { // 이거 왜 3번 불리는지 질문
-    console.log("firepadRef : ", firepadRef.toString())
+    console.log("(JoMode.js) firepadRef : ", firepadRef.toString())
     firepadRef.child("gameMode").set("Jo")
+    console.log("(JoMode.js) rId from roomCreate.js : ", rId)
+    if(rId){ // 방 참가하기로 드갔으면...
+      roomRef =  db.database().ref().child(rId)
+      console.log("(JoMode.js) roomRef : ", roomRef.toString())
+    }else{
+
+    }
   }
 
   initGame()

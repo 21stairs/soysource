@@ -22,27 +22,31 @@ export const userName = "temp";
 //URL 치고 들어올시 처리
 const urlparams = new URLSearchParams(window.location.search);
 const roomId = urlparams.get("id");
-
 if (roomId) {
-  console.log("(firebase.js) roomId is True");
+  console.log("(firebase.js) roomId is true");
   firepadRef = firepadRef.child(roomId);
 } else {
+  console.log("(firebase.js) roomId is false");
   console.log("초기화 실행");
   firepadRef = firepadRef.push();
 }
 
 //URL 치지 않고 들어올시 처리
 export const getMetting = (number) => {
-  console.log("in");
-  console.log(number);
-
+  console.log("(firebase.js) getMetting - number : ", number);
   if (number) {
+    console.log("(firebase.js) number is true");
     firepadRef = firebase.database().ref(number);
     window.history.replaceState(null, "Meet", "?id=" + number);
   } else {
+    console.log("(firebase.js) number is false");
     window.history.replaceState(null, "Meet", "?id=" + firepadRef.key);
   }
-
   return firepadRef;
 };
+
+function setFirepadRef(newFirepadRef){
+  firepadRef = newFirepadRef
+}
+export {setFirepadRef}
 export default firepadRef;
