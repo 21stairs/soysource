@@ -1,4 +1,4 @@
-import React, {useRef, useState, useCallback } from "react";
+import React, {useCallback, useEffect, useRef, useState } from "react";
 import "./JoMode.css";
 import JoModeData from './JoModeData';
 import "../btn.css";
@@ -22,6 +22,7 @@ const JoMode=()=> {
   const [List, setList] = useState([]);
 
   const startHandler = () => {
+    onFlip()//중복 클릭 방지
     startSpeechToText();
     setCount(0);
     clearInterval(countRef.current);
@@ -30,8 +31,8 @@ const JoMode=()=> {
   };
 
   const stopHandler = () => {
+    onFlip()//중복 클릭 방지
     stopSpeechToText();
-
     clearInterval(countRef.current);
     countRef.current = null;
     setProblem((c) => c = <h1>{Count}ms</h1>);
@@ -45,39 +46,47 @@ const JoMode=()=> {
 
   const SetRate = (problem) => {
     var recoderProblem = interimResult; //녹음된 문자
-    //공백 제거
-    problem.replace(/ /g, "");
-    recoderProblem.replace(/ /g, "");
+    
+    if (recoderProblem!== undefined) {
+      //공백 제거
+      problem.replace(/ /g, "");
+      recoderProblem.replace(/ /g, "");
 
-    //비교를 위해 배열로 만들어 준다.
-    const proArr = problem.split("");
-    const recArr = recoderProblem.split("");
-    var total = proArr.length;
-    var same = 0;
-    for (let i = 0; i < proArr.length; i++) {
-      for (let j = 0; j < recArr.length; j++) {
-        if (proArr[i] === recArr[j]&&recArr[j]!= null) {
-          proArr[i] = null;
-          recArr[j] = null;
-          same++;
+      //비교를 위해 배열로 만들어 준다.
+      const proArr = problem.split("");
+      const recArr = recoderProblem.split("");
+      var total = proArr.length;
+      var same = 0;
+      for (let i = 0; i < proArr.length; i++) {
+        for (let j = 0; j < recArr.length; j++) {
+          if (proArr[i] === recArr[j] && recArr[j] != null) {
+            proArr[i] = null;
+            recArr[j] = null;
+            same++;
+          }
         }
       }
+      var avg = ((same / total) * 100).toFixed(2);
+      
+      setRate((e) => e = avg);
     }
-    var avg = ((same / total)*100).toFixed(2);
-    console.log(avg);
+    else {
+      avg = 0;
+      console.log(avg); 
 
-    setRate((e) => e = avg);
+      setRate((e) => e = avg);
+    }
 
   }
-  const RankList = () => {
+  
+
+  const RankList = useCallback(() => {
     setList((e) => [...e, Count]);
-    console.log(List);
-  }
+    console.log(List.length);
+  },[Count]);
 
   const SuccessOrFail = () => {
     if (Rate > 70) {
-      //1console.log(List.map);
-
       return (
         <div>
           <h1>성공</h1>
@@ -92,6 +101,12 @@ const JoMode=()=> {
     }
     
   }
+  //Start와 Stop 중복 클릭 방지를 위한 함수
+  const [flipped, setFlipped] = React.useState(true);
+  const onFlip=()=>{
+    setFlipped((current) => !current);
+  }
+
   //{
   //   results.map((result) => (
   //     <li key={result.timestamp}>{result.transcript}</li>
@@ -114,8 +129,8 @@ const JoMode=()=> {
   return (
     <div>
       <div>
-        <button className="w-btn w-btn-blue" type="button" onClick={startHandler} >시작</button>
-        <button className="w-btn w-btn-gra1 w-btn-gra-anim" type="button" onClick={stopHandler}>종료</button>
+        <button className="w-btn w-btn-blue" type="button" onClick={startHandler} disabled={!flipped}>시작</button>
+        <button className="w-btn w-btn-gra1 w-btn-gra-anim" type="button" onClick={stopHandler} disabled={flipped}>종료</button>
         <h1 className='problem'>{Problem}</h1>
         <h1 className='rate'>인식률 : {Rate}%</h1>
         <button onClick={RankList}>리스트에 추가</button>
@@ -132,7 +147,6 @@ const JoMode=()=> {
         <h1>
           <SuccessOrFail />
         </h1>
-        
       </div>
       
       
