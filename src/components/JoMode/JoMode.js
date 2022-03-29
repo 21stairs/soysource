@@ -1,10 +1,10 @@
-import React, { useRef, useState, useCallback } from "react";
+import React, { useRef, useState, useCallback, useEffect } from "react";
 import "./JoMode.css";
 import JoModeData from './JoModeData';
 import "../btn.css";
 import ReactDOM from "react-dom"
 import useSpeechToText from 'react-hook-speech-to-text';
-import firepadRef, {db, setFirepadRef} from '../../server/firebase'
+import firepadRef, { db, setFirepadRef } from '../../server/firebase'
 import { rId } from "../MainPage/roomCreate";
 
 /*
@@ -23,25 +23,10 @@ const JoMode = () => {
   const [Rate, setRate] = useState(0);
   const [List, setList] = useState([]);
 
-  var roomRef = ""
-  /**
-   * [게임 초기화]
-   * 1. Mode 를 '조준영모드' 으로 설정
-   * 2. 
-   */
-  function initGame() { // 이거 왜 3번 불리는지 질문
-    console.log("(JoMode.js) firepadRef : ", firepadRef.toString())
-    firepadRef.child("gameMode").set("Jo")
-    console.log("(JoMode.js) rId from roomCreate.js : ", rId)
-    if(rId){ // 방 참가하기로 드갔으면...
-      roomRef =  db.database().ref().child(rId)
-      console.log("(JoMode.js) roomRef : ", roomRef.toString())
-    }else{
-
-    }
-  }
-
-  initGame()
+  useEffect(() => {
+    initGame()
+    addListeners()
+  });
 
   const startHandler = () => {
     onFlip()//중복 클릭 방지
@@ -157,14 +142,14 @@ const JoMode = () => {
       <div>
         <button className="w-btn w-btn-blue" type="button" onClick={startHandler} disabled={!flipped}>시작</button>
         <button className="w-btn w-btn-gra1 w-btn-gra-anim" type="button" onClick={stopHandler} disabled={flipped}>종료</button>
-        <h1 className='problem'>{Problem}</h1>
-        <h1 className='rate'>인식률 : {Rate}%</h1>
+        <h1 className='problem' id="problem">{Problem}</h1>
+        <h1 className='rate' id="rate">인식률 : {Rate}%</h1>
         <button onClick={RankList}>리스트에 추가</button>
       </div>
 
       <div>
 
-        <h1>
+        <h1 className="speakedSentence" id="speakedSentence">
           {interimResult}
         </h1>
       </div>
@@ -176,9 +161,48 @@ const JoMode = () => {
       </div>
     </div>
   );
-}
-// 힝홍행
 
+  var roomRef // 참가자가 참가한 방의 위치
+  /**
+   * [게임 초기화]
+   * 1. Mode 를 '조준영모드' 으로 설정
+   * 2. 참가자라면, 참가한 방의 위치를 설정
+   */
+  function initGame() { // 이거 왜 3번 불리는지 질문
+    console.log("(JoMode.js) firepadRef : ", firepadRef.toString())
+    firepadRef.child("gameMode").set("Jo")
+    console.log("(JoMode.js) rId from roomCreate.js : ", rId)
+    if (rId) { // 방 참가하기로 드갔으면...
+      roomRef = db.database().ref().child(rId)
+      console.log("(JoMode.js) roomRef : ", roomRef.toString())
+    } else {
+      roomRef = firepadRef
+    }
+  }
+
+  /**
+   * [리스너 달아주기]
+   * 1. html태그
+   */
+  function addListeners() {
+    var problem = document.getElementById("problem")
+    var rate = document.getElementById("rate")
+    var speakedSentence = document.getElementById("speakedSentence")
+    console.log("problem : ", problem)
+    console.log("rate : ", rate)
+    console.log("speakedSentence : ", speakedSentence)
+    roomRef.child("currentSentence").on('value', snap => {
+      problem.innerText = snap.val()
+    })
+    roomRef.child("rate").on('value', snap => {
+      rate.innerText = snap.val()
+    })
+    roomRef.child("speakedSentence").on('value', snap => {
+      speakedSentence.innerText = snap.val()
+    })
+  }
+
+}
 
 
 export default JoMode;
