@@ -63,6 +63,8 @@ const JoMode = (props) => {
     for (let i = 0; i < Object.keys(props.participants).length; i++) {
       list.push(Object.keys(props.participants)[i])
     }
+    //섞고 섞고 돌리고 섞고
+    list.sort(() => Math.random() - 0.5)
     roomRef.current.child("order").set(list);
   }
 
