@@ -3,7 +3,7 @@ import "./JoMode.css";
 import JoModeData from "./JoModeData";
 import "../btn.css";
 import ReactDOM from "react-dom";
-import {connect} from "react-redux"
+import { connect } from "react-redux";
 import useSpeechToText from "react-hook-speech-to-text";
 import firepadRef, { db, setFirepadRef } from "../../server/firebase";
 import { rId } from "../MainPage/roomCreate";
@@ -25,6 +25,7 @@ import {
 7. 3, 5, 7 라운드 수 지정해서 누적 시간을 매겨 순위 지정.
 */
 const JoMode = (props) => {
+  console.log("(JoMode.js) JoMode")
   var roomRef = useRef(); // 참가자가 참가한 방의 위치
   const countRef = useRef(null);
   const [Count, setCount] = useState(0); //타이머 결과 값
@@ -36,28 +37,46 @@ const JoMode = (props) => {
   const [isFail, setIsFail] = useState("");
   const [speakedSentence, setSpeakedSentence] = useState("");
   const [time, setTime] = useState("");
-  
+
   console.log(props);
   if (props.currentUser) {
     const userId = Object.keys(props.currentUser)[0]; // 현재 클라이언트 사용자 DB에 저장된 고유 ID값
-    console.log(props.currentUser[userId].name); // 현재 클라이언트 사용자 이름(닉네임)
+    console.log(
+      "현재 클라이언트 사용자 이름 : ",
+      props.currentUser[userId].name
+    ); // 현재 클라이언트 사용자 이름(닉네임)
     //현재 세션 참가자 인원들은 participant에 저장되어 있음.
     for (let i = 0; i < Object.keys(props.participants).length; i++) {
       // 참가자 목록 뽑기
-      console.log(Object.keys(props.participants)[i]);
+      console.log("참가자[", i, "] : ", Object.keys(props.participants)[i]);
     }
+  }
+
+  /**
+   * [순서 만들기]
+   * 1. 방 ref를 참고하여, participants들을 리스트에 담는다.
+   * 2. 리스트를 frdb에 넣는다.
+   * 3. 각 유저에게 리스트에 해당하는 인덱스를 부여한다.
+   */
+  function makeOrder() {
+    var list = []
+    for (let i = 0; i < Object.keys(props.participants).length; i++) {
+      list.push(Object.keys(props.participants)[i])
+    }
+    roomRef.current.child("order").set(list);
   }
 
   useEffect(async () => {
     initGame();
     addListeners();
+    makeOrder()
   }, []);
 
   /**
-     * [게임 초기화]
-     * 1. Mode 를 '조준영모드' 으로 설정
-     * 2. 참가자라면, 참가한 방의 위치를 설정
-     */
+   * [게임 초기화]
+   * 1. Mode 를 '조준영모드' 으로 설정
+   * 2. 참가자라면, 참가한 방의 위치를 설정
+   */
   function initGame() {
     // 이거 왜 3번 불리는지 질문
     console.log("-initGame-");
@@ -116,7 +135,7 @@ const JoMode = (props) => {
     SetProblem();
   };
 
-  const stopHandler = async() => {
+  const stopHandler = async () => {
     console.log("멈춰!");
     console.log("(JoMode.js stopHandler) roomRef : ", roomRef.current); // 왜 여기서 부르면 undefined 되는지?
     onFlip(); //중복 클릭 방지
@@ -163,9 +182,9 @@ const JoMode = (props) => {
       var avg = ((same / total) * 100).toFixed(2);
 
       setRate((e) => {
-        e = avg
-        roomRef.current.child("accuracy").set(avg)
-        
+        e = avg;
+        roomRef.current.child("accuracy").set(avg);
+
         if (avg > 70) {
           roomRef.current.child("isFail").set("성공");
         } else {
@@ -177,9 +196,9 @@ const JoMode = (props) => {
       console.log(avg);
 
       setRate((e) => {
-        e = avg
-        roomRef.current.child("accuracy").set(avg)
-        
+        e = avg;
+        roomRef.current.child("accuracy").set(avg);
+
         if (avg > 70) {
           roomRef.current.child("isFail").set("성공");
         } else {
@@ -258,9 +277,7 @@ const JoMode = (props) => {
       </div>
 
       <div className="rank" id="isFail">
-        <h1>
-          {isFail}
-        </h1>
+        <h1>{isFail}</h1>
       </div>
     </div>
   );
@@ -268,14 +285,16 @@ const JoMode = (props) => {
 
 // 넣은 정보가 props에 담김
 const mapStateToProps = (state) => {
+  console.log("(JoMode.js) mapStateToProps")
   return {
     stream: state.mainStream,
     currentUser: state.currentUser,
-    participants: state.participants
+    participants: state.participants,
   };
 };
 
 const mapDispatchToProps = (dispatch) => {
+  console.log("(JoMode.js) mapDispatchToProps")
   return {
     setMainStream: (stream) => dispatch(setMainStream(stream)),
     addParticipant: (user) => dispatch(addParticipant(user)),
