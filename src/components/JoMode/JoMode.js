@@ -18,7 +18,7 @@ import { rId } from "../MainPage/roomCreate";
 */
 const JoMode = () => {
   
-  var roomRef // 참가자가 참가한 방의 위치
+  var roomRef = useRef(); // 참가자가 참가한 방의 위치
   const countRef = useRef(null);
   const [Count, setCount] = useState(0); //타이머 결과 값
   const [Problem, setProblem] = useState("시작"); //문제 
@@ -26,12 +26,12 @@ const JoMode = () => {
   const [List, setList] = useState([]);
 
   useEffect(() => {
-    initGame()
+    roomRef.current=initGame()
     addListeners()
   },[]);
 
   const startHandler = () => {
-    console.log("(JoMode.js startHandler) roomRef : ",roomRef)
+    console.log("(JoMode.js startHandler) roomRef : ",roomRef.current)
     onFlip()//중복 클릭 방지
     startSpeechToText();
     setCount(0);
@@ -42,27 +42,27 @@ const JoMode = () => {
 
   const stopHandler = () => {
     console.log("멈춰!")
-    console.log("(JoMode.js stopHandler) roomRef : ",roomRef) // 왜 여기서 부르면 undefined 되는지?
+    console.log("(JoMode.js stopHandler) roomRef : ",roomRef.current) // 왜 여기서 부르면 undefined 되는지?
     onFlip()//중복 클릭 방지
     stopSpeechToText();
     clearInterval(countRef.current);
     countRef.current = null;
     setProblem((c) => c = <h1>{Count}ms</h1>);
-    roomRef.child("time").set(Count)
-    roomRef.child("speakedSentence").set(interimResult)
+    roomRef.current.child("time").set(Count)
+    roomRef.current.child("speakedSentence").set(interimResult)
     SetRate(Problem);
   };
 
   const SetProblem = () => {
-    console.log("(JoMode.js setProblem) roomRef : ",roomRef)
+    console.log("(JoMode.js setProblem) roomRef : ",roomRef.current)
     var rand = Math.floor(Math.random() * 33);
     const sentence = JoModeData.JoModeData[rand]
     setProblem((c) => c = sentence);
-    roomRef.child("currentSentence").set(sentence)
+    roomRef.current.child("currentSentence").set(sentence)
   };
 
   const SetRate = (problem) => {
-    console.log("(JoMode.js setRate) roomRef : ",roomRef)
+    console.log("(JoMode.js setRate) roomRef : ",roomRef.current)
     var recoderProblem = interimResult; //녹음된 문자
 
     if (recoderProblem !== undefined) {
@@ -175,18 +175,21 @@ const JoMode = () => {
    */
   function initGame() { // 이거 왜 3번 불리는지 질문
     console.log("-initGame-")
+    var rmR;
     if (rId) { // 방 참가하기로 드갔으면...
-      roomRef = db.database().ref(rId)
+      rmR = db.database().ref(rId)
     } else {
-      roomRef = firepadRef
+      rmR = firepadRef
     }
-    console.log("roomRef : ", roomRef)
-    roomRef.child("gameMode").set("Jo")
-    roomRef.child("currentSentence").set("fff")
-    roomRef.child("speakedSentence").set("fff")
-    roomRef.child("time").set(0)
-    roomRef.child("accuracy").set("fff")
-    roomRef.child("isFail").set("fff")
+    console.log("roomRef : ", rmR)
+    rmR.child("gameMode").set("Jo")
+    rmR.child("currentSentence").set("fff")
+    rmR.child("speakedSentence").set("fff")
+    rmR.child("time").set(0)
+    rmR.child("accuracy").set("fff")
+    rmR.child("isFail").set("fff")
+    
+    return rmR;
   }
 
   /**
@@ -202,23 +205,23 @@ const JoMode = () => {
     var speakedSentence = document.getElementById("speakedSentence")
     var time = document.getElementById("time")
   
-    roomRef.child("accuracy").on('value', snap => {
+    roomRef.current.child("accuracy").on('value', snap => {
       accuracy.innerText = snap.val()
       console.log("accuracy : " , snap.val())
     })
-    roomRef.child("currentSentence").on('value', snap => {
+    roomRef.current.child("currentSentence").on('value', snap => {
       currentSentence.innerText = snap.val()
       console.log("currentSentence : " , snap.val())
     })
-    roomRef.child("isFail").on('value', snap => {
+    roomRef.current.child("isFail").on('value', snap => {
       isFail.innerText = snap.val()
       console.log("isFail : " , snap.val())
     })
-    roomRef.child("speakedSentence").on('value', snap => {
+    roomRef.current.child("speakedSentence").on('value', snap => {
       speakedSentence.innerText = snap.val()
       console.log("speakedSentence : " , snap.val())
     })
-    roomRef.child("time").on('value', snap => {
+    roomRef.current.child("time").on('value', snap => {
       time.innerText = snap.val()
       console.log("time : " , snap.val())
     })
