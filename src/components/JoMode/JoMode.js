@@ -97,7 +97,7 @@ const JoMode = () => {
     SetProblem();
   };
 
-  const stopHandler = async () => {
+  const stopHandler = async() => {
     console.log("멈춰!");
     console.log("(JoMode.js stopHandler) roomRef : ", roomRef.current); // 왜 여기서 부르면 undefined 되는지?
     onFlip(); //중복 클릭 방지
@@ -146,7 +146,7 @@ const JoMode = () => {
       setRate((e) => {
         e = avg
         roomRef.current.child("accuracy").set(avg)
-
+        
         if (avg > 70) {
           roomRef.current.child("isFail").set("성공");
         } else {
@@ -154,14 +154,19 @@ const JoMode = () => {
         }
       });
     } else {
-      e = avg
-      roomRef.current.child("accuracy").set(avg)
+      avg = 0;
+      console.log(avg);
 
-      if (avg > 70) {
-        roomRef.current.child("isFail").set("성공");
-      } else {
-        roomRef.current.child("isFail").set("실패");
-      }
+      setRate((e) => {
+        e = avg
+        roomRef.current.child("accuracy").set(avg)
+        
+        if (avg > 70) {
+          roomRef.current.child("isFail").set("성공");
+        } else {
+          roomRef.current.child("isFail").set("실패");
+        }
+      });
     }
   };
 
