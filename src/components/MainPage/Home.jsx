@@ -37,7 +37,7 @@ const test = () => {
             <button>게임실행</button>
           </div>
         </section>
-        <section>
+        <section >
           <img src='./gosok.png' />
         </section>
       </div>
