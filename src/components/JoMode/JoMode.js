@@ -26,7 +26,7 @@ const JoMode = () => {
   const [List, setList] = useState([]);
 
   useEffect(() => {
-    roomRef.current=initGame()
+    initGame()
     addListeners()
   },[]);
 
@@ -175,21 +175,20 @@ const JoMode = () => {
    */
   function initGame() { // 이거 왜 3번 불리는지 질문
     console.log("-initGame-")
-    var rmR;
-    if (rId) { // 방 참가하기로 드갔으면...
-      rmR = db.database().ref(rId)
-    } else {
-      rmR = firepadRef
-    }
-    console.log("roomRef : ", rmR)
-    rmR.child("gameMode").set("Jo")
-    rmR.child("currentSentence").set("fff")
-    rmR.child("speakedSentence").set("fff")
-    rmR.child("time").set(0)
-    rmR.child("accuracy").set("fff")
-    rmR.child("isFail").set("fff")
     
-    return rmR;
+    if (rId) { // 방 참가하기로 드갔으면...
+      roomRef.current = db.database().ref(rId)
+    } else {
+      roomRef.current = firepadRef
+    }
+    console.log("roomRef : ", roomRef.current)
+    roomRef.current.child("gameMode").set("Jo")
+    roomRef.current.child("currentSentence").set("fff")
+    roomRef.current.child("speakedSentence").set("fff")
+    roomRef.current.child("time").set(0)
+    roomRef.current.child("accuracy").set("fff")
+    roomRef.current.child("isFail").set("fff")
+  
   }
 
   /**
