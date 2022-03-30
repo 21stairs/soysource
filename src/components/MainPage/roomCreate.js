@@ -23,9 +23,11 @@ const RoomCreate = () => {
   return (
       <div class="room">
         <div class="left" onClick={insertRoomToRTDB}>
+          <img className="left-img" src="./make.png"/>
           <h1>방 생성하기</h1>
         </div>
         <div class="right" onClick={test}>
+          <img className="right-img" src="./in.png"/>
           <h1>방 입장하기</h1>
         </div>
       </div>

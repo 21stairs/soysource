@@ -1,58 +1,45 @@
 .room {
-  /* GENERAL BUTTON STYLING */
-  button,
-  button::after {
-    -webkit-transition: all 0.3s;
-    -moz-transition: all 0.3s;
-    -o-transition: all 0.3s;
-    transition: all 0.3s;
+  display: flex;
+  flex-wrap: nowrap;
+  margin: 0 auto;
+  align-items: center;
+  width: 90%;
+  height: 90%;
+  cursor: pointer;
+  
+  :hover {
+    background: #dcdcdc;
   }
-
-  button {
-    float: left;
-    background: none;
-    border: 3px solid #ffff00;
-    border-radius: 5px;
-    color: black;
-    display: block;
-    font-size: 30px;
-    font-weight: bold;
-    margin-top: 2%;
-    margin-left: 25%;
-    padding: 1%;
-    position: relative;
-    text-transform: uppercase;
-  }
-
   div {
     display: flex;
-    justify-content: center;
+    flex-flow: column nowrap;
     align-items: center;
-
-    height: 94vh;
-    width: 50vw;
-    object-fit: cover;
-    background-repeat: no-repeat;
-    background-size : cover;
-    opacity: 0.8;
+    margin-top: 20px;
+    border-radius: 50px;
+    overflow: hidden;
+    .left-img {
+      width: 100%;
+      overflow: hidden;
+    }
+    .right-img{
+      width: 90%;
+      margin-bottom: 10%;
+      :hover {
+        width: 92%;
+      }
+    }
   }
-
-  div.left {
-    float: left;
-    background-image: url("https://image.freepik.com/free-photo/empty-house-under-construction_293060-783.jpg");
-    
-  }
-  div.right {
-    float: right;
-    background-image: url("https://images.unsplash.com/photo-1536160885591-301854e2ed04?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Nnx8ZG9vcnxlbnwwfHwwfHw%3D&w=1000&q=80");
-    
-  }
-
-  h1{
-    display: table-cell;
-    vertical-align: middle;
-    text-align: center;
-    font-size: 400%;
-  }
-  
 }
+
+@media screen and (max-width: 768px){
+  .room{
+    flex-direction: column;
+    width: 100%;
+    margin: 0;
+    
+    div {
+      margin: 0 0 20px 0;
+    }
+  }
+}
+
