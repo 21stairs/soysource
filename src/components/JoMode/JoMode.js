@@ -1,10 +1,10 @@
 import React, { useRef, useState, useCallback, useEffect } from "react";
 import "./JoMode.css";
-import JoModeData from './JoModeData';
+import JoModeData from "./JoModeData";
 import "../btn.css";
-import ReactDOM from "react-dom"
-import useSpeechToText from 'react-hook-speech-to-text';
-import firepadRef, { db, setFirepadRef } from '../../server/firebase'
+import ReactDOM from "react-dom";
+import useSpeechToText from "react-hook-speech-to-text";
+import firepadRef, { db, setFirepadRef } from "../../server/firebase";
 import { rId } from "../MainPage/roomCreate";
 
 /*
@@ -17,22 +17,79 @@ import { rId } from "../MainPage/roomCreate";
 7. 3, 5, 7 라운드 수 지정해서 누적 시간을 매겨 순위 지정.
 */
 const JoMode = () => {
-  
   var roomRef = useRef(); // 참가자가 참가한 방의 위치
   const countRef = useRef(null);
   const [Count, setCount] = useState(0); //타이머 결과 값
-  const [Problem, setProblem] = useState("시작"); //문제 
+  const [Problem, setProblem] = useState("시작"); //문제
   const [Rate, setRate] = useState(0);
   const [List, setList] = useState([]);
+  const [accuracy, setAccuracy] = useState("");
+  const [currentSentence, setCurrentSentence] = useState("");
+  const [isFail, setIsFail] = useState("");
+  const [speakedSentence, setSpeakedSentence] = useState("");
+  const [time, setTime] = useState("");
 
-  useEffect(() => {
-    initGame()
-    addListeners()
-  },[]);
+  useEffect(async () => {
+    initGame();
+    addListeners();
+  }, []);
+
+  /**
+     * [게임 초기화]
+     * 1. Mode 를 '조준영모드' 으로 설정
+     * 2. 참가자라면, 참가한 방의 위치를 설정
+     */
+  function initGame() {
+    // 이거 왜 3번 불리는지 질문
+    console.log("-initGame-");
+
+    if (rId) {
+      // 방 참가하기로 드갔으면...
+      roomRef.current = db.database().ref(rId);
+    } else {
+      roomRef.current = firepadRef;
+    }
+    console.log("roomRef : ", roomRef.current);
+    roomRef.current.child("gameMode").set("Jo");
+    roomRef.current.child("currentSentence").set("fff");
+    roomRef.current.child("speakedSentence").set("fff");
+    roomRef.current.child("time").set(0);
+    roomRef.current.child("accuracy").set("fff");
+    roomRef.current.child("isFail").set("fff");
+  }
+
+  /**
+   * [리스너 달아주기]
+   * 1. html 엘리먼트 ID로 가져오기(ID 이름은 DB랑 같음)
+   * 2. 값 변할때, 값 가져오기
+   * 3. 가져온 값으로 텍스트 변경
+   */
+  function addListeners() {
+    roomRef.current.child("accuracy").on("value", (snap) => {
+      setAccuracy(snap.val());
+      console.log("accuracy : ", snap.val());
+    });
+    roomRef.current.child("currentSentence").on("value", (snap) => {
+      setCurrentSentence(snap.val());
+      console.log("currentSentence : ", snap.val());
+    });
+    roomRef.current.child("isFail").on("value", (snap) => {
+      setIsFail(snap.val());
+      console.log("isFail : ", snap.val());
+    });
+    roomRef.current.child("speakedSentence").on("value", (snap) => {
+      setSpeakedSentence(snap.val());
+      console.log("speakedSentence : ", snap.val());
+    });
+    roomRef.current.child("time").on("value", (snap) => {
+      setTime(snap.val());
+      console.log("time : ", snap.val());
+    });
+  }
 
   const startHandler = () => {
-    console.log("(JoMode.js startHandler) roomRef : ",roomRef.current)
-    onFlip()//중복 클릭 방지
+    console.log("(JoMode.js startHandler) roomRef : ", roomRef.current);
+    onFlip(); //중복 클릭 방지
     startSpeechToText();
     setCount(0);
     clearInterval(countRef.current);
@@ -40,29 +97,29 @@ const JoMode = () => {
     SetProblem();
   };
 
-  const stopHandler = () => {
-    console.log("멈춰!")
-    console.log("(JoMode.js stopHandler) roomRef : ",roomRef.current) // 왜 여기서 부르면 undefined 되는지?
-    onFlip()//중복 클릭 방지
+  const stopHandler = async () => {
+    console.log("멈춰!");
+    console.log("(JoMode.js stopHandler) roomRef : ", roomRef.current); // 왜 여기서 부르면 undefined 되는지?
+    onFlip(); //중복 클릭 방지
     stopSpeechToText();
     clearInterval(countRef.current);
     countRef.current = null;
-    setProblem((c) => c = <h1>{Count}ms</h1>);
-    roomRef.current.child("time").set(Count)
-    roomRef.current.child("speakedSentence").set(interimResult)
+    setProblem((c) => (c = <h1>{Count}ms</h1>));
+    roomRef.current.child("time").set(Count);
+    roomRef.current.child("speakedSentence").set(interimResult);
     SetRate(Problem);
   };
 
   const SetProblem = () => {
-    console.log("(JoMode.js setProblem) roomRef : ",roomRef.current)
+    console.log("(JoMode.js setProblem) roomRef : ", roomRef.current);
     var rand = Math.floor(Math.random() * 33);
-    const sentence = JoModeData.JoModeData[rand]
-    setProblem((c) => c = sentence);
-    roomRef.current.child("currentSentence").set(sentence)
+    const sentence = JoModeData.JoModeData[rand];
+    setProblem((c) => (c = sentence));
+    roomRef.current.child("currentSentence").set(sentence);
   };
 
   const SetRate = (problem) => {
-    console.log("(JoMode.js setRate) roomRef : ",roomRef.current)
+    console.log("(JoMode.js setRate) roomRef : ", roomRef.current);
     var recoderProblem = interimResult; //녹음된 문자
 
     if (recoderProblem !== undefined) {
@@ -86,43 +143,38 @@ const JoMode = () => {
       }
       var avg = ((same / total) * 100).toFixed(2);
 
-      setRate((e) => e = avg);
+      setRate((e) => {
+        e = avg
+        roomRef.current.child("accuracy").set(avg)
+
+        if (avg > 70) {
+          roomRef.current.child("isFail").set("성공");
+        } else {
+          roomRef.current.child("isFail").set("실패");
+        }
+      });
+    } else {
+      e = avg
+      roomRef.current.child("accuracy").set(avg)
+
+      if (avg > 70) {
+        roomRef.current.child("isFail").set("성공");
+      } else {
+        roomRef.current.child("isFail").set("실패");
+      }
     }
-    else {
-      avg = 0;
-      console.log(avg);
-
-      setRate((e) => e = avg);
-    }
-
-  }
-
+  };
 
   const RankList = useCallback(() => {
     setList((e) => [...e, Count]);
     console.log(List.length);
   }, [Count]);
 
-  const SuccessOrFail = () => {
-    if (Rate > 70) {
-      return (
-        <div>
-          <h1>성공</h1>
-        </div>
-      );
-    } else {
-      return (
-        <div>
-          <h1>실패</h1>
-        </div>
-      );
-    }
-  }
   //Start와 Stop 중복 클릭 방지를 위한 함수
   const [flipped, setFlipped] = React.useState(true);
   const onFlip = () => {
     setFlipped((current) => !current);
-  }
+  };
 
   //{
   //   results.map((result) => (
@@ -131,102 +183,63 @@ const JoMode = () => {
   // }
 
   /*녹음 ---------------------------------------------------- */
-  const {
-    error,
-    interimResult,
-    results,
-    startSpeechToText,
-    stopSpeechToText,
-  } = useSpeechToText({
-    continuous: true,
-    useLegacyResults: false
-
-  });
-  if (error) return <p>Chrome에서 실행 부탁드립니다!!!!🤷‍</p>;
+  const { error, interimResult, results, startSpeechToText, stopSpeechToText } =
+    useSpeechToText({
+      continuous: true,
+      useLegacyResults: false,
+    });
+  if (error) return <p>Chrome에서 실행 부탁드립니다!!!!🤷 </p>;
   return (
     <div>
       <div>
-        <button className="w-btn w-btn-blue" type="button" onClick={startHandler} disabled={!flipped}>시작</button>
-        <button className="w-btn w-btn-gra1 w-btn-gra-anim" type="button" onClick={stopHandler} disabled={flipped}>종료</button>
-        <h1 className='problem' id="currentSentence">{Problem}</h1>
-        <h1 className='rate' id="accuracy">인식률 : {Rate}%</h1>
+        <button
+          className="w-btn w-btn-blue"
+          type="button"
+          onClick={startHandler}
+          disabled={!flipped}
+        >
+          시작
+        </button>
+        <button
+          className="w-btn w-btn-gra1 w-btn-gra-anim"
+          type="button"
+          onClick={stopHandler}
+          disabled={flipped}
+        >
+          종료
+        </button>
+        <h1 className="problem" id="currentSentence">
+          {Problem}
+          <br />
+          {currentSentence}
+        </h1>
+        <h1 className="rate" id="accuracy">
+          인식률 : {Rate}%
+          <br />
+          accuracy : {accuracy}
+        </h1>
         <button onClick={RankList}>리스트에 추가</button>
       </div>
 
       <div>
         <h1 className="speakedSentence" id="speakedSentence">
           {interimResult}
+          {speakedSentence}
         </h1>
-        <p id="time"></p>
+        <p>
+          {time}
+          <br />
+          {isFail}
+        </p>
       </div>
 
-      <div className='rank' id="isFail">
+      <div className="rank" id="isFail">
         <h1>
-          <SuccessOrFail />
+          {isFail}
         </h1>
       </div>
     </div>
   );
-
-  /**
-   * [게임 초기화]
-   * 1. Mode 를 '조준영모드' 으로 설정
-   * 2. 참가자라면, 참가한 방의 위치를 설정
-   */
-  function initGame() { // 이거 왜 3번 불리는지 질문
-    console.log("-initGame-")
-    
-    if (rId) { // 방 참가하기로 드갔으면...
-      roomRef.current = db.database().ref(rId)
-    } else {
-      roomRef.current = firepadRef
-    }
-    console.log("roomRef : ", roomRef.current)
-    roomRef.current.child("gameMode").set("Jo")
-    roomRef.current.child("currentSentence").set("fff")
-    roomRef.current.child("speakedSentence").set("fff")
-    roomRef.current.child("time").set(0)
-    roomRef.current.child("accuracy").set("fff")
-    roomRef.current.child("isFail").set("fff")
-  
-  }
-
-  /**
-   * [리스너 달아주기]
-   * 1. html 엘리먼트 ID로 가져오기(ID 이름은 DB랑 같음)
-   * 2. 값 변할때, 값 가져오기
-   * 3. 가져온 값으로 텍스트 변경
-   */
-  function addListeners() {
-    var accuracy = document.getElementById("accuracy")
-    var currentSentence = document.getElementById("currentSentence")
-    var isFail = document.getElementById("isFail")
-    var speakedSentence = document.getElementById("speakedSentence")
-    var time = document.getElementById("time")
-  
-    roomRef.current.child("accuracy").on('value', snap => {
-      accuracy.innerText = snap.val()
-      console.log("accuracy : " , snap.val())
-    })
-    roomRef.current.child("currentSentence").on('value', snap => {
-      currentSentence.innerText = snap.val()
-      console.log("currentSentence : " , snap.val())
-    })
-    roomRef.current.child("isFail").on('value', snap => {
-      isFail.innerText = snap.val()
-      console.log("isFail : " , snap.val())
-    })
-    roomRef.current.child("speakedSentence").on('value', snap => {
-      speakedSentence.innerText = snap.val()
-      console.log("speakedSentence : " , snap.val())
-    })
-    roomRef.current.child("time").on('value', snap => {
-      time.innerText = snap.val()
-      console.log("time : " , snap.val())
-    })
-  }
-
-}
-
+};
 
 export default JoMode;
