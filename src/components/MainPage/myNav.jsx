@@ -4,22 +4,22 @@ import { Link } from "react-router-dom";
 
 const myNav = () => {
   return (
-    <div id="navigation-bar">
+    <>
       <nav>
-        <div id="logo">
+        <div className="logo">
           <Link to="/">Soysourcetree</Link>
         </div>
 
-        <ul>
-          <li>
+        <ul className="nav-items">
+          <li className="nav-item">
             <Link to="/">홈</Link>
           </li>
-          <li>
+          <li className="nav-item">
             <Link to="/room">잰말놀이</Link>
           </li>
         </ul>
       </nav>
-    </div>
+    </>
   );
 };
 

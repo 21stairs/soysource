@@ -1,56 +1,61 @@
-/* FONT IMPORTED */
-
-/* Fira Sans */
 @import url("https://fonts.googleapis.com/css?family=Fira+Sans");
 
-// #container {
-//   width: 100%;
-//   display: inline-block;
-// }
-
-/** HEADER */
-
-/** NAVIGATION BAR */
 nav {
-  overflow: hidden;
-  background-color: rgb(51, 51, 51);
-  /* position: fixed; */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   top: 0;
-  width: 100vw;
-  #logo * {
-    margin: 0 auto;
-    margin-top: 0.5%;
-    margin-left: 5%;
-    float: left;
-    color: #f2f2f2;
-    font-size: 30px;
-    display: inline;
-    font-family: "Fira Sans", sans-serif;
-    text-decoration: none;
+  width: 100%;
+  background-color: #3c3c3c;
+  
+  :only-child {
+    white-space: nowrap;
+    padding: 10px;
   }
-  ul {
-    float: right;
-    text-align: center;
-    list-style-type: none;
-    margin: 0;
-    padding: 15px;
-    li {
-      display: inline;
-      font-family: "Fira Sans", sans-serif;
-      font-size: 17px;
 
-      a {
-        color: #f2f2f2;
-        text-decoration: none;
-        padding: 14px;
-        &:hover {
-          background-color: #111;
-        }
-      }
-    }
+  * {
+    font-family: "Fira Sans", sans-serif;
+    font-weight: bold;
+    color: #F0F8FF;
+
   }
 }
 
-.content {
+.logo {
+  font-size: 30px;
+  margin-left: 20px;  
+  :only-child {
+    text-decoration: none;
+  }
+}
+
+.nav-items {
+  display: flex;
   text-align: center;
+  list-style: none;
+  margin-right: 20px;
+  // transition: all 3s ease;
+  :hover {
+    color: gold;
+  }
+}
+.nav-item :only-child {
+  text-decoration: none;
+  font-size: 20px;
+}
+
+@media screen and (max-width: 576px) {
+  nav {
+    height: 50px;
+    .logo {
+      margin-left: 10px;
+    }
+    * {
+      padding: 0;
+      margin: 10px;
+    }
+  }
+  .nav-items {
+    display: none;
+  }
 }
