@@ -1,6 +1,7 @@
 import MainScreen from "../MainScreen/MainScreen.component";
 import firepadRef, { db, getMetting } from "../../server/firebase";
 import { useLocation } from "react-router-dom";
+// import { test } from "../../server/peerConnection";
 
 import React from "react";
 import { useEffect } from "react";
@@ -14,7 +15,6 @@ import {
 } from "../../store/actioncreator";
 
 const Meeting = (props) => {
-  console.log("순서0");
   const location = useLocation();
   const { number } = location.state || "";
 
@@ -28,7 +28,7 @@ const Meeting = (props) => {
   };
   useEffect(async () => {
     const userName = prompt("닉네임 입력");
-
+    console.log(props);
     const stream = await getUserStream();
     stream.getVideoTracks()[0].enabled = false;
     props.setMainStream(stream);
@@ -46,7 +46,7 @@ const Meeting = (props) => {
           userName,
           preferences: defaultPreference,
         });
-        // setUser를 통해서 해당 유저의 정보를 userStatusRef에 저장된 객체를 값으로 set
+        // redux의 연결된 props로 setUser를 통해서 해당 유저의 정보를 userStatusRef에 저장된 객체를 값으로 set
         props.setUser({
           [userStatusRef.key]: { name: userName, ...defaultPreference },
         });
@@ -56,7 +56,6 @@ const Meeting = (props) => {
     });
   }, []);
 
-  console.log("순서2");
   const connectedRef = db.database().ref(".info/connected");
   const participantRef = getMetting(number).child("participants");
 
@@ -68,6 +67,7 @@ const Meeting = (props) => {
       //자식 노드 추가가 감지 되면 실행
 
       participantRef.on("child_added", (snap) => {
+        console.log("check", snap);
         const preferenceUpdateEvent = participantRef
           .child(snap.key)
           .child("preferences");

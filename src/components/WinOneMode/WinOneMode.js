@@ -1,4 +1,3 @@
-
 /*
 1. 사용하지 않았던 문장 중 랜덤하게 문장이 주어진다.
 2. 버튼을 눌러 문장을 녹음 한다. or 캠
@@ -12,8 +11,7 @@
     3. 다음 라운드 진행 : 모든 문장의 제한시간을 n초 줄인다. 단, 최소 시간 밑으로는 불가능. **go to 1*
 */
 
-
-
+import WinOneData from "./WinOneModeData";
 import React, { useState, useCallback } from "react";
 
 const WinOneMode = () => {
@@ -93,15 +91,13 @@ const WinOneMode = () => {
       console.log(URL.createObjectURL(audioUrl)); // 출력된 링크에서 녹음된 오디오 확인 가능
     }
 
-    
-
     // File 생성자를 사용해 파일로 변환
-    const sound = new File([audioUrl], "soundBlob", { lastModified: new Date().getTime(), type: "audio" });
+    const sound = new File([audioUrl], "soundBlob", {
+      lastModified: new Date().getTime(),
+      type: "audio",
+    });
     console.log(sound); // File 정보 출력
   }, [audioUrl]);
-
-
-
 
   return (
     <>

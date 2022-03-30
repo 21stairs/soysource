@@ -8,6 +8,7 @@ const RoomCreate = () => {
   const test = () => {
     id.current = prompt("방 번호 입력");
     console.log(id.current);
+    // getMetting(id.current);
     navigate("/meet/", {
       state: {
         number: id.current,
