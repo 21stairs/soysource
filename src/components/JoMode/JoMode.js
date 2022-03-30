@@ -3,9 +3,17 @@ import "./JoMode.css";
 import JoModeData from "./JoModeData";
 import "../btn.css";
 import ReactDOM from "react-dom";
+import {connect} from "react-redux"
 import useSpeechToText from "react-hook-speech-to-text";
 import firepadRef, { db, setFirepadRef } from "../../server/firebase";
 import { rId } from "../MainPage/roomCreate";
+import {
+  setMainStream,
+  addParticipant,
+  setUser,
+  removeParticipant,
+  updateParticipant,
+} from "../../store/actioncreator";
 
 /*
 1. 문장이 주어진다.
@@ -16,7 +24,7 @@ import { rId } from "../MainPage/roomCreate";
 6. 정답률을 넘긴것중 시간 순으로 순위를 매김.
 7. 3, 5, 7 라운드 수 지정해서 누적 시간을 매겨 순위 지정.
 */
-const JoMode = () => {
+const JoMode = (props) => {
   var roomRef = useRef(); // 참가자가 참가한 방의 위치
   const countRef = useRef(null);
   const [Count, setCount] = useState(0); //타이머 결과 값
@@ -28,6 +36,17 @@ const JoMode = () => {
   const [isFail, setIsFail] = useState("");
   const [speakedSentence, setSpeakedSentence] = useState("");
   const [time, setTime] = useState("");
+  
+  console.log(props);
+  if (props.currentUser) {
+    const userId = Object.keys(props.currentUser)[0]; // 현재 클라이언트 사용자 DB에 저장된 고유 ID값
+    console.log(props.currentUser[userId].name); // 현재 클라이언트 사용자 이름(닉네임)
+    //현재 세션 참가자 인원들은 participant에 저장되어 있음.
+    for (let i = 0; i < Object.keys(props.participants).length; i++) {
+      // 참가자 목록 뽑기
+      console.log(Object.keys(props.participants)[i]);
+    }
+  }
 
   useEffect(async () => {
     initGame();
@@ -247,4 +266,23 @@ const JoMode = () => {
   );
 };
 
-export default JoMode;
+// 넣은 정보가 props에 담김
+const mapStateToProps = (state) => {
+  return {
+    stream: state.mainStream,
+    currentUser: state.currentUser,
+    participants: state.participants
+  };
+};
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    setMainStream: (stream) => dispatch(setMainStream(stream)),
+    addParticipant: (user) => dispatch(addParticipant(user)),
+    setUser: (user) => dispatch(setUser(user)),
+    removeParticipant: (userId) => dispatch(removeParticipant(userId)),
+    updateParticipant: (user) => dispatch(updateParticipant(user)),
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(JoMode);
