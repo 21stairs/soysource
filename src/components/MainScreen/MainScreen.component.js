@@ -25,7 +25,7 @@ const MainScreen = (props) => {
   };
 
   useEffect(() => {
-    participantRef.current = props.participants;
+    participantRef.current = props.participants;//과연
   }, [props.participants]);
 
   function Mode(Props) {
