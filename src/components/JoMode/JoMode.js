@@ -1,4 +1,4 @@
-import React, { useRef, useState, useCallback, useEffect } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import "./JoMode.css";
 import JoModeData from "./JoModeData";
 import "../btn.css";
@@ -26,7 +26,7 @@ const JoMode = () => {
   const [speakedSentence, setSpeakedSentence] = useState("");
   const [time, setTime] = useState("");
 
-  useEffect(async () => {
+  useEffect( () => {
     initGame();
     addListeners();
   }, []);
