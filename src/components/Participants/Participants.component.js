@@ -18,10 +18,10 @@ const Participants = (props) => {
     : null;
 
   let gridCol =
-    participantKey.length === 1 ? 1 : participantKey.length <= 4 ? 2 : 4;
-  const gridColSize = participantKey.length <= 4 ? 1 : 2;
+    participantKey.length === 1 ? 1 : participantKey.length <= 3 ? 2 : 3;
+  const gridColSize = participantKey.length <= 3 ? 1 : 2;
   let gridRowSize =
-    participantKey.length <= 4
+    participantKey.length <= 3
       ? participantKey.length
       : Math.ceil(participantKey.length / 2);
 

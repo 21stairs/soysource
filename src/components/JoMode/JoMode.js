@@ -2,9 +2,8 @@ import React, { useRef, useState, useCallback, useEffect } from "react";
 import "./JoMode.css";
 import JoModeData from "./JoModeData";
 import "../btn.css";
-import ReactDOM from "react-dom";
 import useSpeechToText from "react-hook-speech-to-text";
-import firepadRef, { db, setFirepadRef } from "../../server/firebase";
+import firepadRef, { db} from "../../server/firebase";
 import { rId } from "../MainPage/roomCreate";
 
 /*
@@ -21,8 +20,6 @@ const JoMode = () => {
   const countRef = useRef(null);
   const [Count, setCount] = useState(0); //타이머 결과 값
   const [Problem, setProblem] = useState("시작"); //문제
-  const [Rate, setRate] = useState(0);
-  const [List, setList] = useState([]);
   const [accuracy, setAccuracy] = useState("");
   const [currentSentence, setCurrentSentence] = useState("");
   const [isFail, setIsFail] = useState("");
@@ -51,11 +48,11 @@ const JoMode = () => {
     }
     console.log("roomRef : ", roomRef.current);
     roomRef.current.child("gameMode").set("Jo");
-    roomRef.current.child("currentSentence").set("fff");
-    roomRef.current.child("speakedSentence").set("fff");
+    roomRef.current.child("currentSentence").set("문제");
+    roomRef.current.child("speakedSentence").set("");
     roomRef.current.child("time").set(0);
-    roomRef.current.child("accuracy").set("fff");
-    roomRef.current.child("isFail").set("fff");
+    roomRef.current.child("accuracy").set("Rate");
+    roomRef.current.child("isFail").set("성공or실패");
   }
 
   /**
@@ -106,7 +103,8 @@ const JoMode = () => {
     countRef.current = null;
     setProblem((c) => (c = <h1>{Count}ms</h1>));
     roomRef.current.child("time").set(Count);
-    roomRef.current.child("speakedSentence").set(interimResult);
+    if(interimResult!=null)
+      roomRef.current.child("speakedSentence").set(interimResult);
     SetRate(Problem);
   };
 
@@ -143,37 +141,23 @@ const JoMode = () => {
       }
       var avg = ((same / total) * 100).toFixed(2);
 
-      setRate((e) => {
-        e = avg
-        roomRef.current.child("accuracy").set(avg)
+      roomRef.current.child("accuracy").set(avg)
         
-        if (avg > 70) {
-          roomRef.current.child("isFail").set("성공");
-        } else {
-          roomRef.current.child("isFail").set("실패");
-        }
-      });
+      if (avg > 70) {
+        roomRef.current.child("isFail").set("성공");
+      } else {
+        roomRef.current.child("isFail").set("실패");
+      }
+        
+    
     } else {
       avg = 0;
       console.log(avg);
-
-      setRate((e) => {
-        e = avg
-        roomRef.current.child("accuracy").set(avg)
-        
-        if (avg > 70) {
-          roomRef.current.child("isFail").set("성공");
-        } else {
-          roomRef.current.child("isFail").set("실패");
-        }
-      });
+      roomRef.current.child("accuracy").set(avg)
+      roomRef.current.child("isFail").set("실패");
     }
   };
 
-  const RankList = useCallback(() => {
-    setList((e) => [...e, Count]);
-    console.log(List.length);
-  }, [Count]);
 
   //Start와 Stop 중복 클릭 방지를 위한 함수
   const [flipped, setFlipped] = React.useState(true);
@@ -181,14 +165,10 @@ const JoMode = () => {
     setFlipped((current) => !current);
   };
 
-  //{
-  //   results.map((result) => (
-  //     <li key={result.timestamp}>{result.transcript}</li>
-  //   ))
-  // }
+
 
   /*녹음 ---------------------------------------------------- */
-  const { error, interimResult, results, startSpeechToText, stopSpeechToText } =
+  const { error, interimResult,  startSpeechToText, stopSpeechToText } =
     useSpeechToText({
       continuous: true,
       useLegacyResults: false,
@@ -213,35 +193,32 @@ const JoMode = () => {
         >
           종료
         </button>
-        <h1 className="problem" id="currentSentence">
-          {Problem}
-          <br />
+        <h1 className="problem" >
           {currentSentence}
         </h1>
-        <h1 className="rate" id="accuracy">
-          인식률 : {Rate}%
-          <br />
-          accuracy : {accuracy}
-        </h1>
-        <button onClick={RankList}>리스트에 추가</button>
+        
+        
       </div>
 
       <div>
-        <h1 className="speakedSentence" id="speakedSentence">
-          {interimResult}
-          {speakedSentence}
+      <h1 className="rate">
+          정확도 : {accuracy}%
         </h1>
-        <p>
-          {time}
-          <br />
-          {isFail}
-        </p>
+        <h1 className='time'>
+          {time/10}초
+        </h1>
       </div>
 
-      <div className="rank" id="isFail">
+      <div className="res" >
         <h1>
           {isFail}
         </h1>
+      </div>
+      <div>
+        <h2>
+          {interimResult}
+          {speakedSentence}
+        </h2>
       </div>
     </div>
   );
