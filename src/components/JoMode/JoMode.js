@@ -50,22 +50,6 @@ const JoMode = (props) => {
     }
   }
 
-  /**
-   * [순서 만들기]
-   * 1. 방 ref를 참고하여, participants들을 리스트에 담는다.
-   * 2. 리스트를 frdb에 넣는다.
-   * 3. 각 유저에게 리스트에 해당하는 인덱스를 부여한다.
-   */
-  function makeOrder() {
-    var list = [];
-    for (let i = 0; i < Object.keys(props.participants).length; i++) {
-      list.push(Object.keys(props.participants)[i]);
-    }
-    //섞고 섞고 돌리고 섞고
-    list.sort(() => Math.random() - 0.5);
-    roomRef.current.child("order").set(list);
-  }
-
   useEffect(async () => {
     initGame();
     addListeners();
@@ -78,21 +62,14 @@ const JoMode = (props) => {
    * 2. 참가자라면, 참가한 방의 위치를 설정
    */
   function initGame() {
-    console.log("-initGame-");
-
-    if (rId) {
-      roomRef.current = db.database().ref(rId);
-    } else {
-      roomRef.current = firepadRef;
-    }
-
+    roomRef.current = rId ? db.database().ref(rId) : firepadRef;
     roomRef.current
       .child("state")
       .get()
       .then((snapshot) => {
         // 방 처음 만들때만 실행됨.
         if (!snapshot.exists()) {
-          console.log("방 DB 초기화!")
+          console.log("방 DB 초기화!");
           roomRef.current.child("state").set("wait");
           roomRef.current.child("gameMode").set("jo");
           roomRef.current.child("currentSentence").set("NO_CURRENT_SENTENCE");
@@ -103,7 +80,7 @@ const JoMode = (props) => {
         }
       })
       .catch((error) => {
-        console.log("에러 : ",error);
+        console.log("에러 : ", error);
       });
   }
 
@@ -112,6 +89,7 @@ const JoMode = (props) => {
    * 1. html 엘리먼트 ID로 가져오기(ID 이름은 DB랑 같음)
    * 2. 값 변할때, 값 가져오기
    * 3. 가져온 값으로 텍스트 변경
+   * ※ 현재 리스너를 동일한 곳에 계속 달아주고 있어서 낭비긴 함. 하지만 그로인한 버그는 없음.
    */
   function addListeners() {
     roomRef.current.child("accuracy").on("value", (snap) => {
@@ -136,8 +114,35 @@ const JoMode = (props) => {
     });
   }
 
+  /**
+   * [순서 만들기]
+   * 1. 방 ref를 참고하여, participants들을 리스트에 담는다.
+   * 2. 리스트를 frdb에 넣는다.
+   * 3. 각 유저에게 리스트에 해당하는 인덱스를 부여한다.
+   */
+  function makeOrder() {
+    roomRef.current
+      .child("state")
+      .get()
+      .then((snapshot) => {
+        if (snapshot.exists()) {
+          if ("wait" === snapshot.val()) {
+            // state가 wait일때만 섞음.
+            var list = [];
+            for (let i = 0; i < Object.keys(props.participants).length; i++) {
+              list.push(Object.keys(props.participants)[i]);
+            }
+            list.sort(() => Math.random() - 0.5);
+            roomRef.current.child("order").set(list);
+          }
+        }
+      })
+      .catch((error) => {
+        console.log("에러 : ", error);
+      });
+  }
+
   const startHandler = () => {
-    console.log("(JoMode.js startHandler) roomRef : ", roomRef.current);
     onFlip(); //중복 클릭 방지
     startSpeechToText();
     setCount(0);
@@ -147,8 +152,6 @@ const JoMode = (props) => {
   };
 
   const stopHandler = async () => {
-    console.log("멈춰!");
-    console.log("(JoMode.js stopHandler) roomRef : ", roomRef.current); // 왜 여기서 부르면 undefined 되는지?
     onFlip(); //중복 클릭 방지
     stopSpeechToText();
     clearInterval(countRef.current);
@@ -160,7 +163,6 @@ const JoMode = (props) => {
   };
 
   const SetProblem = () => {
-    console.log("(JoMode.js setProblem) roomRef : ", roomRef.current);
     var rand = Math.floor(Math.random() * 33);
     const sentence = JoModeData.JoModeData[rand];
     setProblem((c) => (c = sentence));
@@ -168,7 +170,6 @@ const JoMode = (props) => {
   };
 
   const SetRate = (problem) => {
-    console.log("(JoMode.js setRate) roomRef : ", roomRef.current);
     var recoderProblem = interimResult; //녹음된 문자
 
     if (recoderProblem !== undefined) {
@@ -221,7 +222,6 @@ const JoMode = (props) => {
 
   const RankList = useCallback(() => {
     setList((e) => [...e, Count]);
-    console.log(List.length);
   }, [Count]);
 
   //Start와 Stop 중복 클릭 방지를 위한 함수
@@ -229,12 +229,6 @@ const JoMode = (props) => {
   const onFlip = () => {
     setFlipped((current) => !current);
   };
-
-  //{
-  //   results.map((result) => (
-  //     <li key={result.timestamp}>{result.transcript}</li>
-  //   ))
-  // }
 
   /*녹음 ---------------------------------------------------- */
   const { error, interimResult, results, startSpeechToText, stopSpeechToText } =
