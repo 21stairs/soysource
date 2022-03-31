@@ -5,8 +5,10 @@ nav {
   justify-content: space-between;
   align-items: center;
   top: 0;
+  height: 70px;
   width: 100%;
   background-color: #3c3c3c;
+  z-index: 20;
   
   :only-child {
     white-space: nowrap;
@@ -34,28 +36,34 @@ nav {
   text-align: center;
   list-style: none;
   margin-right: 20px;
-  // transition: all 3s ease;
-  :hover {
-    color: gold;
+  
+  .nav-item :only-child {
+    transition: 0.5s;
+    &:hover {
+      color: #87CEFA;
+    }
   }
 }
 .nav-item :only-child {
   text-decoration: none;
   font-size: 20px;
+
 }
 
-@media screen and (max-width: 576px) {
+@media screen and (max-width: 768px) {
   nav {
-    height: 50px;
-    .logo {
-      margin-left: 10px;
-    }
-    * {
-      padding: 0;
-      margin: 10px;
-    }
+    height: 60px;
   }
-  .nav-items {
-    display: none;
+}
+@media screen and (max-width: 376px) {
+  nav {
+    justify-content: center;
+    .logo {
+      font-size: 10vw;
+      margin: 0;
+    }
+    .nav-items {
+      display: none;
+    }
   }
 }
