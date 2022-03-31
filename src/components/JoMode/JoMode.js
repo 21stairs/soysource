@@ -25,7 +25,6 @@ import {
 7. 3, 5, 7 라운드 수 지정해서 누적 시간을 매겨 순위 지정.
 */
 const JoMode = (props) => {
-  console.log("(JoMode.js) JoMode")
   var roomRef = useRef(); // 참가자가 참가한 방의 위치
   const countRef = useRef(null);
   const [Count, setCount] = useState(0); //타이머 결과 값
@@ -38,7 +37,6 @@ const JoMode = (props) => {
   const [speakedSentence, setSpeakedSentence] = useState("");
   const [time, setTime] = useState("");
 
-  console.log(props);
   if (props.currentUser) {
     const userId = Object.keys(props.currentUser)[0]; // 현재 클라이언트 사용자 DB에 저장된 고유 ID값
     console.log(
@@ -59,19 +57,19 @@ const JoMode = (props) => {
    * 3. 각 유저에게 리스트에 해당하는 인덱스를 부여한다.
    */
   function makeOrder() {
-    var list = []
+    var list = [];
     for (let i = 0; i < Object.keys(props.participants).length; i++) {
-      list.push(Object.keys(props.participants)[i])
+      list.push(Object.keys(props.participants)[i]);
     }
     //섞고 섞고 돌리고 섞고
-    list.sort(() => Math.random() - 0.5)
+    list.sort(() => Math.random() - 0.5);
     roomRef.current.child("order").set(list);
   }
 
   useEffect(async () => {
     initGame();
     addListeners();
-    makeOrder()
+    makeOrder();
   }, []);
 
   /**
@@ -80,22 +78,33 @@ const JoMode = (props) => {
    * 2. 참가자라면, 참가한 방의 위치를 설정
    */
   function initGame() {
-    // 이거 왜 3번 불리는지 질문
     console.log("-initGame-");
 
     if (rId) {
-      // 방 참가하기로 드갔으면...
       roomRef.current = db.database().ref(rId);
     } else {
       roomRef.current = firepadRef;
     }
-    console.log("roomRef : ", roomRef.current);
-    roomRef.current.child("gameMode").set("Jo");
-    roomRef.current.child("currentSentence").set("fff");
-    roomRef.current.child("speakedSentence").set("fff");
-    roomRef.current.child("time").set(0);
-    roomRef.current.child("accuracy").set("fff");
-    roomRef.current.child("isFail").set("fff");
+
+    roomRef.current
+      .child("state")
+      .get()
+      .then((snapshot) => {
+        // 방 처음 만들때만 실행됨.
+        if (!snapshot.exists()) {
+          console.log("방 DB 초기화!")
+          roomRef.current.child("state").set("wait");
+          roomRef.current.child("gameMode").set("jo");
+          roomRef.current.child("currentSentence").set("NO_CURRENT_SENTENCE");
+          roomRef.current.child("speakedSentence").set("NO_SPEAK_SENTENCE");
+          roomRef.current.child("time").set("NO_TIME");
+          roomRef.current.child("accuracy").set("NO_ACCURACY");
+          roomRef.current.child("isFail").set("NO_IS_FAIL");
+        }
+      })
+      .catch((error) => {
+        console.log("에러 : ",error);
+      });
   }
 
   /**
@@ -287,7 +296,7 @@ const JoMode = (props) => {
 
 // 넣은 정보가 props에 담김
 const mapStateToProps = (state) => {
-  console.log("(JoMode.js) mapStateToProps")
+  console.log("(JoMode.js) mapStateToProps");
   return {
     stream: state.mainStream,
     currentUser: state.currentUser,
@@ -296,7 +305,7 @@ const mapStateToProps = (state) => {
 };
 
 const mapDispatchToProps = (dispatch) => {
-  console.log("(JoMode.js) mapDispatchToProps")
+  console.log("(JoMode.js) mapDispatchToProps");
   return {
     setMainStream: (stream) => dispatch(setMainStream(stream)),
     addParticipant: (user) => dispatch(addParticipant(user)),
