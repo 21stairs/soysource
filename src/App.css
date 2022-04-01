@@ -4,3 +4,10 @@
   height: 100vh;
   text-align: center;
 }
+a {
+  color: inherit;
+  text-decoration: none;
+}
+* {
+  box-sizing: border-box;
+}
