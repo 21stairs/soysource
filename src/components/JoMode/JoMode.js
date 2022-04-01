@@ -1,11 +1,11 @@
-import React, { useRef, useState, useEffect, useCallback } from "react";
+import React, { useRef, useState, useEffect, useCallback, memo } from "react";
 import "./JoMode.css";
 import JoModeData from "./JoModeData";
 import "../btn.css";
 import ReactDOM from "react-dom";
 import { connect } from "react-redux";
 import useSpeechToText from "react-hook-speech-to-text";
-import firepadRef, { db} from "../../server/firebase";
+import firepadRef, { db } from "../../server/firebase";
 import { rId } from "../MainPage/roomCreate";
 import {
   setMainStream,
@@ -26,7 +26,7 @@ import { hostname } from "os";
 7. 3, 5, 7 라운드 수 지정해서 누적 시간을 매겨 순위 지정.
 */
 
-let isbegin = false
+let isbegin = false;
 
 const JoMode = (props) => {
   var roomRef = useRef(); // 참가자가 참가한 방의 위치
@@ -38,20 +38,31 @@ const JoMode = (props) => {
   const [isFail, setIsFail] = useState("");
   const [speakedSentence, setSpeakedSentence] = useState("");
   const [time, setTime] = useState("");
-  const [rate, setRate] = useState("")
-  const [list, setList] = useState("")
-  const [host, setHost] = useState(false)
-  const [gameState, setGameState] = useState("")
+  const [rate, setRate] = useState("");
+  const [list, setList] = useState("");
+  const [host, setHost] = useState(false);
+  const [gameState, setGameState] = useState("");
+  const [isShow, setIsShow] = useState(false);
 
   useEffect(async () => {
     initGame();
-    if(!isbegin){
-      isStart()
+    console.log("check합시다", isbegin);
+    if (!isbegin) {
+      isStart();
     }
     addListeners();
     makeOrder();
   }, []);
-
+  useEffect(() => {
+    console.log("checkcheckcheck", isbegin);
+    if (gameState === "inGame") {
+      setIsShow(true);
+      isbegin = true;
+    }
+  }, [gameState]);
+  useEffect(() => {
+    addListeners();
+  }, [Problem, accuracy, isFail]);
   /**
    * [게임 초기화]
    * 1. Mode 를 '조준영모드' 으로 설정
@@ -143,7 +154,6 @@ const JoMode = (props) => {
   }
 
   const isStart = async () => {
-    console.log("dddddddddddddddddddd", isbegin);
     var temp = "temp";
     await roomRef.current
       .child("participants")
@@ -168,13 +178,13 @@ const JoMode = (props) => {
   const startGame = () => {
     isbegin = true;
     setHost(false);
-
+    setIsShow(true);
     roomRef.current
       .child("state")
       .get()
       .then((snapshot) => {
-        if ("wait"===snapshot.val()) {
-          roomRef.current.child("state").set("inGame")
+        if ("wait" === snapshot.val()) {
+          roomRef.current.child("state").set("inGame");
         }
       })
       .catch((error) => {
@@ -185,6 +195,7 @@ const JoMode = (props) => {
   const startHandler = () => {
     onFlip(); //중복 클릭 방지
     startSpeechToText();
+
     setCount(0);
     clearInterval(countRef.current);
     countRef.current = setInterval(() => setCount((c) => c + 1), 100); // 주구장창
@@ -198,7 +209,7 @@ const JoMode = (props) => {
     countRef.current = null;
     setProblem((c) => (c = <h1>{Count}ms</h1>));
     roomRef.current.child("time").set(Count);
-    if(interimResult!=null)
+    if (interimResult != null)
       roomRef.current.child("speakedSentence").set(interimResult);
     SetRate(Problem);
   };
@@ -272,7 +283,7 @@ const JoMode = (props) => {
   };
 
   /*녹음 ---------------------------------------------------- */
-  const { error, interimResult,  startSpeechToText, stopSpeechToText } =
+  const { error, interimResult, startSpeechToText, stopSpeechToText } =
     useSpeechToText({
       continuous: true,
       useLegacyResults: false,
@@ -281,31 +292,30 @@ const JoMode = (props) => {
   return (
     <div>
       <div>
-        <p id="gameState">
-          gameState : {gameState}
-        </p>
-        {/* {!host && ( */}
-        <button
-          className="w-btn w-btn-blue"
-          type="button"
-          onClick={startHandler}
-          disabled={!flipped}
-        >
-          시작
-        </button>
-        {/* {!host && ( */}
-        <button
-          className="w-btn w-btn-gra1 w-btn-gra-anim"
-          type="button"
-          onClick={stopHandler}
-          disabled={flipped}
-        >
-          종료
-        </button>
+        <p id="gameState">gameState : {gameState}</p>
+        {isShow && (
+          <button
+            className="w-btn w-btn-blue"
+            type="button"
+            onClick={startHandler}
+            disabled={!flipped}
+          >
+            시작
+          </button>
+        )}
+        {isShow && (
+          <button
+            className="w-btn w-btn-gra1 w-btn-gra-anim"
+            type="button"
+            onClick={stopHandler}
+            disabled={flipped}
+          >
+            종료
+          </button>
+        )}
         {host && <button onClick={startGame}>게임 시작</button>}
-        {isbegin && <p>게임 시작중...</p>}
         <h1 className="problem" id="currentSentence">
-          {Problem}
+          {currentSentence}
         </h1>
         <h1 className="rate" id="accuracy">
           정답률 : {accuracy}
