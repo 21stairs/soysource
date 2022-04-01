@@ -48,5 +48,6 @@ export const getMetting = (number) => {
 function setFirepadRef(newFirepadRef){
   firepadRef = newFirepadRef
 }
+
 export {setFirepadRef}
 export default firepadRef;

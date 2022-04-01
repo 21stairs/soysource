@@ -1,10 +1,19 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState, useEffect, useCallback } from "react";
 import "./JoMode.css";
 import JoModeData from "./JoModeData";
 import "../btn.css";
+import ReactDOM from "react-dom";
+import { connect } from "react-redux";
 import useSpeechToText from "react-hook-speech-to-text";
 import firepadRef, { db} from "../../server/firebase";
 import { rId } from "../MainPage/roomCreate";
+import {
+  setMainStream,
+  addParticipant,
+  setUser,
+  removeParticipant,
+  updateParticipant,
+} from "../../store/actioncreator";
 
 /*
 1. 문장이 주어진다.
@@ -15,7 +24,7 @@ import { rId } from "../MainPage/roomCreate";
 6. 정답률을 넘긴것중 시간 순으로 순위를 매김.
 7. 3, 5, 7 라운드 수 지정해서 누적 시간을 매겨 순위 지정.
 */
-const JoMode = () => {
+const JoMode = (props) => {
   var roomRef = useRef(); // 참가자가 참가한 방의 위치
   const countRef = useRef(null);
   const [Count, setCount] = useState(0); //타이머 결과 값
@@ -25,34 +34,53 @@ const JoMode = () => {
   const [isFail, setIsFail] = useState("");
   const [speakedSentence, setSpeakedSentence] = useState("");
   const [time, setTime] = useState("");
+  const [rate, setRate] = useState("")
+  const [list, setList] = useState("")
+  if (props.currentUser) {
+    const userId = Object.keys(props.currentUser)[0]; // 현재 클라이언트 사용자 DB에 저장된 고유 ID값
+    console.log(
+      "현재 클라이언트 사용자 이름 : ",
+      props.currentUser[userId].name
+    ); // 현재 클라이언트 사용자 이름(닉네임)
+    //현재 세션 참가자 인원들은 participant에 저장되어 있음.
+    for (let i = 0; i < Object.keys(props.participants).length; i++) {
+      // 참가자 목록 뽑기
+      console.log("참가자[", i, "] : ", Object.keys(props.participants)[i]);
+    }
+  }
 
   useEffect(async () => {
     initGame();
     addListeners();
+    makeOrder();
   }, []);
 
   /**
-     * [게임 초기화]
-     * 1. Mode 를 '조준영모드' 으로 설정
-     * 2. 참가자라면, 참가한 방의 위치를 설정
-     */
+   * [게임 초기화]
+   * 1. Mode 를 '조준영모드' 으로 설정
+   * 2. 참가자라면, 참가한 방의 위치를 설정
+   */
   function initGame() {
-    // 이거 왜 3번 불리는지 질문
-    console.log("-initGame-");
-
-    if (rId) {
-      // 방 참가하기로 드갔으면...
-      roomRef.current = db.database().ref(rId);
-    } else {
-      roomRef.current = firepadRef;
-    }
-    console.log("roomRef : ", roomRef.current);
-    roomRef.current.child("gameMode").set("Jo");
-    roomRef.current.child("currentSentence").set("문제");
-    roomRef.current.child("speakedSentence").set("");
-    roomRef.current.child("time").set(0);
-    roomRef.current.child("accuracy").set("Rate");
-    roomRef.current.child("isFail").set("성공or실패");
+    roomRef.current = rId ? db.database().ref(rId) : firepadRef;
+    roomRef.current
+      .child("state")
+      .get()
+      .then((snapshot) => {
+        // 방 처음 만들때만 실행됨.
+        if (!snapshot.exists()) {
+          console.log("방 DB 초기화!");
+          roomRef.current.child("state").set("wait");
+          roomRef.current.child("gameMode").set("jo");
+          roomRef.current.child("currentSentence").set("NO_CURRENT_SENTENCE");
+          roomRef.current.child("speakedSentence").set("NO_SPEAK_SENTENCE");
+          roomRef.current.child("time").set("NO_TIME");
+          roomRef.current.child("accuracy").set("NO_ACCURACY");
+          roomRef.current.child("isFail").set("NO_IS_FAIL");
+        }
+      })
+      .catch((error) => {
+        console.log("에러 : ", error);
+      });
   }
 
   /**
@@ -60,6 +88,7 @@ const JoMode = () => {
    * 1. html 엘리먼트 ID로 가져오기(ID 이름은 DB랑 같음)
    * 2. 값 변할때, 값 가져오기
    * 3. 가져온 값으로 텍스트 변경
+   * ※ 현재 리스너를 동일한 곳에 계속 달아주고 있어서 낭비긴 함. 하지만 그로인한 버그는 없음.
    */
   function addListeners() {
     roomRef.current.child("accuracy").on("value", (snap) => {
@@ -84,8 +113,62 @@ const JoMode = () => {
     });
   }
 
+  /**
+   * [순서 만들기]
+   * 1. 방 ref를 참고하여, participants들을 리스트에 담는다.
+   * 2. 리스트를 frdb에 넣는다.
+   * 3. 각 유저에게 리스트에 해당하는 인덱스를 부여한다.
+   */
+  function makeOrder() {
+    roomRef.current
+      .child("state")
+      .get()
+      .then((snapshot) => {
+        if (snapshot.exists()) {
+          if ("wait" === snapshot.val()) {
+            // state가 wait일때만 섞음.
+            var list = [];
+            for (let i = 0; i < Object.keys(props.participants).length; i++) {
+              list.push(Object.keys(props.participants)[i]);
+            }
+            list.sort(() => Math.random() - 0.5);
+            roomRef.current.child("order").set(list);
+          }
+        }
+      })
+      .catch((error) => {
+        console.log("에러 : ", error);
+      });
+  }
+
+  /**
+   * [게임 시작]
+   * 1. state를 wait에서 inGame으로 변경.
+   * 2. 더 이상의 참가자를 받을수 없도록 해야함...
+   * 3. 
+   */
+  function gameStart(){
+    roomRef.current
+      .child("state")
+      .get()
+      .then((snapshot) => {
+        if ("wait"===snapshot.val()) {
+          roomRef.current.child("state").set("inGame")
+        }
+      })
+      .catch((error) => {
+        console.log("에러 : ", error);
+      });
+  }
+
+  function getHostParticipants(){
+    roomRef.current.child("participants").get().then((snapshot) => {
+      var v = Object.keys(snapshot.val())[0];
+      console.log("멍멍멍 : ", v)
+    })
+  }
+
   const startHandler = () => {
-    console.log("(JoMode.js startHandler) roomRef : ", roomRef.current);
     onFlip(); //중복 클릭 방지
     startSpeechToText();
     setCount(0);
@@ -94,9 +177,7 @@ const JoMode = () => {
     SetProblem();
   };
 
-  const stopHandler = async() => {
-    console.log("멈춰!");
-    console.log("(JoMode.js stopHandler) roomRef : ", roomRef.current); // 왜 여기서 부르면 undefined 되는지?
+  const stopHandler = async () => {
     onFlip(); //중복 클릭 방지
     stopSpeechToText();
     clearInterval(countRef.current);
@@ -109,7 +190,6 @@ const JoMode = () => {
   };
 
   const SetProblem = () => {
-    console.log("(JoMode.js setProblem) roomRef : ", roomRef.current);
     var rand = Math.floor(Math.random() * 33);
     const sentence = JoModeData.JoModeData[rand];
     setProblem((c) => (c = sentence));
@@ -117,7 +197,6 @@ const JoMode = () => {
   };
 
   const SetRate = (problem) => {
-    console.log("(JoMode.js setRate) roomRef : ", roomRef.current);
     var recoderProblem = interimResult; //녹음된 문자
 
     if (recoderProblem !== undefined) {
@@ -141,31 +220,42 @@ const JoMode = () => {
       }
       var avg = ((same / total) * 100).toFixed(2);
 
-      roomRef.current.child("accuracy").set(avg)
-        
-      if (avg > 70) {
-        roomRef.current.child("isFail").set("성공");
-      } else {
-        roomRef.current.child("isFail").set("실패");
-      }
-        
-    
+      setRate((e) => {
+        e = avg;
+        roomRef.current.child("accuracy").set(avg);
+
+        if (avg > 70) {
+          roomRef.current.child("isFail").set("성공");
+        } else {
+          roomRef.current.child("isFail").set("실패");
+        }
+      });
     } else {
       avg = 0;
       console.log(avg);
-      roomRef.current.child("accuracy").set(avg)
-      roomRef.current.child("isFail").set("실패");
+
+      setRate((e) => {
+        e = avg;
+        roomRef.current.child("accuracy").set(avg);
+
+        if (avg > 70) {
+          roomRef.current.child("isFail").set("성공");
+        } else {
+          roomRef.current.child("isFail").set("실패");
+        }
+      });
     }
   };
 
+  const RankList = useCallback(() => {
+    setList((e) => [...e, Count]);
+  }, [Count]);
 
   //Start와 Stop 중복 클릭 방지를 위한 함수
   const [flipped, setFlipped] = React.useState(true);
   const onFlip = () => {
     setFlipped((current) => !current);
   };
-
-
 
   /*녹음 ---------------------------------------------------- */
   const { error, interimResult,  startSpeechToText, stopSpeechToText } =
@@ -177,6 +267,12 @@ const JoMode = () => {
   return (
     <div>
       <div>
+        <button onClick={getHostParticipants}>
+          getHostParticipants
+        </button>
+        <button onClick={gameStart}>
+          게임시작
+        </button>
         <button
           className="w-btn w-btn-blue"
           type="button"
@@ -209,10 +305,8 @@ const JoMode = () => {
         </h1>
       </div>
 
-      <div className="res" >
-        <h1>
-          {isFail}
-        </h1>
+      <div className="rank" id="isFail">
+        <h1>{isFail}</h1>
       </div>
       <div>
         <h2>
@@ -224,4 +318,25 @@ const JoMode = () => {
   );
 };
 
-export default JoMode;
+// 넣은 정보가 props에 담김
+const mapStateToProps = (state) => {
+  console.log("(JoMode.js) mapStateToProps");
+  return {
+    stream: state.mainStream,
+    currentUser: state.currentUser,
+    participants: state.participants,
+  };
+};
+
+const mapDispatchToProps = (dispatch) => {
+  console.log("(JoMode.js) mapDispatchToProps");
+  return {
+    setMainStream: (stream) => dispatch(setMainStream(stream)),
+    addParticipant: (user) => dispatch(addParticipant(user)),
+    setUser: (user) => dispatch(setUser(user)),
+    removeParticipant: (userId) => dispatch(removeParticipant(userId)),
+    updateParticipant: (user) => dispatch(updateParticipant(user)),
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(JoMode);
