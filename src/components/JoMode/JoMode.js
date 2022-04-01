@@ -43,11 +43,19 @@ const JoMode = (props) => {
     initGame();
     if (!isbegin) {
       isStart();
-      addListeners();
     }
     makeOrder();
   }, []);
-
+  useEffect(() => {
+    console.log("checkcheckcheck", isbegin);
+    if (gameState === "inGame") {
+      setIsShow(true);
+      isbegin = true;
+    }
+  }, [gameState]);
+  useEffect(() => {
+    addListeners();
+  }, [Problem, accuracy, isFail]);
   /**
    * [게임 초기화]
    * 1. Mode 를 '조준영모드' 으로 설정
@@ -133,7 +141,6 @@ const JoMode = (props) => {
   }
 
   const isStart = async () => {
-    console.log("dddddddddddddddddddd", isbegin);
     var temp = "temp";
     await roomRef.current
       .child("participants")
@@ -158,7 +165,7 @@ const JoMode = (props) => {
   const startGame = () => {
     isbegin = true;
     setHost(false);
-
+    setIsShow(true);
     roomRef.current
       .child("state")
       .get()
@@ -175,6 +182,7 @@ const JoMode = (props) => {
   const startHandler = () => {
     onFlip(); //중복 클릭 방지
     startSpeechToText();
+
     setCount(0);
     clearInterval(countRef.current);
     countRef.current = setInterval(() => setCount((c) => c + 1), 100); // 주구장창
@@ -201,7 +209,7 @@ const JoMode = (props) => {
   };
 
   const SetRate = (problem) => {
-    var avg
+    var avg;
     var recoderProblem = interimResult; //녹음된 문자
 
     if (recoderProblem !== undefined) {
@@ -254,35 +262,30 @@ const JoMode = (props) => {
   return (
     <div>
       <div>
-        <p>gameState : {gameState}</p>
-        <p>currentSentence : {currentSentence}</p>
-        <p>speakingSentence : {interimResult}</p>
-        <p>speakedSentence : {speakedSentence}</p>
-        <p>time : {time}</p>
-        <p>accuracy : {accuracy}</p>
-        <p>isFail : {isFail}</p>
-        {/* {!host && ( */}
-        <button
-          className="w-btn w-btn-blue"
-          type="button"
-          onClick={startHandler}
-          disabled={!flipped}
-        >
-          시작
-        </button>
-        {/* {!host && ( */}
-        <button
-          className="w-btn w-btn-gra1 w-btn-gra-anim"
-          type="button"
-          onClick={stopHandler}
-          disabled={flipped}
-        >
-          종료
-        </button>
+        <p id="gameState">gameState : {gameState}</p>
+        {isShow && (
+          <button
+            className="w-btn w-btn-blue"
+            type="button"
+            onClick={startHandler}
+            disabled={!flipped}
+          >
+            시작
+          </button>
+        )}
+        {isShow && (
+          <button
+            className="w-btn w-btn-gra1 w-btn-gra-anim"
+            type="button"
+            onClick={stopHandler}
+            disabled={flipped}
+          >
+            종료
+          </button>
+        )}
         {host && <button onClick={startGame}>게임 시작</button>}
-        {isbegin && <p>게임 시작중...</p>}
         <h1 className="problem" id="currentSentence">
-          {Problem}
+          {currentSentence}
         </h1>
         <h1 className="rate" id="accuracy">
           정답률 : {accuracy}

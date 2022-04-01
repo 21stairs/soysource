@@ -2,11 +2,11 @@ import React, { useRef, useEffect } from "react";
 import MeetingFooter from "../MeetingFooter/MeetingFooter.component";
 import Participants from "../Participants/Participants.component";
 import "./MainScreen.css";
-import "../btn.css"
+import "../btn.css";
 import { connect } from "react-redux";
 import { setMainStream, updateUser } from "../../store/actioncreator";
-import JoMode from '../JoMode/JoMode';
-import WinOneMode from '../WinOneMode/WinOneMode';
+import JoMode from "../JoMode/JoMode";
+import WinOneMode from "../WinOneMode/WinOneMode";
 
 const MainScreen = (props) => {
   const participantRef = useRef(props.participants);
@@ -25,20 +25,20 @@ const MainScreen = (props) => {
   };
 
   useEffect(() => {
-    participantRef.current = props.participants;//과연
+    participantRef.current = props.participants; //과연
   }, [props.participants]);
 
   function Mode(Props) {
     if (Props.mode) {
-      return <JoMode />
+      return <JoMode />;
     } else {
-      return <WinOneMode />
+      return <WinOneMode />;
     }
   }
 
   return (
     <div className="wrapper">
-      <div className='main-scream-total'>
+      <div className="main-scream-total">
         <div className="main-screen-left">
           <Participants />
         </div>
@@ -48,10 +48,7 @@ const MainScreen = (props) => {
       </div>
 
       <div className="footer">
-        <MeetingFooter
-          onMicClick={onMicClick}
-          onVideoClick={onVideoClick}
-        />
+        <MeetingFooter onMicClick={onMicClick} onVideoClick={onVideoClick} />
       </div>
     </div>
   );
