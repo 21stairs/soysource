@@ -162,6 +162,13 @@ const JoMode = (props) => {
       });
   }
 
+  function getHostParticipants(){
+    roomRef.current.child("participants").get().then((snapshot) => {
+      var v = Object.keys(snapshot.val())[0];
+      console.log("멍멍멍 : ", v)
+    })
+  }
+
   const startHandler = () => {
     onFlip(); //중복 클릭 방지
     startSpeechToText();
@@ -260,8 +267,11 @@ const JoMode = (props) => {
   return (
     <div>
       <div>
-        <button>
-          onClick={gameStart}
+        <button onClick={getHostParticipants}>
+          getHostParticipants
+        </button>
+        <button onClick={gameStart}>
+          게임시작
         </button>
         <button
           className="w-btn w-btn-blue"
