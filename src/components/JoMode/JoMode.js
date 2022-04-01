@@ -38,6 +38,7 @@ const JoMode = (props) => {
   const [time, setTime] = useState("");
   const [host, setHost] = useState(false);
   const [gameState, setGameState] = useState("");
+  const [isShow, setIsShow] = useState(false);
 
   useEffect(async () => {
     initGame();
