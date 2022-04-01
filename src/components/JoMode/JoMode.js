@@ -26,7 +26,7 @@ const JoMode = () => {
   const [speakedSentence, setSpeakedSentence] = useState("");
   const [time, setTime] = useState("");
 
-  useEffect( () => {
+  useEffect(async () => {
     initGame();
     addListeners();
   }, []);
