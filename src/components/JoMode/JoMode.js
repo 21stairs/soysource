@@ -47,8 +47,8 @@ const JoMode = (props) => {
     initGame();
     if(!isbegin){
       isStart()
+      addListeners();
     }
-    addListeners();
     makeOrder();
   }, []);
 
@@ -88,6 +88,7 @@ const JoMode = (props) => {
    * ※ 현재 리스너를 동일한 곳에 계속 달아주고 있어서 낭비긴 함. 하지만 그로인한 버그는 없음.
    */
   function addListeners() {
+    console.log("addListeners")
     roomRef.current.child("accuracy").on("value", (snap) => {
       setAccuracy(snap.val());
       console.log("accuracy : ", snap.val());
@@ -237,11 +238,13 @@ const JoMode = (props) => {
       setRate((e) => {
         e = avg;
         roomRef.current.child("accuracy").set(avg);
-
+        setAccuracy(avg)
         if (avg > 70) {
           roomRef.current.child("isFail").set("성공");
+          setIsFail("성공")
         } else {
           roomRef.current.child("isFail").set("실패");
+          setIsFail("실패")
         }
       });
     } else {
@@ -251,11 +254,13 @@ const JoMode = (props) => {
       setRate((e) => {
         e = avg;
         roomRef.current.child("accuracy").set(avg);
-
+        setAccuracy(avg)
         if (avg > 70) {
           roomRef.current.child("isFail").set("성공");
+          setIsFail("성공")
         } else {
           roomRef.current.child("isFail").set("실패");
+          setIsFail("실패")
         }
       });
     }
@@ -281,9 +286,12 @@ const JoMode = (props) => {
   return (
     <div>
       <div>
-        <p id="gameState">
-          gameState : {gameState}
-        </p>
+        <p>gameState : {gameState}</p>
+        <p>currentSentence : {currentSentence}</p>
+        <p>speakedSentence : {speakedSentence}</p>
+        <p>time : {time}</p>
+        <p>accuracy : {accuracy}</p>
+        <p>isFail : {isFail}</p>
         {/* {!host && ( */}
         <button
           className="w-btn w-btn-blue"
@@ -349,3 +357,8 @@ const mapDispatchToProps = (dispatch) => {
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(JoMode);
+
+/**
+ * 지금 해야 되는 것.
+ * 1. 방장이 '게임시작' 을 눌럿
+ */
