@@ -14,6 +14,7 @@ import {
   removeParticipant,
   updateParticipant,
 } from "../../store/actioncreator";
+import { hostname } from "os";
 
 /*
 1. 문장이 주어진다.
@@ -24,6 +25,9 @@ import {
 6. 정답률을 넘긴것중 시간 순으로 순위를 매김.
 7. 3, 5, 7 라운드 수 지정해서 누적 시간을 매겨 순위 지정.
 */
+
+let isbegin = false
+
 const JoMode = (props) => {
   var roomRef = useRef(); // 참가자가 참가한 방의 위치
   const countRef = useRef(null);
@@ -36,21 +40,13 @@ const JoMode = (props) => {
   const [time, setTime] = useState("");
   const [rate, setRate] = useState("")
   const [list, setList] = useState("")
-  if (props.currentUser) {
-    const userId = Object.keys(props.currentUser)[0]; // 현재 클라이언트 사용자 DB에 저장된 고유 ID값
-    console.log(
-      "현재 클라이언트 사용자 이름 : ",
-      props.currentUser[userId].name
-    ); // 현재 클라이언트 사용자 이름(닉네임)
-    //현재 세션 참가자 인원들은 participant에 저장되어 있음.
-    for (let i = 0; i < Object.keys(props.participants).length; i++) {
-      // 참가자 목록 뽑기
-      console.log("참가자[", i, "] : ", Object.keys(props.participants)[i]);
-    }
-  }
+  const [host, setHost] = useState(false)
 
   useEffect(async () => {
     initGame();
+    if(!isbegin){
+      isStart()
+    }
     addListeners();
     makeOrder();
   }, []);
@@ -168,6 +164,34 @@ const JoMode = (props) => {
     })
   }
 
+  const isStart = async () => {
+    console.log("dddddddddddddddddddd", isbegin);
+    var temp = "temp";
+    await roomRef.current
+      .child("participants")
+      .get()
+      .then((snapshot) => {
+        return (temp = snapshot);
+      });
+
+    if (temp.val()) {
+      console.log("start?");
+      const getUid = Object.keys(temp.val())[0];
+      if (props.currentUser) {
+        const userId = Object.keys(props.currentUser)[0];
+        if (getUid == userId) {
+          setHost(true);
+        }
+      }
+    }
+    console.log(host);
+  };
+
+  const startGame = () => {
+    isbegin = true;
+    setHost(false);
+  };
+
   const startHandler = () => {
     onFlip(); //중복 클릭 방지
     startSpeechToText();
@@ -267,12 +291,7 @@ const JoMode = (props) => {
   return (
     <div>
       <div>
-        <button onClick={getHostParticipants}>
-          getHostParticipants
-        </button>
-        <button onClick={gameStart}>
-          게임시작
-        </button>
+        {/* {!host && ( */}
         <button
           className="w-btn w-btn-blue"
           type="button"
@@ -281,6 +300,7 @@ const JoMode = (props) => {
         >
           시작
         </button>
+        {/* {!host && ( */}
         <button
           className="w-btn w-btn-gra1 w-btn-gra-anim"
           type="button"
@@ -289,30 +309,26 @@ const JoMode = (props) => {
         >
           종료
         </button>
-        <h1 className="problem" >
-          {currentSentence}
+        {host && <button onClick={startGame}>게임 시작</button>}
+        {isbegin && <p>게임 시작중...</p>}
+        <h1 className="problem" id="currentSentence">
+          {Problem}
         </h1>
-        
-        
+        <h1 className="rate" id="accuracy">
+          정답률 : {accuracy}
+        </h1>
+        <button onClick={RankList}>리스트에 추가</button>
       </div>
 
       <div>
-      <h1 className="rate">
-          정확도 : {accuracy}%
-        </h1>
-        <h1 className='time'>
-          {time/10}초
+        <h1 className="speakedSentence" id="speakedSentence">
+          {interimResult}
+          {speakedSentence}
         </h1>
       </div>
 
       <div className="rank" id="isFail">
         <h1>{isFail}</h1>
-      </div>
-      <div>
-        <h2>
-          {interimResult}
-          {speakedSentence}
-        </h2>
       </div>
     </div>
   );
