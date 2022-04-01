@@ -41,6 +41,7 @@ const JoMode = (props) => {
   const [rate, setRate] = useState("")
   const [list, setList] = useState("")
   const [host, setHost] = useState(false)
+  const [gameState, setGameState] = useState("")
 
   useEffect(async () => {
     initGame();
@@ -107,6 +108,10 @@ const JoMode = (props) => {
       setTime(snap.val());
       console.log("time : ", snap.val());
     });
+    roomRef.current.child("state").on("value", (snap) => {
+      setGameState(snap.val());
+      console.log("gameState : ", snap.val());
+    });
   }
 
   /**
@@ -137,33 +142,6 @@ const JoMode = (props) => {
       });
   }
 
-  /**
-   * [게임 시작]
-   * 1. state를 wait에서 inGame으로 변경.
-   * 2. 더 이상의 참가자를 받을수 없도록 해야함...
-   * 3. 
-   */
-  function gameStart(){
-    roomRef.current
-      .child("state")
-      .get()
-      .then((snapshot) => {
-        if ("wait"===snapshot.val()) {
-          roomRef.current.child("state").set("inGame")
-        }
-      })
-      .catch((error) => {
-        console.log("에러 : ", error);
-      });
-  }
-
-  function getHostParticipants(){
-    roomRef.current.child("participants").get().then((snapshot) => {
-      var v = Object.keys(snapshot.val())[0];
-      console.log("멍멍멍 : ", v)
-    })
-  }
-
   const isStart = async () => {
     console.log("dddddddddddddddddddd", isbegin);
     var temp = "temp";
@@ -190,6 +168,18 @@ const JoMode = (props) => {
   const startGame = () => {
     isbegin = true;
     setHost(false);
+
+    roomRef.current
+      .child("state")
+      .get()
+      .then((snapshot) => {
+        if ("wait"===snapshot.val()) {
+          roomRef.current.child("state").set("inGame")
+        }
+      })
+      .catch((error) => {
+        console.log("에러 : ", error);
+      });
   };
 
   const startHandler = () => {
@@ -291,6 +281,9 @@ const JoMode = (props) => {
   return (
     <div>
       <div>
+        <p id="gameState">
+          gameState : {gameState}
+        </p>
         {/* {!host && ( */}
         <button
           className="w-btn w-btn-blue"
