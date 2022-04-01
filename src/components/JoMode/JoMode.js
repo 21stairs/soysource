@@ -39,6 +39,7 @@ const JoMode = (props) => {
   const [host, setHost] = useState(false);
   const [gameState, setGameState] = useState("");
   const [isShow, setIsShow] = useState(false);
+  const [order, setOrder] = useState([]);
 
   useEffect(async () => {
     initGame();
@@ -50,6 +51,7 @@ const JoMode = (props) => {
   useEffect(() => {
     console.log("checkcheckcheck", isbegin);
     if (gameState === "inGame") {
+      getOrder();
       setIsShow(true);
       isbegin = true;
     }
@@ -163,6 +165,22 @@ const JoMode = (props) => {
     console.log(host);
   };
 
+  const getOrder = async () => {
+    let tempArr = [...order];
+    await roomRef.current
+      .child("order")
+      .get()
+      .then((snapshot) => {
+        console.log(snapshot.val());
+        for (let i = 0; i < Object.keys(snapshot.val()).length; i++) {
+          console.log("in");
+          console.log(snapshot.val()[i]);
+          tempArr[i] = snapshot.val()[i];
+        }
+      });
+    // setOrder((e) => (e = tempArr)); << 동기처리가 안되네... 오류수정 필요...
+    console.log("Order 배열 체크", order);
+  };
   const startGame = () => {
     isbegin = true;
     setHost(false);
