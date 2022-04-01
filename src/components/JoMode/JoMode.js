@@ -142,6 +142,26 @@ const JoMode = (props) => {
       });
   }
 
+  /**
+   * [게임 시작]
+   * 1. state를 wait에서 inGame으로 변경.
+   * 2. 더 이상의 참가자를 받을수 없도록 해야함...
+   * 3. 
+   */
+  function gameStart(){
+    roomRef.current
+      .child("state")
+      .get()
+      .then((snapshot) => {
+        if ("wait"===snapshot.val()) {
+          roomRef.current.child("state").set("inGame")
+        }
+      })
+      .catch((error) => {
+        console.log("에러 : ", error);
+      });
+  }
+
   const startHandler = () => {
     onFlip(); //중복 클릭 방지
     startSpeechToText();
@@ -240,6 +260,9 @@ const JoMode = (props) => {
   return (
     <div>
       <div>
+        <button>
+          onClick={gameStart}
+        </button>
         <button
           className="w-btn w-btn-blue"
           type="button"
