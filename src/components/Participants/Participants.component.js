@@ -2,10 +2,14 @@ import React, { useEffect, useRef } from "react";
 import "./Participants.css";
 import { connect } from "react-redux";
 import { Participant } from "./Participant/Participant.component";
+import { db } from '../../server/firebase';
 
 const Participants = (props) => {
   const videoRef = useRef(null);
   let participantKey = Object.keys(props.participants);
+  console.log(db.database().ref())
+  let Ready_isCheck = "";
+  // let Ready_isCheck = Object.keys(props.participantKey);
   useEffect(() => {
     if (videoRef.current) {
       videoRef.current.srcObject = props.stream;
@@ -18,7 +22,7 @@ const Participants = (props) => {
     : null;
 
   let gridCol =
-    participantKey.length === 1 ? 1 : participantKey.length <= 4 ? 2 : 4;
+    participantKey.length === 1 ? 1 : participantKey.length <= 4 ? 2 : 3;
   const gridColSize = participantKey.length <= 4 ? 1 : 2;
   let gridRowSize =
     participantKey.length <= 4
@@ -50,15 +54,18 @@ const Participants = (props) => {
         });
         const videElement = document.getElementById(
           `participantVideo${curentIndex}`
-        );
-        if (videElement) videElement.srcObject = remoteStream;
-      };
+          );
+          if (videElement) videElement.srcObject = remoteStream;
+        };
+        console.log(participantKey);
     }
 
     return (
       <Participant
         key={curentIndex}
         currentParticipant={currentParticipant}
+        participantKey={participantKey}
+        Ready_isCheck= {Ready_isCheck}
         curentIndex={curentIndex}
         hideVideo={screenPresenter && screenPresenter !== element}
         showAvatar={
@@ -71,22 +78,27 @@ const Participants = (props) => {
   });
   return (
     <div
-      style={{
+      style={{ 
         "--grid-size": gridCol,
         "--grid-col-size": gridColSize,
         "--grid-row-size": gridRowSize,
       }}
       className={`participants`}
     >
-      {participants}
       <Participant
         currentParticipant={currentUser}
+        participantKey={participantKey}
+        Ready_isCheck= {Ready_isCheck}
         curentIndex={participantKey.length}
         hideVideo={screenPresenter && !currentUser.screen}
         videoRef={videoRef}
         showAvatar={currentUser && !currentUser.video && !currentUser.screen}
         currentUser={true}
-      />
+    />
+      {participants}
+      
+      
+    
     </div>
   );
 };
