@@ -175,10 +175,51 @@ const JoMode = () => {
     });
   if (error) return <p>Chrome에서 실행 부탁드립니다!!!!🤷 </p>;
   return (
-    <div>
-      <div>
+    <div className="gameboy">
+      <div className="top">
+        <div className="onoff">
+          <span className="arrow-left"></span>
+          <span className="onoff-label">on/off</span>
+          <span className="arrow-right"></span>
+        </div>
+      </div>
+      <div className="gameboy-component">
+        <div className="screen">
+          <canvas className=""></canvas>
+        </div>
+        <div className="controls">
+          <div className="logo">
+            <div className="logo-text"></div>
+            <div className="logo-gameboy"></div>
+          </div>
+          <div className="inputs">
+            <div className="dpad">
+              <div className="left-key"></div>
+              <div className="up-key"></div>
+              <div className="right-key"></div>
+              <div className="down-key"></div>
+            </div>
+            <div className="buttons">
+              <div className="button-start" onClick={startHandler}></div>
+              <div className="button-end" onClick={stopHandler}></div>
+            </div>
+            <div className="selections">
+              <div className="select"></div>
+              <div className="start"></div>
+            </div>
+          </div>
+          <div className="speakers">
+            <div className="grill"></div>
+            <div className="grill"></div>
+            <div className="grill"></div>
+            <div className="grill"></div>
+            <div className="grill"></div>
+            <div className="grill"></div>
+          </div>          
+        </div>
+      </div>
+      <div className="cont-div">
         <button
-          className="w-btn w-btn-blue"
           type="button"
           onClick={startHandler}
           disabled={!flipped}
@@ -186,40 +227,34 @@ const JoMode = () => {
           시작
         </button>
         <button
-          className="w-btn w-btn-gra1 w-btn-gra-anim"
           type="button"
           onClick={stopHandler}
           disabled={flipped}
         >
           종료
         </button>
-        <h1 className="problem" >
+      </div>
+      
+      <div className="prob__box">
+        <h2 className="problem" >
           {currentSentence}
-        </h1>
-        
-        
-      </div>
-
-      <div>
-      <h1 className="rate">
-          정확도 : {accuracy}%
-        </h1>
-        <h1 className='time'>
-          {time/10}초
-        </h1>
-      </div>
-
-      <div className="res" >
-        <h1>
-          {isFail}
-        </h1>
-      </div>
-      <div>
-        <h2>
-          {interimResult}
-          {speakedSentence}
         </h2>
       </div>
+
+      <h1 className="rate">
+        정확도 : {accuracy}%
+      </h1>
+      <h1 className='time'>
+        {time/10}초
+      </h1>
+
+      <h1>
+        {isFail}
+      </h1>
+      <h2>
+        {interimResult}
+        {speakedSentence}
+      </h2>
     </div>
   );
 };

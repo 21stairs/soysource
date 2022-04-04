@@ -1,24 +1,27 @@
+.wrapper{
+    display: flex;
+    flex-direction: column;
+}
 
 .main-scream-total{
-    width: 100%;
-    height: 84vh;
-    background: #3c4043;
+    display: flex;
+    height: calc(90vh - 70px);
 }
 
 .main-screen-left{
-    width: 80%;
-    float: left;
-    background: #3c4043;
+    width: 70%;
+    background-color:tan;
 }
 .main-screen-right{
-    width: 20%;
-    float: right;
-}
-.wrapper{
-    width: 100%;
-    background-color: #3c4043;
+    width: 30%;
 }
 
 .footer {
-  height: 10vh;
+    height: 10vh;
+}
+
+@media screen and (max-width:768px) {
+    .main-scream-total{
+        height: calc(90vh - 60px);
+    }
 }
