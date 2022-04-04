@@ -7,7 +7,7 @@ const myNav = () => {
     <>
       <nav>
         <div className="logo">
-          <Link to="/">Soysourcetree</Link>
+          <Link to="/">soysource</Link>
         </div>
 
         <ul className="nav-items">
