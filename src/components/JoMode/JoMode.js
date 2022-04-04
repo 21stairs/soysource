@@ -39,7 +39,11 @@ const JoMode = (props) => {
   const [host, setHost] = useState(false);
   const [gameState, setGameState] = useState("");
   const [isShow, setIsShow] = useState(false);
-  const [order, setOrder] = useState([]);
+  const [isUser, setIsUser] = useState(false);
+  const order = useRef([]);
+  const inOrder = useRef();
+  const [isOrder, setIsOrder] = useState(false);
+  const [orderName, setOrderName] = useState("");
 
   useEffect(async () => {
     initGame();
@@ -49,13 +53,12 @@ const JoMode = (props) => {
     makeOrder();
   }, []);
   useEffect(() => {
-    console.log("checkcheckcheck", isbegin);
     if (gameState === "inGame") {
       getOrder();
       setIsShow(true);
       isbegin = true;
     }
-  }, [gameState]);
+  }, [gameState, accuracy]);
   useEffect(() => {
     addListeners();
   }, [Problem, accuracy, isFail]);
@@ -80,6 +83,7 @@ const JoMode = (props) => {
           roomRef.current.child("time").set("NO_TIME");
           roomRef.current.child("accuracy").set("NO_ACCURACY");
           roomRef.current.child("isFail").set("NO_IS_FAIL");
+          roomRef.current.child("turn").set(0);
         }
       })
       .catch((error) => {
@@ -153,7 +157,6 @@ const JoMode = (props) => {
       });
 
     if (temp.val()) {
-      console.log("start?");
       const getUid = Object.keys(temp.val())[0];
       if (props.currentUser) {
         const userId = Object.keys(props.currentUser)[0];
@@ -162,24 +165,49 @@ const JoMode = (props) => {
         }
       }
     }
-    console.log(host);
   };
 
   const getOrder = async () => {
-    let tempArr = [...order];
+    const userId = Object.keys(props.currentUser)[0];
+    await roomRef.current
+      .child("turn")
+      .get()
+      .then((snap) => {
+        inOrder.current = snap.val();
+      });
+    if (Object.keys(props.participants).length === inOrder.current) {
+      //여기서 전부 초기화 갈기자
+      inOrder.current = -1;
+      setIsOrder(false);
+      await roomRef.current.update({
+        state: "wait",
+      });
+      return;
+    }
     await roomRef.current
       .child("order")
       .get()
       .then((snapshot) => {
-        console.log(snapshot.val());
         for (let i = 0; i < Object.keys(snapshot.val()).length; i++) {
-          console.log("in");
-          console.log(snapshot.val()[i]);
-          tempArr[i] = snapshot.val()[i];
+          order.current[i] = snapshot.val()[i];
         }
       });
-    // setOrder((e) => (e = tempArr)); << 동기처리가 안되네... 오류수정 필요...
-    console.log("Order 배열 체크", order);
+    for (let i = 0; i < Object.keys(props.participants).length; i++) {
+      if (
+        Object.keys(props.participants)[i] === order.current[inOrder.current]
+      ) {
+        setOrderName(
+          props.participants[Object.keys(props.participants)[i]].name
+        );
+        setIsOrder(true);
+        if (userId === order.current[inOrder.current]) {
+          setIsUser(true);
+        } else {
+          setIsUser(false);
+        }
+        break;
+      }
+    }
   };
   const startGame = () => {
     isbegin = true;
@@ -218,6 +246,13 @@ const JoMode = (props) => {
     if (interimResult != null)
       roomRef.current.child("speakedSentence").set(interimResult);
     SetRate(Problem);
+    SetIncrease();
+  };
+
+  const SetIncrease = async () => {
+    await roomRef.current.update({
+      turn: inOrder.current + 1,
+    });
   };
 
   const SetProblem = () => {
@@ -282,7 +317,7 @@ const JoMode = (props) => {
     <div>
       <div>
         <p id="gameState">gameState : {gameState}</p>
-        {isShow && (
+        {isShow && isUser && (
           <button
             className="w-btn w-btn-blue"
             type="button"
@@ -292,7 +327,7 @@ const JoMode = (props) => {
             시작
           </button>
         )}
-        {isShow && (
+        {isShow && isUser && (
           <button
             className="w-btn w-btn-gra1 w-btn-gra-anim"
             type="button"
@@ -303,6 +338,7 @@ const JoMode = (props) => {
           </button>
         )}
         {host && <button onClick={startGame}>게임 시작</button>}
+        {isOrder && <p>{orderName}님 의 차례 입니다!!!!</p>}
         <h1 className="problem" id="currentSentence">
           {currentSentence}
         </h1>
@@ -327,7 +363,6 @@ const JoMode = (props) => {
 
 // 넣은 정보가 props에 담김
 const mapStateToProps = (state) => {
-  console.log("(JoMode.js) mapStateToProps");
   return {
     stream: state.mainStream,
     currentUser: state.currentUser,
@@ -336,7 +371,6 @@ const mapStateToProps = (state) => {
 };
 
 const mapDispatchToProps = (dispatch) => {
-  console.log("(JoMode.js) mapDispatchToProps");
   return {
     setMainStream: (stream) => dispatch(setMainStream(stream)),
     addParticipant: (user) => dispatch(addParticipant(user)),
