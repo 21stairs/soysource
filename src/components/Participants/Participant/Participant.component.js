@@ -6,6 +6,7 @@ import "./Participant.css";
 import Not_ready from "./minus-button.png"
 import Ready from "./accept.png"
 import firepadRef, { db } from "../../../server/firebase";
+import { rId } from "../../MainPage/roomCreate";
 
 export const Participant = (props) => {
   const {
@@ -18,15 +19,21 @@ export const Participant = (props) => {
     showAvatar,
     currentUser,
   } = props;
+  
   const urlparams = new URLSearchParams(window.location.search);
   const roomId = urlparams.get("id");
-  const [isReadyCheck, setIsReadyCheck] = useState("");
-  const [res, setRes] = useState("");
+  const [isReadyCheck, setIsReadyCheck] = useState("false");
+  const [changeUserCheck, setChangeUserCheck] = useState("");
+  const [res, setRes] = useState("false");
+  const roomRef = db.database().ref(roomId)
   const userRef = db.database().ref(roomId + '/participants/' + participantKey[curentIndex - 1])
 
-  // console.log("participantKey 값 : ", participantKey)
+  console.log("===================== ", !!currentUser, " =====================")
 
-  useEffect(() => {
+  
+  roomRef.child("isChangeReadyState");
+
+  useEffect( async() => {
 
     // console.log("participantKey 값 : ", participantKey)
 
@@ -39,21 +46,31 @@ export const Participant = (props) => {
     // console.log(userRef2)
     // console.log(currentParticipant)
     // console.log(currentUser)
-
-
-    userRef.on('child_changed', (data) => {
+    
+    //파이어베이스의 값이 변한 경우 동작
+    userRef.on('child_changed', async(data) => {
       // const data = snapshot.val();
       // console.log(data.val())
-      const v = data.val();
-      if (!!v) {
-        console.log(v);
+      const v = await data.val();
+      console.log("child_changed의 data.val() : ",v);
+      if (v == undefined && v == "" && res == "") {
+        console.log("child_changed의 data.val() : ",v);
         console.log("값이 없거나 존재하지 않습니다");
       } else {
         setRes(v)
-        console.log(res)
-        console.log(v);
-        console.log("값이 없거나 존재하지 않습니다");
-      }
+        console.log("child_changed의 data.val() 값을 res에 넣음 : ",res)
+        console.log("child_changed의 data.val() : ",v);
+        
+      }      
+      roomRef.child("isChangeReadyState").on('value',(data) => {
+        console.log("roomRef의 data.val() : ",data.val())
+        console.log("participantKey[curentIndex-1]의 값 : ",participantKey[curentIndex-1])
+        if (data.val() == participantKey[curentIndex-1]) {
+          console.log("res 값 : ",res);
+          setIsReadyCheck(res)
+          console.log("isReadyCheck 값 : ",isReadyCheck);
+        }
+      })
     });
 
 
@@ -105,27 +122,6 @@ export const Participant = (props) => {
 
   });
 
-  const Who_ready = () => {
-
-    if (curentIndex - 1 > 1) {
-      console.log(curentIndex, participantKey[curentIndex - 1])
-
-      userRef.on('child_changed', (snapshot) => {
-        // console.log("본인의 화면이 아닌경우 : ", snapshot.val())
-        const data = snapshot.val();
-        console.log(data)
-        console.log(participantKey[curentIndex - 1]);
-        // setRes(data.isReady)
-        console.log(res)
-      });
-
-
-    }
-
-
-    return res;
-  }
-
 
 
 
@@ -134,6 +130,14 @@ export const Participant = (props) => {
   const On_ready = () => {
     const curUser = firepadRef.child("participants").child(participantKey[0])
     // console.log("실행 1")
+
+    console.log("바뀐 유저의 키값 : ",curUser.key);
+    roomRef.update({
+      isChangeReadyState: curUser.key,
+    });
+
+    setChangeUserCheck(curUser.key)
+    // console.log("바뀐 유저의 키값을 changeUserCheck에 넣음 : ",changeUserCheck)
 
     if (currentUser) {
       if (isReadyCheck) {
@@ -190,7 +194,7 @@ export const Participant = (props) => {
           </div>
         )}
         {/* <div onClick={On_ready} > */}
-        <img className="ready" onClick={On_ready} src={!!res ? Ready : Not_ready} />
+        <img className="ready" onClick={On_ready} src={!isReadyCheck ? Ready : Not_ready} />
         {/* <img className="ready_2" src={!!res ? Ready : Not_ready} /> */}
         {/* </div> */}
         <div className="name">
