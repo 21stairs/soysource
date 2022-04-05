@@ -14,7 +14,7 @@ import {
 } from "../../store/actioncreator";
 
 const Meeting = (props) => {
-  console.log("순서0");
+  // console.log("순서0");
   const location = useLocation();
   const { number } = location.state || "";
   const isReady = "false";
@@ -65,7 +65,7 @@ const Meeting = (props) => {
 
   
 
-  console.log("순서2");
+  // console.log("순서2");
   const connectedRef = db.database().ref(".info/connected");
   const participantRef = getMetting(number).child("participants");
   const isUserSet = !!props.user;

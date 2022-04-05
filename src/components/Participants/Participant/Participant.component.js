@@ -27,104 +27,34 @@ export const Participant = (props) => {
   const [res, setRes] = useState("false");
   const roomRef = db.database().ref(roomId)
   const userRef = db.database().ref(roomId + '/participants/' + participantKey[curentIndex - 1])
-
-  console.log("===================== ", !!currentUser, " =====================")
-
+  const [cnt, setCnt] = useState("0");
+  // console.log("======== ", currentUser, " ========")
+  // console.log("======== ", currentUser, " ========")
   
   roomRef.child("isChangeReadyState");
 
-  useEffect( async() => {
-
-    // console.log("participantKey 값 : ", participantKey)
-
-    // Who_ready()
-
-    // console.log(participantKey)
-    // console.log(curentIndex)
-    // console.log(participantKey[curentIndex-1])
-    // console.log(userRef)
-    // console.log(userRef2)
-    // console.log(currentParticipant)
-    // console.log(currentUser)
+  
+  //한번만 실행 되도록
+  useEffect(() => {
     
-    //파이어베이스의 값이 변한 경우 동작
-    userRef.on('child_changed', async(data) => {
-      // const data = snapshot.val();
-      // console.log(data.val())
-      const v = await data.val();
-      console.log("child_changed의 data.val() : ",v);
-      if (v == undefined && v == "" && res == "") {
-        console.log("child_changed의 data.val() : ",v);
-        console.log("값이 없거나 존재하지 않습니다");
-      } else {
-        setRes(v)
-        console.log("child_changed의 data.val() 값을 res에 넣음 : ",res)
-        console.log("child_changed의 data.val() : ",v);
-        
-      }      
-      roomRef.child("isChangeReadyState").on('value',(data) => {
-        console.log("roomRef의 data.val() : ",data.val())
-        console.log("participantKey[curentIndex-1]의 값 : ",participantKey[curentIndex-1])
-        if (data.val() == participantKey[curentIndex-1]) {
-          console.log("res 값 : ",res);
-          setIsReadyCheck(res)
-          console.log("isReadyCheck 값 : ",isReadyCheck);
-        }
-      })
-    });
-
-
-    if (userRef.key == "undefined") {
-      // console.log("값이 없거나 확인되지 않습니다")
-    } else {
-      // console.log("본인의 화면이 맞나요? : ", currentUser)
-      if (!currentUser) {
-        // console.log(curentIndex , participantKey[curentIndex-1])
-        userRef.on('value', (snapshot) => {
-          // console.log("본인의 화면이 아닌경우 : ", snapshot.val())
+    //참가자 수 만큼 반복 (participantKey : 참가자 수의 키값 배열)
+    participantKey.forEach(element => {
+      
+      if (participantKey[curentIndex - 1] !== element) {
+        roomRef.child("participants").child(element).on('value', (snapshot) => {
+          console.log("유저 keys : " , element)
+          console.log("현재 비디오 창 유저 : " , participantKey[curentIndex-1]) 
           const data = snapshot.val();
-          // console.log("본인의 화면이 아닌경우 : ", data)
-          // console.log("본인의 화면이 아닌경우 : ", data.isReady);
-        });
-      } else {
-        // console.log(curentIndex, participantKey[curentIndex - 1])
-        userRef.on('value', (snapshot) => {
-          // console.log("본인의 화면인 경우 : ", snapshot.val())
-          const data = snapshot.val();
-          // console.log("본인의 화면인 경우 : ", data)
-          // console.log("본인의 화면인 경우 : ", data.isReady);
+          
+          console.log(participantKey.length)
+          console.log("값 뭐임", data.isReady)
+          setIsReadyCheck(data.isReady)
+
         });
       }
-    }
+    });
 
-    // userRef2.on('child_changed', (data) => {
-    //   console.log('변한 값의 위치' + data.key);
-    //   setChanged_loc(data.key)
-    // });
-
-    // userRef.on('value', (snapshot) => {
-    //   const data = snapshot.val().isReady;
-    //   console.log(data)
-
-    //   console.log(' 시작전 데이터 값 읽기' + data);
-    //   if (data === "") {
-
-    //     console.log('데이터 값 is null');
-    //   }
-    //   else {
-    //     if (participantKey[curentIndex - 1] === changed_loc) {
-    //       setIsReadyCheck(data)
-    //     }
-    //     console.log('데이터 값 읽기' + data);
-    //   }
-    // });
-
-
-  });
-
-
-
-
+  },[]);
 
   //Ready 클릭 이벤트
   const On_ready = () => {
@@ -194,7 +124,7 @@ export const Participant = (props) => {
           </div>
         )}
         {/* <div onClick={On_ready} > */}
-        <img className="ready" onClick={On_ready} src={!isReadyCheck ? Ready : Not_ready} />
+        <img className="ready" onClick={On_ready} src={isReadyCheck ? Ready : Not_ready} />
         {/* <img className="ready_2" src={!!res ? Ready : Not_ready} /> */}
         {/* </div> */}
         <div className="name">
