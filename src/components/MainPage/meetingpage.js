@@ -14,9 +14,10 @@ import {
 } from "../../store/actioncreator";
 
 const Meeting = (props) => {
-  console.log("순서0");
+  // console.log("순서0");
   const location = useLocation();
   const { number } = location.state || "";
+  const isReady = "false";
 
   const getUserStream = async () => {
     const localStream = await navigator.mediaDevices.getUserMedia({
@@ -44,8 +45,10 @@ const Meeting = (props) => {
         // participantRef는 firepadRef.child("participants") 을 가리키고 여기에 userStatusRef에 담음
         const userStatusRef = participantRef.push({
           userName,
+          isReady,
           preferences: defaultPreference,
         });
+
         // setUser를 통해서 해당 유저의 정보를 userStatusRef에 저장된 객체를 값으로 set
         props.setUser({
           [userStatusRef.key]: { name: userName, ...defaultPreference },
@@ -53,13 +56,18 @@ const Meeting = (props) => {
         // 연결 제거
         userStatusRef.onDisconnect().remove();
       }
+
+      
     });
+
+    
   }, []);
 
-  console.log("순서2");
+  
+
+  // console.log("순서2");
   const connectedRef = db.database().ref(".info/connected");
   const participantRef = getMetting(number).child("participants");
-
   const isUserSet = !!props.user;
   const isStreamSet = !!props.stream;
 
@@ -107,6 +115,8 @@ const mapStateToProps = (state) => {
     user: state.currentUser,
   };
 };
+
+
 
 const mapDispatchToProps = (dispatch) => {
   return {
