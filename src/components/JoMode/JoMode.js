@@ -50,7 +50,6 @@ const JoMode = (props) => {
     if (!isbegin) {
       isStart();
     }
-    makeOrder();
   }, []);
   useEffect(() => {
     if (gameState === "inGame") {
@@ -220,6 +219,7 @@ const JoMode = (props) => {
     isbegin = true;
     setHost(false);
     setIsShow(true);
+    makeOrder();
     roomRef.current
       .child("state")
       .get()
