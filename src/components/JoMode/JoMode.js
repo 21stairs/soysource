@@ -154,6 +154,33 @@ const JoMode = (props) => {
       });
   }
 
+  /**
+   * [점수 계산]
+   */
+  function sendScoreToDB(_time) {
+    var _myName = props.participants[Object.keys(props.currentUser)[0]].name;
+    var scoreRef = roomRef.current.child("ranking").child(_myName);
+    if (_time === "실패") {
+      scoreRef.get().then((snapshot) => {
+        if (!snapshot.exists()) {
+          scoreRef.set(100);
+        }
+      });
+    } else {
+      scoreRef.get().then((snapshot) => {
+        if (!snapshot.exists()) {
+          console.log("무야호");
+          scoreRef.set(_time);
+        } else {
+          console.log("유야호");
+          var _originalScore = snapshot.val();
+          var _newScore = _originalScore + _time;
+          scoreRef.set(_newScore);
+        }
+      });
+    }
+  }
+
   const isStart = async () => {
     var temp = "temp";
     await roomRef.current
@@ -317,17 +344,22 @@ const JoMode = (props) => {
 
     roomRef.current.child("accuracy").set(avg);
     setAccuracy(avg);
+
     if (avg > 70) {
       roomRef.current.child("isFail").set("성공");
       setIsFail("성공");
 
-      const userId = Object.keys(props.currentUser)[0];
-      await roomRef.current.child("ranking").set();
-      await roomRef.current.child("accuracy").set(avg);
-      await roomRef.current.child("user").set(props.participants[userId].name);
+      sendScoreToDB(Count);
+      // [승관]
+      // const userId = Object.keys(props.currentUser)[0];
+      // await roomRef.current.child("ranking").set();
+      // await roomRef.current.child("accuracy").set(avg);
+      // await roomRef.current.child("user").set(props.participants[userId].name);
     } else {
       roomRef.current.child("isFail").set("실패");
       setIsFail("실패");
+
+      sendScoreToDB("실패");
     }
   };
 
