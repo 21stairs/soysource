@@ -46,6 +46,7 @@ const JoMode = (props) => {
   const [isOrder, setIsOrder] = useState(false);
   const [orderName, setOrderName] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const res = useRef();
 
   useEffect(async () => {
     initGame();
@@ -299,8 +300,21 @@ const JoMode = (props) => {
   };
 
   const openModal = async () => {
-    setIsModalOpen(true);
     //결과 db에서 받아와서 사용하자.
+    const restemp = await roomRef.current
+      .child("ranking")
+      .get()
+      .then((snap) => {
+        return snap.val();
+      });
+
+    console.log(restemp);
+
+    res.current = restemp;
+
+    console.log(res.current);
+
+    setIsModalOpen(true);
   };
 
   const closeModal = () => {
@@ -379,7 +393,9 @@ const JoMode = (props) => {
   return (
     <div>
       <div>
-        {isModalOpen && <ResModal open={isModalOpen} close={closeModal} />}
+        {isModalOpen && (
+          <ResModal open={isModalOpen} close={closeModal} ref={res} />
+        )}
         <p id="gameState">gameState : {gameState}</p>
         {isShow && isUser && (
           <button
