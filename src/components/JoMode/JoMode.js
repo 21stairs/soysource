@@ -168,6 +168,7 @@ const JoMode = (props) => {
   };
 
   const getOrder = async () => {
+    console.log("순서 받기");
     const userId = Object.keys(props.currentUser)[0];
     await roomRef.current
       .child("turn")
@@ -176,12 +177,18 @@ const JoMode = (props) => {
         inOrder.current = snap.val();
       });
     if (Object.keys(props.participants).length === inOrder.current) {
-      //여기서 전부 초기화 갈기자
-      inOrder.current = -1;
-      setIsOrder(false);
       await roomRef.current.update({
         state: "wait",
       });
+      await roomRef.current.update({
+        turn: 0,
+      });
+      //여기서 전부 초기화 갈기자
+      setIsOrder(false);
+      setIsShow(false);
+      isbegin = false;
+      console.log(inOrder.current);
+      isStart();
       return;
     }
     await roomRef.current
