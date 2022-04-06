@@ -178,6 +178,11 @@ const JoMode = (props) => {
       scoreRef.get().then((snapshot) => {
         if (!snapshot.exists()) {
           scoreRef.set(100);
+        } else {
+          console.log("유야호");
+          var _originalScore = snapshot.val();
+          var _newScore = _originalScore + 100;
+          scoreRef.set(_newScore);
         }
       });
     } else {
@@ -397,17 +402,10 @@ const JoMode = (props) => {
     if (avg > 70) {
       roomRef.current.child("isFail").set("성공");
       setIsFail("성공");
-
       sendScoreToDB(Count);
-      // [승관]
-      // const userId = Object.keys(props.currentUser)[0];
-      // await roomRef.current.child("ranking").set();
-      // await roomRef.current.child("accuracy").set(avg);
-      // await roomRef.current.child("user").set(props.participants[userId].name);
     } else {
       roomRef.current.child("isFail").set("실패");
       setIsFail("실패");
-
       sendScoreToDB("실패");
     }
   };
