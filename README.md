@@ -9,6 +9,8 @@
   </p>
 </p>
 
+[간장](/uploads/56b7606ecf171fc602c1919aa7a2747d/간장)
+
 #### 💫Tech Stacks & IDE ####
 
 - <img src="https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB" alt="React" style="zoom:80%;" /><img src="https://img.shields.io/badge/javascript-%23323330.svg?style=for-the-badge&logo=javascript&logoColor=%23F7DF1E" alt="JavaScript" style="zoom:80%;" /><img src="https://img.shields.io/badge/redux-yellow?style=for-the-badge&logo=redux&logoColor=%2361DAFB" alt="Redux" style="zoom:80%;" /><img src="https://img.shields.io/badge/firebase-black?style=for-the-badge&logo=firebase&logoColor=yellow" alt="Firebase" style="zoom:80%;" />
@@ -34,11 +36,18 @@
 
 <br/>
 
+#### 아키텍처 ####
+![아키텍처](/uploads/f6daa0ae9778c75493b027b200bce3f1/아키텍처.PNG)
+
 ## 💡주요 기능
 
 ### 1. 메인화면
-
+![메인](/uploads/0bf0b7c8274f46e0e8e104ae10f456d1/메인.PNG)
 ### 2. 대기실 생성
+![방번호입력](/uploads/6f8b75c6d9972b50c0718e2c06a409a1/방번호입력.PNG)
+
+### 3. 닉네임 입력
+![닉네임](/uploads/130d5a23e054d3164c38856871afead7/닉네임.PNG)
 
 
 ### 3. 게임모드
@@ -60,10 +69,10 @@
     * 미리 정한 라운드(3,5,7) 수 만큼 누적 시간을 매겨 순위 지정
 
 
+![게임화면1](/uploads/afcb8f585acfaccac4cf3cac5f221f03/게임화면1.PNG)
 
+![게임화면2](/uploads/753d8fb9dd2a296362072b8237b7c14e/게임화면2.PNG)
 
-
- 
 ## 테스트 화면 (WebRTC)
 
 * Desktop View
