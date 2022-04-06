@@ -57,10 +57,7 @@ const JoMode = (props) => {
   useEffect(() => {
     addListeners();
   }, [Problem, accuracy, isFail]);
-  useEffect(() => {
-    // const res = allReadyCheck();
-    // console.log(allReadyCheck());
-  }, []);
+  
 
   /**
    * [시작 가능한가?]
@@ -82,16 +79,16 @@ const JoMode = (props) => {
           if (!_iR.exists()) {
             console.log("ready가 없는 놈이 있어서 시작 못함");
             _result = false
-            return false
-            // canIstartGame 벗어나고 싶음.
           } else {
             if (_iR.val() === false) {
               console.log("ready가 false인 놈이 있어서 시작 못함");
-              return false
-              // canIstartGame 벗어나고 싶음.
+              _result = false
             }
           }
         });
+      if(_result === false){
+        return false
+      }
     }
     console.log("모든 참가자의 ready가 true라서 시작 가능");
     return true;
@@ -112,7 +109,6 @@ const JoMode = (props) => {
         if (!snapshot.exists()) {
           console.log("방 DB 초기화!");
           roomRef.current.child("state").set("wait");
-          roomRef.current.child("allReady").set("false");
           roomRef.current.child("gameMode").set("jo");
           roomRef.current.child("currentSentence").set("NO_CURRENT_SENTENCE");
           roomRef.current.child("speakedSentence").set("NO_SPEAK_SENTENCE");
@@ -121,11 +117,6 @@ const JoMode = (props) => {
           roomRef.current.child("isFail").set("NO_IS_FAIL");
           roomRef.current.child("turn").set(0);
           roomRef.current.child("ranking").set("");
-          roomRef.current
-            .child("participants")
-            .child(Object.keys(props.currentUser)[0])
-            .child("resultSum")
-            .set(0);
         }
       })
       .catch((error) => {
@@ -215,32 +206,6 @@ const JoMode = (props) => {
       });
     }
   }
-  function allReadyCheck() {
-    //ready카운트 초기화
-    setReadyCnt(0);
-    setAllReady("false");
-    console.log(readyCnt);
-    console.log("레디 체크 함수 실행");
-    roomRef.current
-      .child("participants")
-      .get()
-      .then((snapshot) => {
-        const data = snapshot.val();
-        console.log(Object.entries(data));
-        for (let index = 0; index < Object.entries(data).length; index++) {
-          const element = Object.entries(data)[index];
-          console.log("유저 : ", element[0], "상태 : ", element[1].isReady);
-        }
-      });
-    roomRef.current
-      .child("allReady")
-      .get()
-      .then((snapshot) => {
-        const data = snapshot.val();
-        console.log(data);
-      });
-    return allReady;
-  }
 
   const isStart = async () => {
     var temp = "temp";
@@ -313,8 +278,9 @@ const JoMode = (props) => {
     }
   };
 
-  const startGame = () => {
-    if (canIStartGame()) {
+  const startGame = async() => {
+    var v = await canIStartGame()
+    if (v) {
       console.log("YES");
       isbegin = true;
       setHost(false);
@@ -333,7 +299,7 @@ const JoMode = (props) => {
         });
     } else {
       console.log("NO");
-      alert("ㄴㄴ 안대안대");
+      alert("모두가 준비되지 않았어요");
     }
   };
 
@@ -454,7 +420,6 @@ const JoMode = (props) => {
   if (error) return <p>Chrome에서 실행 부탁드립니다!!!!🤷 </p>;
   return (
     <div className="gameboy">
-      <button onClick={canIStartGame}>**게임 시작 가능?**</button>
       {isModalOpen && (
         <ResModal open={isModalOpen} close={closeModal} ref={res} />
       )}
