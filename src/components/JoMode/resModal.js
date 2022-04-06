@@ -1,6 +1,6 @@
 import React, { forwardRef } from "react";
 import "./resModal.css";
-import '@fortawesome/fontawesome-free/css/all.min.css';
+import '@fortawesome/fontawesome-free/css/all.css';
 const resModal = (props, ref) => {
   console.log(Object.keys(ref.current)[0]);
   console.log(Object.values(ref.current)[0]);
