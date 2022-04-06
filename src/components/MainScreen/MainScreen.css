@@ -6,18 +6,27 @@
 .main-scream-total{
     display: flex;
     height: calc(90vh - 70px);
+    
 }
 
 .main-screen-left{
-    width: 70%;
+    width: calc(100% - 430px);
     background-color:tan;
 }
-.main-screen-right{
-    width: 30%;
+.main-screen-right {
+    width: 430px;
 }
-
 .footer {
     height: 10vh;
+}
+
+@media screen and (max-width:1200px) {
+    .main-screen-left {
+        width: calc(100% - 330px);
+    }
+    .main-screen-right {
+        width: 330px;
+    }
 }
 
 @media screen and (max-width:768px) {

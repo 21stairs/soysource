@@ -25,6 +25,7 @@ const JoMode = () => {
   const [isFail, setIsFail] = useState("");
   const [speakedSentence, setSpeakedSentence] = useState("");
   const [time, setTime] = useState("");
+  const [isRecording, setIsRecording] = useState(null)
 
   useEffect( () => {
     initGame();
@@ -92,6 +93,7 @@ const JoMode = () => {
     clearInterval(countRef.current);
     countRef.current = setInterval(() => setCount((c) => c + 1), 100); // 주구장창
     SetProblem();
+    setIsRecording(true)
   };
 
   const stopHandler = async() => {
@@ -106,6 +108,7 @@ const JoMode = () => {
     if(interimResult!=null)
       roomRef.current.child("speakedSentence").set(interimResult);
     SetRate(Problem);
+    setIsRecording(false)
   };
 
   const SetProblem = () => {
@@ -185,7 +188,17 @@ const JoMode = () => {
       </div>
       <div className="gameboy-component">
         <div className="screen">
-          <canvas className=""></canvas>
+          {isRecording ? 
+          <div className="screen__item"> {currentSentence}</div>
+          :
+          <div className="screen__item">
+            <p>정확도 : {accuracy}%</p>
+            <p>{time/10}초</p>
+            <p>{isFail}</p>
+            <p>{interimResult}</p>
+            {/* {speakedSentence} */}
+          </div>
+          }
         </div>
         <div className="controls">
           <div className="logo">
@@ -218,43 +231,6 @@ const JoMode = () => {
           </div>          
         </div>
       </div>
-      <div className="cont-div">
-        <button
-          type="button"
-          onClick={startHandler}
-          disabled={!flipped}
-        >
-          시작
-        </button>
-        <button
-          type="button"
-          onClick={stopHandler}
-          disabled={flipped}
-        >
-          종료
-        </button>
-      </div>
-      
-      <div className="prob__box">
-        <h2 className="problem" >
-          {currentSentence}
-        </h2>
-      </div>
-
-      <h1 className="rate">
-        정확도 : {accuracy}%
-      </h1>
-      <h1 className='time'>
-        {time/10}초
-      </h1>
-
-      <h1>
-        {isFail}
-      </h1>
-      <h2>
-        {interimResult}
-        {speakedSentence}
-      </h2>
     </div>
   );
 };
