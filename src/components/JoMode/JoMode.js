@@ -68,8 +68,8 @@ const JoMode = (props) => {
     addListeners();
   }, [Problem, accuracy, isFail]);
   useEffect(() => {
-    const res = allReadyCheck();
-    console.log(res);
+    // const res = allReadyCheck();
+    console.log(allReadyCheck());
   },[])
   /**
    * [게임 초기화]

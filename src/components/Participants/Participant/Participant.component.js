@@ -30,12 +30,12 @@ export const Participant = (props) => {
 
   
   //한번만 실행 되도록
-  useEffect(() => {
+  useEffect(async() => {
 
     // console.log(isReadyCheck)
     
     //여기서 db에 있는 isReady 값을 업데이트 받아야 함
-    curUser.on('value', (snapshot) => {
+    curUser.on('value',(snapshot) => {
       const data = snapshot.val();
       // console.log("확인 필요", Object.keys(data))
       // console.log(data)
@@ -51,7 +51,7 @@ export const Participant = (props) => {
           // } else {
             if (Object.entries(data)[index][1].userName == currentParticipant?.name) {
               // console.log(!Object.entries(data)[index][1].isReady)
-              setIsReadyCheck(!Object.entries(data)[index][1].isReady)
+              setIsReadyCheck(Object.entries(data)[index][1].isReady)
             }
           // }
         // }
