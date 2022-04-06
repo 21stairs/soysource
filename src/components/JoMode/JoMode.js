@@ -49,7 +49,7 @@ const JoMode = (props) => {
   const res = useRef();
   const [isRecording, setIsRecording] = useState(null);
   const round = useRef(0);
-  const maxRound = useRef(2);
+  const [maxRound, setMaxRound] = useState(-1);
 
   useEffect(async () => {
     initGame();
@@ -67,6 +67,14 @@ const JoMode = (props) => {
   useEffect(() => {
     addListeners();
   }, [Problem, accuracy, isFail]);
+
+  function askMaxRound(){
+    var _v = prompt("최대 라운드 설정","3")
+    var _num_v = parseInt(_v)
+    setMaxRound(_num_v) 
+    return _num_v
+  }
+
   /**
    * [게임 초기화]
    * 1. Mode 를 '조준영모드' 으로 설정
@@ -91,6 +99,7 @@ const JoMode = (props) => {
           roomRef.current.child("turn").set(0);
           roomRef.current.child("ranking").set("");
           roomRef.current.child("round").set(0);
+          roomRef.current.child("maxRound").set(askMaxRound());
           roomRef.current
             .child("participants")
             .child(Object.keys(props.currentUser)[0])
