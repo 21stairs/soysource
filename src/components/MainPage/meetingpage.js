@@ -32,8 +32,8 @@ useEffect(async () => {
     const userName = prompt("닉네임 입력");
 
     if(userName===null){
-      roomRef.remove();
-      window.location.href = 'http://localhost:3000/room';
+      
+      window.location.href = 'https://j6d203.p.ssafy.io/room';
       // if (roomRef.equalTo('participants')){
       //   roomRef.remove();
       // }
