@@ -36,7 +36,7 @@
 
 <br/>
 
-#### 아키텍처 ####
+#### 🌟아키텍처 ####
 ![아키텍처](/uploads/f6daa0ae9778c75493b027b200bce3f1/아키텍처.PNG)
 
 ## 💡주요 기능
@@ -73,15 +73,4 @@
 
 ![게임화면2](/uploads/753d8fb9dd2a296362072b8237b7c14e/게임화면2.PNG)
 
-## 테스트 화면 (WebRTC)
 
-* Desktop View
-![](screenshots/Desktop%20View.jpg)
-
-* Desktop Sharing View
-![](screenshots/Screenshare.jpg)
-
-* Mobile View
-<br />
-
-![](screenshots/Mobile%20View.jpg)
