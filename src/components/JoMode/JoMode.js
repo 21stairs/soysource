@@ -47,7 +47,9 @@ const JoMode = (props) => {
   const [orderName, setOrderName] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const res = useRef();
-  const [isRecording, setIsRecording] = useState(null)
+  const [isRecording, setIsRecording] = useState(null);
+  const round = useRef(0);
+  const maxRound = useRef(2);
 
   useEffect(async () => {
     initGame();
@@ -88,6 +90,7 @@ const JoMode = (props) => {
           roomRef.current.child("isFail").set("NO_IS_FAIL");
           roomRef.current.child("turn").set(0);
           roomRef.current.child("ranking").set("");
+          roomRef.current.child("round").set(0);
           roomRef.current
             .child("participants")
             .child(Object.keys(props.currentUser)[0])
@@ -207,18 +210,31 @@ const JoMode = (props) => {
     console.log("순서 받기");
     const userId = Object.keys(props.currentUser)[0];
     await roomRef.current
+      .child("round")
+      .get()
+      .then((snap) => {
+        round.current = snap.val();
+      });
+    console.log("inOrder 체크1", inOrder.current);
+    await roomRef.current
       .child("turn")
       .get()
       .then((snap) => {
         inOrder.current = snap.val();
       });
-    if (Object.keys(props.participants).length === inOrder.current) {
+    console.log("inOrder 체크2", inOrder.current);
+    //종료 조건을 maxRound로 변경
+    if (maxRound.current === round.current) {
       await roomRef.current.update({
         state: "wait",
       });
       await roomRef.current.update({
         turn: 0,
       });
+      await roomRef.current.update({
+        round: 0,
+      });
+      round.current = 0;
       //여기서 전부 초기화 갈기자
       setIsOrder(false);
       setIsShow(false);
@@ -279,7 +295,7 @@ const JoMode = (props) => {
     clearInterval(countRef.current);
     countRef.current = setInterval(() => setCount((c) => c + 1), 100); // 주구장창
     SetProblem();
-    setIsRecording(true)
+    setIsRecording(true);
   };
 
   const stopHandler = async () => {
@@ -293,13 +309,20 @@ const JoMode = (props) => {
       roomRef.current.child("speakedSentence").set(interimResult);
     SetRate(Problem);
     SetIncrease();
-    setIsRecording(false)
+    setIsRecording(false);
   };
 
   const SetIncrease = async () => {
+    const moduler = Object.keys(props.participants).length;
+    if (inOrder.current + 1 === moduler) {
+      await roomRef.current.update({
+        round: round.current + 1,
+      });
+    }
     await roomRef.current.update({
-      turn: inOrder.current + 1,
+      turn: (inOrder.current + 1) % moduler,
     });
+    inOrder.current = (inOrder.current + 1) % moduler;
   };
 
   const openModal = async () => {
@@ -398,7 +421,7 @@ const JoMode = (props) => {
       {isModalOpen && (
         <ResModal open={isModalOpen} close={closeModal} ref={res} />
       )}
-      {/* <p id="gameState">gameState : {gameState}</p> */}
+      <p id="gameState">gameState : {gameState}</p>
       {/* 게임중, 대기중 */}
       <div className="top">
         <div className="onoff">
@@ -410,18 +433,19 @@ const JoMode = (props) => {
       <div className="gameboy-component">
         <div className="screen">
           {isOrder && <p>{orderName}님 의 차례 입니다!!!!</p>}
+          {isOrder && <p>{round.current + 1} 라운드</p>}
           {/* 대기중일땐 안보이고 게임시작하면 보이게끔 */}
-          {isRecording ? 
-          <div className="screen__item"> {currentSentence}</div>
-          :
-          <div className="screen__item">
-            <p>정확도 : {accuracy}%</p>
-            <p>{time/10}초</p>
-            <p>{isFail}</p>
-            <p>{interimResult}</p>
-            {/* {speakedSentence} */}
-          </div>
-          }
+          {isRecording ? (
+            <div className="screen__item"> {currentSentence}</div>
+          ) : (
+            <div className="screen__item">
+              <p>정확도 : {accuracy}%</p>
+              <p>{time / 10}초</p>
+              <p>{isFail}</p>
+              <p>{interimResult}</p>
+              {/* {speakedSentence} */}
+            </div>
+          )}
         </div>
         <div className="controls">
           <div className="logo">
@@ -436,21 +460,25 @@ const JoMode = (props) => {
               <div className="down-key"></div>
             </div>
             <div className="buttons">
-            {isUser ?
-              <div className="button-start" onClick={startHandler} disabled={flipped}></div>
-              :
-              <div className="button-start"></div>
-              }
+              {isUser ? (
+                <div className="button-start" onClick={startHandler}></div>
+              ) : (
+                <div className="button-start"></div>
+              )}
               {/* 내차례가 아니면 안눌러지게끔 */}
-            {isUser ?
-              <div className="button-end" onClick={stopHandler} disabled={flipped}></div>
-              :
-              <div className="button-end"></div>
-              }
+              {isUser ? (
+                <div className="button-end" onClick={stopHandler}></div>
+              ) : (
+                <div className="button-end"></div>
+              )}
             </div>
             <div className="selections">
               <div className="select"></div>
-              {host && <div className="start" onClick={startGame}></div>}
+              {host ? (
+                !isOrder && <div className="start" onClick={startGame}></div>
+              ) : (
+                <div className="start"></div>
+              )}
             </div>
           </div>
           <div className="speakers">
@@ -460,7 +488,7 @@ const JoMode = (props) => {
             <div className="grill"></div>
             <div className="grill"></div>
             <div className="grill"></div>
-          </div>          
+          </div>
         </div>
       </div>
     </div>
