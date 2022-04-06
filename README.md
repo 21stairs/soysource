@@ -1,14 +1,7 @@
 # 구미 특화 2반 3팀 간장공장공장장
-<p align="center"> 
-  <h3 align="center">SoySorce</h3>
 
-  <p align="center">
-    <br />  
-     어색한 분위기를 깨버리자!!!!
-    <br />
-  </p>
-</p>
-
+# SoySorce
+## 어색한 분위기를 깨버리자!!!!
 
 ![간장로고](/uploads/d60d58d5412f365d3cdf31435ccc1973/간장로고.PNG)
 
