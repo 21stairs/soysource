@@ -27,47 +27,56 @@ const Meeting = (props) => {
 
     return localStream;
   };
-  useEffect(async () => {
+useEffect(async () => {
+
     const userName = prompt("닉네임 입력");
 
-    const stream = await getUserStream();
-    stream.getVideoTracks()[0].enabled = false;
-    props.setMainStream(stream);
-
-    connectedRef.on("value", (snap) => {
-      if (snap.val()) {
-        // 유저 디바이스 정보 설정
-        const defaultPreference = {
-          audio: true,
-          video: false,
-          screen: false,
-        };
-        // participantRef는 firepadRef.child("participants") 을 가리키고 여기에 userStatusRef에 담음
-        const userStatusRef = participantRef.push({
-          userName,
-          isReady,
-          preferences: defaultPreference,
-        });
-
-        // setUser를 통해서 해당 유저의 정보를 userStatusRef에 저장된 객체를 값으로 set
-        props.setUser({
-          [userStatusRef.key]: { name: userName, ...defaultPreference },
-        });
-        // 연결 제거
-        userStatusRef.onDisconnect().remove();
-      }
-
+    if(userName===null){
+      roomRef.remove();
+      window.location.href = 'http://localhost:3000/room';
+      // if (roomRef.equalTo('participants')){
+      //   roomRef.remove();
+      // }
+   
       
-    });
+    }else{
 
-    
+      const stream = await getUserStream();
+      stream.getVideoTracks()[0].enabled = false;
+      props.setMainStream(stream);
+
+      connectedRef.on("value", (snap) => {
+        if (snap.val()) {
+          // 유저 디바이스 정보 설정
+          const defaultPreference = {
+            audio: true,
+            video: false,
+            screen: false,
+          };
+          // participantRef는 firepadRef.child("participants") 을 가리키고 여기에 userStatusRef에 담음
+          const userStatusRef = participantRef.push({
+            userName,
+            preferences: defaultPreference,
+          });
+          // setUser를 통해서 해당 유저의 정보를 userStatusRef에 저장된 객체를 값으로 set
+          props.setUser({
+            [userStatusRef.key]: { name: userName, ...defaultPreference },
+          });
+          // 연결 제거
+          userStatusRef.onDisconnect().remove();
+        }
+      });
+    }
+
   }, []);
 
   
 
   // console.log("순서2");
   const connectedRef = db.database().ref(".info/connected");
-  const participantRef = getMetting(number).child("participants");
+  const roomRef = getMetting(number)
+  const participantRef = roomRef.child("participants");
+
   const isUserSet = !!props.user;
   const isStreamSet = !!props.stream;
 
