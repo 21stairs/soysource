@@ -93,6 +93,7 @@ const JoMode = (props) => {
     }
     console.log("모든 참가자의 ready가 true라서 시작 가능");
     return true;
+  }
 
   function askMaxRound(){
     var _v = prompt("최대 라운드 설정","3")
@@ -223,7 +224,7 @@ const JoMode = (props) => {
       });
     }
   }
-  }
+
   const isStart = async () => {
     var temp = "temp";
     await roomRef.current
