@@ -1,24 +1,36 @@
+.wrapper{
+    display: flex;
+    flex-direction: column;
+}
 
 .main-scream-total{
-    width: 100%;
-    height: 84vh;
-    background: #3c4043;
+    display: flex;
+    height: calc(90vh - 70px);
+    
 }
 
 .main-screen-left{
-    width: 80%;
-    float: left;
-    background: #3c4043;
+    width: calc(100% - 430px);
+    background-color:tan;
 }
-.main-screen-right{
-    width: 20%;
-    float: right;
+.main-screen-right {
+    width: 430px;
 }
-.wrapper{
-    width: 100%;
-    background-color: #3c4043;
+.footer {
+    height: 10vh;
 }
 
-.footer {
-  height: 10vh;
+@media screen and (max-width:1200px) {
+    .main-screen-left {
+        width: calc(100% - 330px);
+    }
+    .main-screen-right {
+        width: 330px;
+    }
+}
+
+@media screen and (max-width:768px) {
+    .main-scream-total{
+        height: calc(90vh - 60px);
+    }
 }

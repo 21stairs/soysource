@@ -47,6 +47,7 @@ const JoMode = (props) => {
   const [orderName, setOrderName] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const res = useRef();
+  const [isRecording, setIsRecording] = useState(null)
 
   useEffect(async () => {
     initGame();
@@ -278,6 +279,7 @@ const JoMode = (props) => {
     clearInterval(countRef.current);
     countRef.current = setInterval(() => setCount((c) => c + 1), 100); // 주구장창
     SetProblem();
+    setIsRecording(true)
   };
 
   const stopHandler = async () => {
@@ -291,6 +293,7 @@ const JoMode = (props) => {
       roomRef.current.child("speakedSentence").set(interimResult);
     SetRate(Problem);
     SetIncrease();
+    setIsRecording(false)
   };
 
   const SetIncrease = async () => {
@@ -391,51 +394,74 @@ const JoMode = (props) => {
     });
   if (error) return <p>Chrome에서 실행 부탁드립니다!!!!🤷 </p>;
   return (
-    <div>
-      <div>
-        {isModalOpen && (
-          <ResModal open={isModalOpen} close={closeModal} ref={res} />
-        )}
-        <p id="gameState">gameState : {gameState}</p>
-        {isShow && isUser && (
-          <button
-            className="w-btn w-btn-blue"
-            type="button"
-            onClick={startHandler}
-            disabled={!flipped}
-          >
-            시작
-          </button>
-        )}
-        {isShow && isUser && (
-          <button
-            className="w-btn w-btn-gra1 w-btn-gra-anim"
-            type="button"
-            onClick={stopHandler}
-            disabled={flipped}
-          >
-            종료
-          </button>
-        )}
-        {host && <button onClick={startGame}>게임 시작</button>}
-        {isOrder && <p>{orderName}님 의 차례 입니다!!!!</p>}
-        <h1 className="problem" id="currentSentence">
-          {currentSentence}
-        </h1>
-        <h1 className="rate" id="accuracy">
-          정답률 : {accuracy}
-        </h1>
+    <div className="gameboy">
+      {isModalOpen && (
+        <ResModal open={isModalOpen} close={closeModal} ref={res} />
+      )}
+      {/* <p id="gameState">gameState : {gameState}</p> */}
+      {/* 게임중, 대기중 */}
+      <div className="top">
+        <div className="onoff">
+          <span className="arrow-left"></span>
+          <span className="onoff-label">on/off</span>
+          <span className="arrow-right"></span>
+        </div>
       </div>
-
-      <div>
-        <h1 className="speakedSentence" id="speakedSentence">
-          {interimResult}
-          {speakedSentence}
-        </h1>
-      </div>
-
-      <div className="rank" id="isFail">
-        <h1>{isFail}</h1>
+      <div className="gameboy-component">
+        <div className="screen">
+          {isOrder && <p>{orderName}님 의 차례 입니다!!!!</p>}
+          {/* 대기중일땐 안보이고 게임시작하면 보이게끔 */}
+          {isRecording ? 
+          <div className="screen__item"> {currentSentence}</div>
+          :
+          <div className="screen__item">
+            <p>정확도 : {accuracy}%</p>
+            <p>{time/10}초</p>
+            <p>{isFail}</p>
+            <p>{interimResult}</p>
+            {/* {speakedSentence} */}
+          </div>
+          }
+        </div>
+        <div className="controls">
+          <div className="logo">
+            <div className="logo-text"></div>
+            <div className="logo-gameboy"></div>
+          </div>
+          <div className="inputs">
+            <div className="dpad">
+              <div className="left-key"></div>
+              <div className="up-key"></div>
+              <div className="right-key"></div>
+              <div className="down-key"></div>
+            </div>
+            <div className="buttons">
+            {isUser ?
+              <div className="button-start" onClick={startHandler} disabled={flipped}></div>
+              :
+              <div className="button-start"></div>
+              }
+              {/* 내차례가 아니면 안눌러지게끔 */}
+            {isUser ?
+              <div className="button-end" onClick={stopHandler} disabled={flipped}></div>
+              :
+              <div className="button-end"></div>
+              }
+            </div>
+            <div className="selections">
+              <div className="select"></div>
+              {host && <div className="start" onClick={startGame}></div>}
+            </div>
+          </div>
+          <div className="speakers">
+            <div className="grill"></div>
+            <div className="grill"></div>
+            <div className="grill"></div>
+            <div className="grill"></div>
+            <div className="grill"></div>
+            <div className="grill"></div>
+          </div>          
+        </div>
       </div>
     </div>
   );
