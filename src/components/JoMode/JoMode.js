@@ -69,7 +69,7 @@ const JoMode = (props) => {
   }, [Problem, accuracy, isFail]);
   useEffect(() => {
     // const res = allReadyCheck();
-    console.log(allReadyCheck());
+    // console.log(allReadyCheck());
   },[])
   /**
    * [게임 초기화]

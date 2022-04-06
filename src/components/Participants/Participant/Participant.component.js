@@ -30,7 +30,7 @@ export const Participant = (props) => {
 
   
   //한번만 실행 되도록
-  useEffect(async() => {
+  useEffect(() => {
 
     // console.log(isReadyCheck)
     
@@ -89,7 +89,7 @@ export const Participant = (props) => {
               // console.log("두 값이 일치합니다")
               // console.log("변한 값의 키 값 : ", element)
               curUser.child(element).update({
-                isReady: true,
+                isReady: false,
               });
             } else {
               // console.log("두 값이 일치하지 않습니다")
@@ -111,11 +111,11 @@ export const Participant = (props) => {
             // console.log()
             // console.log(currentParticipant.name)
 
-            if (data.userName == currentParticipant.name) {
+            if (data.userName == currentParticipant?.name) {
               // console.log("두 값이 일치합니다()")
               // console.log("변한 값의 키 값 : ", element)
               curUser.child(element).update({
-                isReady: false,
+                isReady: true,
               });
             } else {
               // console.log("두 값이 일치하지 않습니다")
