@@ -1,32 +1,47 @@
-# 구미 특화 2반 3팀 간장공장공장장 (작성중)
+# 구미 특화 2반 3팀 간장공장공장장
 <p align="center"> 
-  <h3 align="center">간장공장공장장</h3>
+  <h3 align="center">SoySorce</h3>
 
   <p align="center">
     <br />  
-     어색한 분위기를 아이스브레이킹하기 위한 돕는 서비스
+     어색한 분위기를 깨버리자!!!!
     <br />
   </p>
 </p>
 
-<!-- 주 기술 스택 -->
-## 주 기술 스택
+#### 💫Tech Stacks & IDE ####
 
-* [React]
-* [Firebase]
-* [Kospeech]
+- <img src="https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB" alt="React" style="zoom:80%;" /><img src="https://img.shields.io/badge/javascript-%23323330.svg?style=for-the-badge&logo=javascript&logoColor=%23F7DF1E" alt="JavaScript" style="zoom:80%;" /><img src="https://img.shields.io/badge/redux-yellow?style=for-the-badge&logo=redux&logoColor=%2361DAFB" alt="Redux" style="zoom:80%;" /><img src="https://img.shields.io/badge/firebase-black?style=for-the-badge&logo=firebase&logoColor=yellow" alt="Firebase" style="zoom:80%;" />
 
-<!-- 주요기능 -->
+- <img src="https://img.shields.io/badge/Visual%20Studio%20Code-0078d7.svg?style=for-the-badge&logo=visual-studio-code&logoColor=white" alt="Visual Studio Code" style="zoom:80%;" />  
 
-## 주요기능
+<br/>
 
-### 1. 닉네임 설정
+#### 📅프로젝트 기간 ####
 
-  * 대기실 참여하기 전 유저 닉네임 설정과 카메라, 마이크 설정을 할 수 있다.
+- 2022.02.28 ~ 2022.04.08
+
+<br/>
+
+
+#### 🌟기획 의도 ####
+- 온라인에서 처음 만난 사람들과 어색함을 풀어주고 프로젝트의 분위기를 좋게해주고 팀원들과의 원만한 관계를 만들어 주기 위해 WebRTC를 사용한 아이스브레이킹 게임
+
+<br/>
+
+#### 🌟기획 배경 ####
+- 최근 코로나19로 온라인으로 화상회의를 하는 경우가 늘고 있습니다. 하지만 화상회의에서 만난 사람들과 어색한 분위기를 풀기 쉽지 않기 때문에 어색한 분위기를 풀어주는 아이스브레이킹 게임을 화상회의에서 즐겨보세요!!
+
+<br/>
+
+## 💡주요 기능
+
+### 1. 메인화면
 
 ### 2. 대기실 생성
 
-  #### └ 게임모드 설정
+
+### 3. 게임모드
 
   1. 조준영 모드
 
@@ -44,52 +59,9 @@
 
     * 미리 정한 라운드(3,5,7) 수 만큼 누적 시간을 매겨 순위 지정
 
-  2. 윤승일 모드
-
-    * 사용하지 않았던 문장 중에서 랜덤하게 문장이 주어진다.
-
-    * 버튼을 눌러 문장을 녹음한다.
-
-    * 녹음본을 텍스트로 변환
-
-    * 정답률을 넘었는 지와 문장 별로 지정된 제한시간 내에 마쳤는지 확인
-
-    * 위의 조건을 만족하면 해당 플레이어는 생존. 만족하지 못한 경우 사망
-
-    * 생존자 인원수 체크 
-
-      몰살엔딩, “정말 못하시네요” 메시지 출력 후 게임 종료
-
-      1명 : 승리엔딩, 승자얼굴 클로즈업 후 게임종료
-
-      2명이상 : 다음라운드 진행, 모든 문장의 제한시간을 n초 줄인다 (단, 최소시간 밑으로는 불가능)
-
-  #### └ 최대 인원수 설정
-
-  #### └ 대기실 제목 설정
-
-  ### 3. 대기실 참가
-
-    * 대기실 목록에서 입장하기
-
-    * 대기실 코드를 통해 입장하기
-
-      * 대기실을 생성하게 되면 자동으로 만들어지는 코드 값을 친구에게 보내 입장
-
-  ### 4. 대기실 나가기
-
-    * 방장이 나갈 경우
-
-      1.	방장 외의 사람이 있음 : 랜덤하게 다른 유저에게 방장 권한 이임.
-
-      2.	방장 외의 사람이 없음 : 방 제거
 
 
-  ### 5. 게임 준비 및 시작
 
-    * 방장 : 강퇴 및 모두가 준비완료 시 게임시작 활성화
-
-    * 참가자 : 준비와 준비해제 가능
 
  
 ## 테스트 화면 (WebRTC)
