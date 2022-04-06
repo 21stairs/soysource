@@ -13,6 +13,9 @@ const MeetingFooter = (props) => {
     mic: true,
     video: false,
   });
+
+  
+
   const micClick = () => {
     setStreamState((currentState) => {
       return {
@@ -57,6 +60,7 @@ const MeetingFooter = (props) => {
       >
         <FontAwesomeIcon icon={!streamState.video ? faVideoSlash : faVideo} />
       </div>
+      {/* <button className='ready-btn' >준비!!</button> */}
       <ReactTooltip />
     </div>
   );

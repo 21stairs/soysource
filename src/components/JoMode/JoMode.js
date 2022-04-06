@@ -1,12 +1,12 @@
-import React, { useRef, useState, useEffect, useCallback } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import "./JoMode.css";
 import JoModeData from "./JoModeData";
 import "../btn.css";
-import ReactDOM from "react-dom";
 import { connect } from "react-redux";
 import useSpeechToText from "react-hook-speech-to-text";
-import firepadRef, { db} from "../../server/firebase";
+import firepadRef, { db } from "../../server/firebase";
 import { rId } from "../MainPage/roomCreate";
+import ResModal from "./resModal";
 import {
   setMainStream,
   addParticipant,
@@ -14,7 +14,6 @@ import {
   removeParticipant,
   updateParticipant,
 } from "../../store/actioncreator";
-import { hostname } from "os";
 
 /*
 1. 문장이 주어진다.
@@ -26,7 +25,7 @@ import { hostname } from "os";
 7. 3, 5, 7 라운드 수 지정해서 누적 시간을 매겨 순위 지정.
 */
 
-let isbegin = false
+let isbegin = false;
 
 const JoMode = (props) => {
   var roomRef = useRef(); // 참가자가 참가한 방의 위치
@@ -38,20 +37,33 @@ const JoMode = (props) => {
   const [isFail, setIsFail] = useState("");
   const [speakedSentence, setSpeakedSentence] = useState("");
   const [time, setTime] = useState("");
-  const [rate, setRate] = useState("")
-  const [list, setList] = useState("")
-  const [host, setHost] = useState(false)
-  const [gameState, setGameState] = useState("")
+  const [host, setHost] = useState(false);
+  const [gameState, setGameState] = useState("");
+  const [isShow, setIsShow] = useState(false);
+  const [isUser, setIsUser] = useState(false);
+  const order = useRef([]);
+  const inOrder = useRef();
+  const [isOrder, setIsOrder] = useState(false);
+  const [orderName, setOrderName] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const res = useRef();
 
   useEffect(async () => {
     initGame();
-    if(!isbegin){
-      isStart()
+    if (!isbegin) {
+      isStart();
     }
-    addListeners();
-    makeOrder();
   }, []);
-
+  useEffect(() => {
+    if (gameState === "inGame") {
+      getOrder();
+      setIsShow(true);
+      isbegin = true;
+    }
+  }, [gameState, accuracy]);
+  useEffect(() => {
+    addListeners();
+  }, [Problem, accuracy, isFail]);
   /**
    * [게임 초기화]
    * 1. Mode 를 '조준영모드' 으로 설정
@@ -73,6 +85,13 @@ const JoMode = (props) => {
           roomRef.current.child("time").set("NO_TIME");
           roomRef.current.child("accuracy").set("NO_ACCURACY");
           roomRef.current.child("isFail").set("NO_IS_FAIL");
+          roomRef.current.child("turn").set(0);
+          roomRef.current.child("ranking").set("");
+          roomRef.current
+            .child("participants")
+            .child(Object.keys(props.currentUser)[0])
+            .child("resultSum")
+            .set(0);
         }
       })
       .catch((error) => {
@@ -90,27 +109,21 @@ const JoMode = (props) => {
   function addListeners() {
     roomRef.current.child("accuracy").on("value", (snap) => {
       setAccuracy(snap.val());
-      console.log("accuracy : ", snap.val());
     });
     roomRef.current.child("currentSentence").on("value", (snap) => {
       setCurrentSentence(snap.val());
-      console.log("currentSentence : ", snap.val());
     });
     roomRef.current.child("isFail").on("value", (snap) => {
       setIsFail(snap.val());
-      console.log("isFail : ", snap.val());
     });
     roomRef.current.child("speakedSentence").on("value", (snap) => {
       setSpeakedSentence(snap.val());
-      console.log("speakedSentence : ", snap.val());
     });
     roomRef.current.child("time").on("value", (snap) => {
       setTime(snap.val());
-      console.log("time : ", snap.val());
     });
     roomRef.current.child("state").on("value", (snap) => {
       setGameState(snap.val());
-      console.log("gameState : ", snap.val());
     });
   }
 
@@ -142,8 +155,34 @@ const JoMode = (props) => {
       });
   }
 
+  /**
+   * [점수 계산]
+   */
+  function sendScoreToDB(_time) {
+    var _myName = props.participants[Object.keys(props.currentUser)[0]].name;
+    var scoreRef = roomRef.current.child("ranking").child(_myName);
+    if (_time === "실패") {
+      scoreRef.get().then((snapshot) => {
+        if (!snapshot.exists()) {
+          scoreRef.set(100);
+        }
+      });
+    } else {
+      scoreRef.get().then((snapshot) => {
+        if (!snapshot.exists()) {
+          console.log("무야호");
+          scoreRef.set(_time);
+        } else {
+          console.log("유야호");
+          var _originalScore = snapshot.val();
+          var _newScore = _originalScore + _time;
+          scoreRef.set(_newScore);
+        }
+      });
+    }
+  }
+
   const isStart = async () => {
-    console.log("dddddddddddddddddddd", isbegin);
     var temp = "temp";
     await roomRef.current
       .child("participants")
@@ -153,7 +192,6 @@ const JoMode = (props) => {
       });
 
     if (temp.val()) {
-      console.log("start?");
       const getUid = Object.keys(temp.val())[0];
       if (props.currentUser) {
         const userId = Object.keys(props.currentUser)[0];
@@ -162,19 +200,69 @@ const JoMode = (props) => {
         }
       }
     }
-    console.log(host);
   };
 
+  const getOrder = async () => {
+    console.log("순서 받기");
+    const userId = Object.keys(props.currentUser)[0];
+    await roomRef.current
+      .child("turn")
+      .get()
+      .then((snap) => {
+        inOrder.current = snap.val();
+      });
+    if (Object.keys(props.participants).length === inOrder.current) {
+      await roomRef.current.update({
+        state: "wait",
+      });
+      await roomRef.current.update({
+        turn: 0,
+      });
+      //여기서 전부 초기화 갈기자
+      setIsOrder(false);
+      setIsShow(false);
+      isbegin = false;
+      console.log(inOrder.current);
+      isStart();
+      openModal();
+      return;
+    }
+    await roomRef.current
+      .child("order")
+      .get()
+      .then((snapshot) => {
+        for (let i = 0; i < Object.keys(snapshot.val()).length; i++) {
+          order.current[i] = snapshot.val()[i];
+        }
+      });
+    for (let i = 0; i < Object.keys(props.participants).length; i++) {
+      if (
+        Object.keys(props.participants)[i] === order.current[inOrder.current]
+      ) {
+        setOrderName(
+          props.participants[Object.keys(props.participants)[i]].name
+        );
+        setIsOrder(true);
+        if (userId === order.current[inOrder.current]) {
+          setIsUser(true);
+        } else {
+          setIsUser(false);
+        }
+        break;
+      }
+    }
+  };
   const startGame = () => {
     isbegin = true;
     setHost(false);
-
+    setIsShow(true);
+    makeOrder();
     roomRef.current
       .child("state")
       .get()
       .then((snapshot) => {
-        if ("wait"===snapshot.val()) {
-          roomRef.current.child("state").set("inGame")
+        if ("wait" === snapshot.val()) {
+          roomRef.current.child("state").set("inGame");
         }
       })
       .catch((error) => {
@@ -185,6 +273,7 @@ const JoMode = (props) => {
   const startHandler = () => {
     onFlip(); //중복 클릭 방지
     startSpeechToText();
+
     setCount(0);
     clearInterval(countRef.current);
     countRef.current = setInterval(() => setCount((c) => c + 1), 100); // 주구장창
@@ -198,9 +287,38 @@ const JoMode = (props) => {
     countRef.current = null;
     setProblem((c) => (c = <h1>{Count}ms</h1>));
     roomRef.current.child("time").set(Count);
-    if(interimResult!=null)
+    if (interimResult != null)
       roomRef.current.child("speakedSentence").set(interimResult);
     SetRate(Problem);
+    SetIncrease();
+  };
+
+  const SetIncrease = async () => {
+    await roomRef.current.update({
+      turn: inOrder.current + 1,
+    });
+  };
+
+  const openModal = async () => {
+    //결과 db에서 받아와서 사용하자.
+    const restemp = await roomRef.current
+      .child("ranking")
+      .get()
+      .then((snap) => {
+        return snap.val();
+      });
+
+    console.log(restemp);
+
+    res.current = restemp;
+
+    console.log(res.current);
+
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    if (isModalOpen === true) return setIsModalOpen(false);
   };
 
   const SetProblem = () => {
@@ -210,7 +328,8 @@ const JoMode = (props) => {
     roomRef.current.child("currentSentence").set(sentence);
   };
 
-  const SetRate = (problem) => {
+  const SetRate = async (problem) => {
+    var avg;
     var recoderProblem = interimResult; //녹음된 문자
 
     if (recoderProblem !== undefined) {
@@ -232,38 +351,31 @@ const JoMode = (props) => {
           }
         }
       }
-      var avg = ((same / total) * 100).toFixed(2);
-
-      setRate((e) => {
-        e = avg;
-        roomRef.current.child("accuracy").set(avg);
-
-        if (avg > 70) {
-          roomRef.current.child("isFail").set("성공");
-        } else {
-          roomRef.current.child("isFail").set("실패");
-        }
-      });
+      avg = ((same / total) * 100).toFixed(2);
     } else {
       avg = 0;
-      console.log(avg);
+    }
 
-      setRate((e) => {
-        e = avg;
-        roomRef.current.child("accuracy").set(avg);
+    roomRef.current.child("accuracy").set(avg);
+    setAccuracy(avg);
 
-        if (avg > 70) {
-          roomRef.current.child("isFail").set("성공");
-        } else {
-          roomRef.current.child("isFail").set("실패");
-        }
-      });
+    if (avg > 70) {
+      roomRef.current.child("isFail").set("성공");
+      setIsFail("성공");
+
+      sendScoreToDB(Count);
+      // [승관]
+      // const userId = Object.keys(props.currentUser)[0];
+      // await roomRef.current.child("ranking").set();
+      // await roomRef.current.child("accuracy").set(avg);
+      // await roomRef.current.child("user").set(props.participants[userId].name);
+    } else {
+      roomRef.current.child("isFail").set("실패");
+      setIsFail("실패");
+
+      sendScoreToDB("실패");
     }
   };
-
-  const RankList = useCallback(() => {
-    setList((e) => [...e, Count]);
-  }, [Count]);
 
   //Start와 Stop 중복 클릭 방지를 위한 함수
   const [flipped, setFlipped] = React.useState(true);
@@ -272,7 +384,7 @@ const JoMode = (props) => {
   };
 
   /*녹음 ---------------------------------------------------- */
-  const { error, interimResult,  startSpeechToText, stopSpeechToText } =
+  const { error, interimResult, startSpeechToText, stopSpeechToText } =
     useSpeechToText({
       continuous: true,
       useLegacyResults: false,
@@ -281,36 +393,38 @@ const JoMode = (props) => {
   return (
     <div>
       <div>
-        <p id="gameState">
-          gameState : {gameState}
-        </p>
-        {/* {!host && ( */}
-        <button
-          className="w-btn w-btn-blue"
-          type="button"
-          onClick={startHandler}
-          disabled={!flipped}
-        >
-          시작
-        </button>
-        {/* {!host && ( */}
-        <button
-          className="w-btn w-btn-gra1 w-btn-gra-anim"
-          type="button"
-          onClick={stopHandler}
-          disabled={flipped}
-        >
-          종료
-        </button>
+        {isModalOpen && (
+          <ResModal open={isModalOpen} close={closeModal} ref={res} />
+        )}
+        <p id="gameState">gameState : {gameState}</p>
+        {isShow && isUser && (
+          <button
+            className="w-btn w-btn-blue"
+            type="button"
+            onClick={startHandler}
+            disabled={!flipped}
+          >
+            시작
+          </button>
+        )}
+        {isShow && isUser && (
+          <button
+            className="w-btn w-btn-gra1 w-btn-gra-anim"
+            type="button"
+            onClick={stopHandler}
+            disabled={flipped}
+          >
+            종료
+          </button>
+        )}
         {host && <button onClick={startGame}>게임 시작</button>}
-        {isbegin && <p>게임 시작중...</p>}
+        {isOrder && <p>{orderName}님 의 차례 입니다!!!!</p>}
         <h1 className="problem" id="currentSentence">
-          {Problem}
+          {currentSentence}
         </h1>
         <h1 className="rate" id="accuracy">
           정답률 : {accuracy}
         </h1>
-        <button onClick={RankList}>리스트에 추가</button>
       </div>
 
       <div>
@@ -329,7 +443,6 @@ const JoMode = (props) => {
 
 // 넣은 정보가 props에 담김
 const mapStateToProps = (state) => {
-  console.log("(JoMode.js) mapStateToProps");
   return {
     stream: state.mainStream,
     currentUser: state.currentUser,
@@ -338,7 +451,6 @@ const mapStateToProps = (state) => {
 };
 
 const mapDispatchToProps = (dispatch) => {
-  console.log("(JoMode.js) mapDispatchToProps");
   return {
     setMainStream: (stream) => dispatch(setMainStream(stream)),
     addParticipant: (user) => dispatch(addParticipant(user)),
@@ -349,3 +461,8 @@ const mapDispatchToProps = (dispatch) => {
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(JoMode);
+
+/**
+ * 지금 해야 되는 것.
+ * 1. 방장이 '게임시작' 을 눌럿
+ */
