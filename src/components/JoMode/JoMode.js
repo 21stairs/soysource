@@ -49,7 +49,6 @@ const JoMode = (props) => {
   const res = useRef();
   const [isRecording, setIsRecording] = useState(null);
   const round = useRef(0);
-  const [maxRound, setMaxRound] = useState(-1);
 
   useEffect(async () => {
     initGame();
@@ -70,9 +69,7 @@ const JoMode = (props) => {
 
   function askMaxRound(){
     var _v = prompt("최대 라운드 설정","3")
-    var _num_v = parseInt(_v)
-    setMaxRound(_num_v) 
-    return _num_v
+    return parseInt(_v)
   }
 
   /**
@@ -238,7 +235,14 @@ const JoMode = (props) => {
       });
     console.log("inOrder 체크2", inOrder.current);
     //종료 조건을 maxRound로 변경
-    if (maxRound.current === round.current) {
+    var _mR
+    await roomRef.current
+      .child("maxRound")
+      .get()
+      .then((snap) => {
+        _mR = snap.val();
+      });
+    if (_mR === round.current) {
       await roomRef.current.update({
         state: "wait",
       });
