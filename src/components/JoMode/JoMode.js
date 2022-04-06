@@ -48,6 +48,8 @@ const JoMode = (props) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const res = useRef();
   const [isRecording, setIsRecording] = useState(null)
+  const [readyCnt, setReadyCnt] = useState(0);
+  const [allReady, setAllReady] = useState("");
 
   useEffect(async () => {
     initGame();
@@ -65,11 +67,17 @@ const JoMode = (props) => {
   useEffect(() => {
     addListeners();
   }, [Problem, accuracy, isFail]);
+  useEffect(() => {
+    const res = allReadyCheck();
+    console.log(res);
+  },[])
   /**
    * [게임 초기화]
    * 1. Mode 를 '조준영모드' 으로 설정
    * 2. 참가자라면, 참가한 방의 위치를 설정
    */
+
+  
   function initGame() {
     roomRef.current = rId ? db.database().ref(rId) : firepadRef;
     roomRef.current
@@ -80,6 +88,7 @@ const JoMode = (props) => {
         if (!snapshot.exists()) {
           console.log("방 DB 초기화!");
           roomRef.current.child("state").set("wait");
+          roomRef.current.child("allReady").set("false");
           roomRef.current.child("gameMode").set("jo");
           roomRef.current.child("currentSentence").set("NO_CURRENT_SENTENCE");
           roomRef.current.child("speakedSentence").set("NO_SPEAK_SENTENCE");
@@ -182,6 +191,28 @@ const JoMode = (props) => {
       });
     }
   }
+  function allReadyCheck() {
+
+    //ready카운트 초기화
+    setReadyCnt(0);
+    setAllReady("false")
+    console.log(readyCnt)
+    console.log("레디 체크 함수 실행")
+    roomRef.current.child("participants").get().then((snapshot) => { 
+      const data = snapshot.val()
+      console.log(Object.entries(data))
+      for (let index = 0; index < Object.entries(data).length; index++) {
+        const element = Object.entries(data)[index];
+        console.log("유저 : ",element[0],"상태 : ",element[1].isReady) 
+        
+      }
+    })
+    roomRef.current.child("allReady").get().then((snapshot) => { 
+      const data = snapshot.val()
+      console.log(data)
+    })
+    return allReady
+  }
 
   const isStart = async () => {
     var temp = "temp";
@@ -253,6 +284,8 @@ const JoMode = (props) => {
       }
     }
   };
+
+
   const startGame = () => {
     isbegin = true;
     setHost(false);

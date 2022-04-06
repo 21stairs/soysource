@@ -22,76 +22,132 @@ export const Participant = (props) => {
   
   const urlparams = new URLSearchParams(window.location.search);
   const roomId = urlparams.get("id");
-  const [isReadyCheck, setIsReadyCheck] = useState("false");
-  const [changeUserCheck, setChangeUserCheck] = useState("");
-  const [res, setRes] = useState("false");
+  const [isReadyCheck, setIsReadyCheck] = useState("");
   const roomRef = db.database().ref(roomId)
-  const userRef = db.database().ref(roomId + '/participants/' + participantKey[curentIndex - 1])
-  const [cnt, setCnt] = useState("0");
-  // console.log("======== ", currentUser, " ========")
-  // console.log("======== ", currentUser, " ========")
+  const curUser = roomRef.child("participants")
   
   roomRef.child("isChangeReadyState");
 
   
   //한번만 실행 되도록
   useEffect(() => {
+
+    // console.log(isReadyCheck)
     
-    //참가자 수 만큼 반복 (participantKey : 참가자 수의 키값 배열)
-    participantKey.forEach(element => {
-      
-      if (participantKey[curentIndex - 1] !== element) {
-        roomRef.child("participants").child(element).on('value', (snapshot) => {
-          console.log("유저 keys : " , element)
-          console.log("현재 비디오 창 유저 : " , participantKey[curentIndex-1]) 
-          const data = snapshot.val();
-          
-          console.log(participantKey.length)
-          console.log("값 뭐임", data.isReady)
-          setIsReadyCheck(data.isReady)
-
-        });
+    //여기서 db에 있는 isReady 값을 업데이트 받아야 함
+    curUser.on('value', (snapshot) => {
+      const data = snapshot.val();
+      // console.log("확인 필요", Object.keys(data))
+      // console.log(data)
+      // if (!!Object.keys(data)) {
+        
+      // } else {
+        for (let index = 0; index < Object.keys(data).length; index++) {
+          // const element = Object.keys(data)[index];
+          // console.log(data)
+          // console.log(Object.entries(data)[index][1].userName)
+          // if (!!currentParticipant.name) {
+            
+          // } else {
+            if (Object.entries(data)[index][1].userName == currentParticipant?.name) {
+              // console.log(!Object.entries(data)[index][1].isReady)
+              setIsReadyCheck(!Object.entries(data)[index][1].isReady)
+            }
+          // }
+        // }
       }
-    });
 
+      
+    })
+
+    // console.log(isReadyCheck)
   },[]);
 
   //Ready 클릭 이벤트
   const On_ready = () => {
-    const curUser = firepadRef.child("participants").child(participantKey[0])
-    // console.log("실행 1")
 
-    console.log("바뀐 유저의 키값 : ",curUser.key);
-    roomRef.update({
-      isChangeReadyState: curUser.key,
-    });
-
-    setChangeUserCheck(curUser.key)
-    // console.log("바뀐 유저의 키값을 changeUserCheck에 넣음 : ",changeUserCheck)
-
+    
+    
     if (currentUser) {
       if (isReadyCheck) {
         setIsReadyCheck(false);
-        // console.log("실행 2-1 : ", curUser)
+        // console.log(participantKey)
+        // console.log(curentIndex - 1)
+        // console.log(participantKey[curentIndex - 1])
+        // console.log(participantKey.length)
 
+        for (let index = 0; index < participantKey.length; index++) {
+          const element = participantKey[index];
+          // console.log(element)
+          curUser.child(element).once('value', (snapshot) => { 
+            const data = snapshot.val();
+            // console.log(data.userName)
+            // console.log()
+            // console.log(currentParticipant.name)
 
-        curUser.update({
-          isReady: false,
-        });
-        // console.log("실행 2-2 : ", curUser)
+            if (data.userName == currentParticipant.name) {
+              // console.log("두 값이 일치합니다")
+              // console.log("변한 값의 키 값 : ", element)
+              curUser.child(element).update({
+                isReady: true,
+              });
+            } else {
+              // console.log("두 값이 일치하지 않습니다")
+            }
+          })
+        }
       }
       else {
         setIsReadyCheck(true);
-        // console.log("실행 3-1 : ", curUser)
+        // console.log(participantKey)
+        // console.log(curentIndex - 1)
+        // console.log(participantKey[curentIndex - 1])
+        for (let index = 0; index < participantKey.length; index++) {
+          const element = participantKey[index];
+          // console.log(element)
+          curUser.child(element).once('value', (snapshot) => { 
+            const data = snapshot.val();
+            // console.log(data.userName)
+            // console.log()
+            // console.log(currentParticipant.name)
 
-        curUser.update({
-          isReady: true,
-        });
+            if (data.userName == currentParticipant.name) {
+              // console.log("두 값이 일치합니다()")
+              // console.log("변한 값의 키 값 : ", element)
+              curUser.child(element).update({
+                isReady: false,
+              });
+            } else {
+              // console.log("두 값이 일치하지 않습니다")
+            }
+          })
+        }
+
+        // curUser.child(participantKey[0]).update({
+        //   isReady: true,
+        // });
         // console.log("실행 3-2 : ", curUser)
       }
     }
+    curUser.on('value', (snapshot) => {
+      const data = snapshot.val();
+
+      // console.log(Object.keys(data).length)
+      // for (let index = 0; index < Object.keys(data).length; index++) {
+      //   const element = Object.keys(data)[index];
+      //   console.log(element)
+      //   // curUser.child(element).on('value', (snapshot) => {
+      //   //   const data_2 = snapshot.val();
+      //   //   console.log(data_2)
+      //   // })
+      //   // curUser.child(element).update({
+      //   //   'isReady': "false"
+      //   // })
+      // }
+    })
   }
 
+  // console.log(isReadyCheck)
 
   if (!currentParticipant) return <></>;
 
