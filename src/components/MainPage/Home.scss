@@ -34,9 +34,11 @@ body {
   display: flex;
   flex-flow: column wrap;
   align-items: flex-start;
-  // width: 50%;
-  div {
+  .section--btn {
+    width: 100%;
     display: flex;
+    margin-top: 10px;
+    justify-content: space-around;
     button {
       height: 35px;
       padding: 0 10px;
@@ -45,11 +47,7 @@ body {
       border-radius: 5px;
       font-weight: bold;
       color: #3c3c3c;
-      
-      :hover {
-        border: 1px solid #3c3c3c;
-        background-color: #F0F8FF
-      };
+      cursor: pointer;
     };
   }
   h1 {

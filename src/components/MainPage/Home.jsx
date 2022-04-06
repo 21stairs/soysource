@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import './Home.scss'
 
 const test = () => {
@@ -32,8 +33,12 @@ const test = () => {
           <h1>깨부수자!</h1>
           <p>화상 음성인식 게임을 통해</p>
           <p>즐겁게 게임을 하며 사람들과 친해져 봅시다.</p>
-          <div>
-            <button>시작하기</button>
+          <div className="section--btn">
+            <Link to="/room">
+              <button>
+                  시작하기
+              </button>
+            </Link>
             <button>게임실행</button>
           </div>
         </section>

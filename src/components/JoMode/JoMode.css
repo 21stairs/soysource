@@ -9,73 +9,55 @@
     font-family: arial;
 }
 .top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     height: 5%;
     border-bottom: 3px solid rgb(188, 202, 179);
 }
 
 .onoff {
-    width: 63px;
-    height: 15px;
-    position: absolute;
+    width: 88px;
+    height: 20px;
     display: flex;
     background-color: #b8c4ae;
-    margin-left: 40px;
-    margin-top: -28px;
-    border-radius: 24px;  
+    margin-left: 20px;
+    margin-right: 10px;
+    justify-content: center;
+    align-items: center;
+    border-radius: 24px;
     color: #d2ddcd;
-    padding-left: 12px;
-    padding-top: 2px;
     box-shadow: inset -1px 1px 10px 1px rgba(0, 0, 0, 0.1);
 }
 
 .onoff .arrow-left:before {
     content: " ";
-    position: absolute;
-    border-right: 0;
-    margin-left: -7px;
-    margin-top: 1px;
-    border-top: 5px solid transparent;
-    border-bottom: 5px solid transparent;  
-    border-right: 5px solid #d2ddcd; 
+    display: inline-block;
+    border-top: 7px solid transparent;
+    border-bottom: 7px solid transparent;  
+    border-right: 7px solid #d2ddcd; 
 }
 
 .onoff .arrow-right:before {
     content: " ";
-    position: absolute;
-    border-right: 0;
-    margin-left: 2px;
-    margin-top: 1px;
-    border-top: 5px solid transparent;
-    border-bottom: 5px solid transparent;  
-    border-left: 5px solid #d2ddcd;  
+    display: inline-block;
+    border-top: 7px solid transparent;
+    border-bottom: 7px solid transparent;  
+    border-left: 7px solid #d2ddcd;  
 }
 
 .onoff-label {
-    font-size: 8pt;
-    font-weight: bold;
-    text-transform: uppercase;  
+    font-size: 10pt;
+    text-transform: uppercase; 
+    margin: 0 3px;
 }
-
-/* .gameboy-component {
-    border-top: 1px solid rgba(255,255,255,0.25);
-} */
-
-.top:before {
-    content: " ";
-    height: 30px;
-    position: relative;
-    display: inline-block;
-    border-left: 1px solid rgba(255, 255, 255, 0.25);
-    border-right: 3px solid #bccab3;
-}
-
-.top:after {
-    content: " ";
-    height: 30px;
-    position: relative;
-    display: inline-block;
-    border-left: 1px solid rgba(255,255,255,0.25);
-    border-right: 3px solid rgb(188, 202, 179);
+.turn {
+    width: 60%;
+    margin-right: 15px;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 .screen {
     background-color: #585769;
@@ -94,9 +76,15 @@
     align-items: flex-start;
     padding: 8% 5%;
     color: #BCFF66;
+    width: 100%;
 }
 .screen__item p {
     margin: 0;
+}
+.screen__item--result {
+    font-size: 30px;
+    font-weight: bold;
+    margin: 20px auto;
 }
 .screen:before,
 .screen:after {
@@ -422,11 +410,11 @@
 }
 
 .select:after {
-    content: "SELECT";  
+    content: "모드선택";  
 }
 
 .start:after {
-    content: "MODE";
+    content: "게임시작";
 }
 
 .speakers {     
@@ -462,7 +450,7 @@
     border-left: 1px solid black;
 }
 
-@media screen and (max-width:1200px) {
+@media screen and (max-height:900px) {
     .gameboy {
         height: 500px;
         width: 291px;
@@ -475,8 +463,37 @@
     .screen {
         height: 180px;
     }
+    .onoff {
+        width: 63px;
+        height: 15px;
+    }
+    .onoff .arrow-left:before {
+        border-top: 5px solid transparent;
+        border-bottom: 5px solid transparent;  
+        border-right: 5px solid #d2ddcd; 
+    }
+    .onoff .arrow-right:before {
+        border-top: 5px solid transparent;
+        border-bottom: 5px solid transparent;  
+        border-left: 5px solid #d2ddcd;  
+    }
+    .onoff-label {
+        font-size: 8pt;
+        font-weight: bold;
+    }
+    .trun {
+        /* font-size: 5px; */
+        font-weight: 100;
+    }
     .screen:after {
         margin-left: 190px;
+    }
+    .screen__item p {
+        font-size: 13px;
+    }
+    .screen__item--result {
+        font-size: 20px;
+        margin: 5px auto;
     }
     .logo-text:before {
         font-size: 12pt;
@@ -492,6 +509,9 @@
     }
     .selections {
         margin-top: 0;
+    }
+    .select {
+        display: none;
     }
     .inputs {
         margin-top: 10px;

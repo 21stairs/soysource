@@ -406,20 +406,32 @@ const JoMode = (props) => {
           <span className="onoff-label">on/off</span>
           <span className="arrow-right"></span>
         </div>
+        {isOrder ? 
+        <div className="turn">
+          {orderName}님의 차례입니다.
+        </div>
+        :
+        <div className="turn">
+          
+        </div>
+        }
+        
       </div>
       <div className="gameboy-component">
         <div className="screen">
-          {isOrder && <p>{orderName}님 의 차례 입니다!!!!</p>}
           {/* 대기중일땐 안보이고 게임시작하면 보이게끔 */}
           {isRecording ? 
-          <div className="screen__item"> {currentSentence}</div>
+          <div className="screen__item"> {currentSentence} 
+            <br/>
+            <p>{interimResult}</p>
+          </div>
           :
           <div className="screen__item">
+            <p>{speakedSentence}</p>
+            <br/>
             <p>정확도 : {accuracy}%</p>
-            <p>{time/10}초</p>
-            <p>{isFail}</p>
-            <p>{interimResult}</p>
-            {/* {speakedSentence} */}
+            <p>소요시간 : {time/10}초</p>
+            <div className="screen__item--result">{isFail} !!</div>
           </div>
           }
         </div>
@@ -437,20 +449,25 @@ const JoMode = (props) => {
             </div>
             <div className="buttons">
             {isUser ?
-              <div className="button-start" onClick={startHandler} disabled={flipped}></div>
+              <div className="button-start" onClick={startHandler}></div>
               :
               <div className="button-start"></div>
               }
               {/* 내차례가 아니면 안눌러지게끔 */}
             {isUser ?
-              <div className="button-end" onClick={stopHandler} disabled={flipped}></div>
+              <div className="button-end" onClick={stopHandler}></div>
               :
               <div className="button-end"></div>
               }
             </div>
             <div className="selections">
               <div className="select"></div>
-              {host && <div className="start" onClick={startGame}></div>}
+              {host ?
+                <div className="start" onClick={startGame}></div>
+              :
+                <div className="start"></div>
+              
+              }
             </div>
           </div>
           <div className="speakers">
