@@ -201,9 +201,9 @@ export const Participant = (props) => {
         {/* <img className="ready_2" src={!!res ? Ready : Not_ready} /> */}
         {/* </div> */}
         <div className="name">
+          {currentUser ? "(You) " : ""}
           {currentParticipant.name}
 
-          {currentUser ? "(You)" : ""}
         </div>
       </Card>
     </div>

@@ -102,7 +102,9 @@ body1{
   margin-top: -0.3rem;
   font-size: 17px;
   overflow: hidden;
-  
+  width: 50%;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .points{

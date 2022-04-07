@@ -52,12 +52,16 @@
     margin: 0 3px;
 }
 .turn {
-    width: 60%;
+    width: 50%;
     margin-right: 15px;
-    font-weight: 500;
+    font-weight: 900;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    margin: 25px 15px auto;
+    font-family: 'KyoboHandwriting2020A';
+    font-size: 30px;
+    animation: blink-effect 1s step-end infinite;
 }
 .screen {
     background-color: #585769;
@@ -80,11 +84,12 @@
 }
 .screen__item p {
     margin: 0;
+    font-family: 'DungGeunMo';
 }
 .screen__item--result {
     font-size: 30px;
-    font-weight: bold;
     margin: 20px auto;
+    font-family: 'LAB디지털';
 }
 .screen:before,
 .screen:after {
@@ -368,6 +373,7 @@
 }
 
 .start,
+.start_allready,
 .select { 
     z-index: 1;
     position: relative;
@@ -382,11 +388,13 @@
 }
 
 .start:active,
+.start_allready:active,
 .select:active {
     background-color: #3d404c;
 }
 
 .select:before,
+.start_allready:before
 .start:before {
     z-index: 0;
     position: absolute;
@@ -401,6 +409,7 @@
 }
 
 .select:after,
+.start_allready:after,
 .start:after {
     position: relative;
     top: 16px;
@@ -416,6 +425,10 @@
 .start:after {
     content: "게임시작";
 }
+.start_allready:after {
+    content: "게임시작";
+    animation: blink-effect 1s step-end infinite;
+}
 
 .speakers {     
     display: flex;  
@@ -424,6 +437,38 @@
     margin-right: 10px;
     transform: rotate(-30deg);  
 }
+
+.nametag {
+    background-image: url('./1649315240800.jpg');
+    background-size: contain;
+    background-repeat: no-repeat;
+    margin-right: 20px;
+    transform: rotate(30deg);  
+    width: 300px;
+    height: 80px;
+    position: absolute;
+    
+}
+
+.whosturn {
+    margin: 50px 150px 50px 0;
+    transform: rotate(30deg);  
+    width: 100px;
+    height: 40px;
+    position: absolute;
+    font-family: 'KyoboHandwriting2020A';
+    font-weight: bold;
+    display: flex;
+}
+.arrow {
+    background-image: url('./arrow.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    width: 30px;
+    height: 40px;
+    display: inline;
+}
+
 
 .speakers .grill {
     width: 10px;
@@ -448,6 +493,13 @@
     width: 1px;
     height: 50px;
     border-left: 1px solid black;
+}
+
+.round {
+    position: fixed;
+    margin: auto 150px auto;
+    color: #d2ddcd;
+    font-weight: bold;
 }
 
 @media screen and (max-height:900px) {
@@ -484,6 +536,7 @@
     .trun {
         /* font-size: 5px; */
         font-weight: 100;
+        text-align: right;
     }
     .screen:after {
         margin-left: 190px;
@@ -521,3 +574,30 @@
         margin-right: 0px;
     }
 }
+
+@font-face {
+    font-family: 'LAB디지털';
+    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_20-07@1.0/LAB디지털.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'DungGeunMo';
+    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_six@1.2/DungGeunMo.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'KyoboHandwriting2020A';
+    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2112@1.0/KyoboHandwriting2020A.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@keyframes blink-effect {
+    50% {
+      opacity: 0;
+    }
+  }
