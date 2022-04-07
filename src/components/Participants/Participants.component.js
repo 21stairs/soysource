@@ -7,7 +7,7 @@ import { db } from '../../server/firebase';
 const Participants = (props) => {
   const videoRef = useRef(null);
   let participantKey = Object.keys(props.participants);
-  console.log(db.database().ref())
+ 
   let Ready_isCheck = "";
   // let Ready_isCheck = Object.keys(props.participantKey);
   useEffect(() => {
@@ -57,8 +57,7 @@ const Participants = (props) => {
           );
           if (videElement) videElement.srcObject = remoteStream;
         };
-        console.log(participantKey);
-    }
+       
 
     return (
       <Participant
