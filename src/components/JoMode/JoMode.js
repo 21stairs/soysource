@@ -502,10 +502,9 @@ const JoMode = (props) => {
             // 남의 차례
             <div className="screen__item">
               {(speakedSentence === -1) ?
-                <p></p>
+                <p>{currentSentence}</p>
                 :
                 <div>
-                  <p>{currentSentence}</p>
                   <p>{speakedSentence}</p>
                   <br/>
                   <p>정확도 : {accuracy}%</p>
