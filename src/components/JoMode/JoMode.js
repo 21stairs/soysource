@@ -468,7 +468,6 @@ const JoMode = (props) => {
       {isModalOpen && (
         <ResModal open={isModalOpen} close={closeModal} ref={res} />
       )}
-      <p id="gameState">gameState : {gameState}</p>
       {/* 게임중, 대기중 */}
       <div className="top">
         <div className="onoff">
@@ -491,13 +490,16 @@ const JoMode = (props) => {
         <div className="screen">
           {/* 대기중일땐 안보이고 게임시작하면 보이게끔 */}
           {isRecording ? 
+          // 내 차례
           <div className="screen__item"> {currentSentence} 
             <br/>
             <br/>
             <p>{interimResult}</p>
           </div>
           :
+          // 남의 차례
           <div className="screen__item">
+            <p>{currentSentence}</p>
             <p>{speakedSentence}</p>
             <br/>
             <p>정확도 : {accuracy}%</p>
