@@ -324,6 +324,9 @@ const JoMode = (props) => {
       setHost(false);
       setIsShow(true);
       makeOrder();
+      await roomRef.current.update({
+        ranking: "",
+      });
       roomRef.current
         .child("state")
         .get()
