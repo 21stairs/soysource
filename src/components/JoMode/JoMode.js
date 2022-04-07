@@ -505,6 +505,7 @@ const JoMode = (props) => {
                 <p></p>
                 :
                 <div>
+                  <p>{currentSentence}</p>
                   <p>{speakedSentence}</p>
                   <br/>
                   <p>정확도 : {accuracy}%</p>
