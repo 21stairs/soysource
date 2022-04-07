@@ -1,17 +1,16 @@
 .wrapper{
     display: flex;
     flex-direction: column;
+    background-color: #fff;
 }
 
 .main-scream-total{
     display: flex;
     height: calc(90vh - 70px);
-    
 }
 
 .main-screen-left{
     width: calc(100% - 430px);
-    background-color:tan;
 }
 .main-screen-right {
     width: 430px;

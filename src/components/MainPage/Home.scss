@@ -14,7 +14,7 @@ body {
   display: inline-flex;
   width: 100%;
   flex-wrap: nowrap;
-  justify-content: space-between;
+  justify-content: space-around;
   background: #F0F8FF;
   margin: 50px 0;
   
@@ -32,6 +32,7 @@ body {
 
 .section {
   display: flex;
+  width: 330px;
   flex-flow: column wrap;
   align-items: flex-start;
   .section--btn {
@@ -62,6 +63,7 @@ body {
   p {
     color: gray;
     margin: 0;
+    white-space: pre-line;
   }
 }
 article {

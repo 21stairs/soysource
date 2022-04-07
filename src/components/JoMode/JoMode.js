@@ -200,7 +200,7 @@ const JoMode = (props) => {
     console.log("레디 체크 함수 실행")
     roomRef.current.child("participants").get().then((snapshot) => { 
       const data = snapshot.val()
-      console.log(Object.entries(data))
+      // console.log(Object.entries(data))
       for (let index = 0; index < Object.entries(data).length; index++) {
         const element = Object.entries(data)[index];
         console.log("유저 : ",element[0],"상태 : ",element[1].isReady) 
@@ -455,6 +455,7 @@ const JoMode = (props) => {
           {/* 대기중일땐 안보이고 게임시작하면 보이게끔 */}
           {isRecording ? 
           <div className="screen__item"> {currentSentence} 
+            <br/>
             <br/>
             <p>{interimResult}</p>
           </div>
