@@ -58,7 +58,6 @@ const JoMode = (props) => {
   useEffect(() => {
     addListeners();
   }, [Problem, accuracy, isFail]);
-  
 
   /**
    * [시작 가능한가?]
@@ -67,7 +66,7 @@ const JoMode = (props) => {
    * 2-2. 각 유저들의 모든 isReady값이 하나라도 true라면 return false
    */
   async function canIStartGame() {
-    var _result = true
+    var _result = true;
     console.log("canIStartGame : ", roomRef.current);
     for (const element of Object.keys(props.participants)) {
       console.log("user : ", element);
@@ -79,25 +78,25 @@ const JoMode = (props) => {
         .then((_iR) => {
           if (!_iR.exists()) {
             console.log("ready가 없는 놈이 있어서 시작 못함");
-            _result = false
+            _result = false;
           } else {
             if (_iR.val() === false) {
               console.log("ready가 false인 놈이 있어서 시작 못함");
-              _result = false
+              _result = false;
             }
           }
         });
-      if(_result === false){
-        return false
+      if (_result === false) {
+        return false;
       }
     }
     console.log("모든 참가자의 ready가 true라서 시작 가능");
     return true;
   }
 
-  function askMaxRound(){
-    var _v = prompt("최대 라운드 설정","3")
-    return parseInt(_v)
+  function askMaxRound() {
+    var _v = prompt("최대 라운드 설정", "3");
+    return parseInt(_v);
   }
 
   /**
@@ -248,12 +247,6 @@ const JoMode = (props) => {
   const getOrder = async () => {
     console.log("순서 받기");
     const userId = Object.keys(props.currentUser)[0];
-    await roomRef.current
-      .child("round")
-      .get()
-      .then((snap) => {
-        round.current = snap.val();
-      });
     console.log("inOrder 체크1", inOrder.current);
     await roomRef.current
       .child("turn")
@@ -261,9 +254,16 @@ const JoMode = (props) => {
       .then((snap) => {
         inOrder.current = snap.val();
       });
+    await roomRef.current
+      .child("round")
+      .get()
+      .then((snap) => {
+        round.current = snap.val();
+      });
+
     console.log("inOrder 체크2", inOrder.current);
     //종료 조건을 maxRound로 변경
-    var _mR
+    var _mR;
     await roomRef.current
       .child("maxRound")
       .get()
@@ -316,8 +316,8 @@ const JoMode = (props) => {
     }
   };
 
-  const startGame = async() => {
-    var v = await canIStartGame()
+  const startGame = async () => {
+    var v = await canIStartGame();
     if (v) {
       console.log("YES");
       isbegin = true;
@@ -361,8 +361,8 @@ const JoMode = (props) => {
     roomRef.current.child("time").set(Count);
     if (interimResult != null)
       roomRef.current.child("speakedSentence").set(interimResult);
-    SetRate(Problem);
     SetIncrease();
+    SetRate(Problem);
     setIsRecording(false);
   };
 
