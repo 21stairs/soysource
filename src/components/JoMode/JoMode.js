@@ -15,16 +15,6 @@ import {
   updateParticipant,
 } from "../../store/actioncreator";
 
-/*
-1. 문장이 주어진다.
-2. 버튼을 눌러 문장을 녹음 한다. wav파일로만
-3. 녹음본을 텍스트로 변환해서 체크
-4. 정답률을 넘었는지 체크, 타이머는 시작버튼을 누르고부터 돌고, 종료 버튼 클릭시 타이머도 종료. (프론트에서 처리해주는게 좋을듯, 시각적으로 보이면 좋을듯)
-5. 걸린 시간 체크
-6. 정답률을 넘긴것중 시간 순으로 순위를 매김.
-7. 3, 5, 7 라운드 수 지정해서 누적 시간을 매겨 순위 지정.
-*/
-
 let isbegin = false;
 
 const JoMode = (props) => {
@@ -47,9 +37,10 @@ const JoMode = (props) => {
   const [orderName, setOrderName] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const res = useRef();
-  const [isRecording, setIsRecording] = useState(null)
+  const [isRecording, setIsRecording] = useState(null);
   const [readyCnt, setReadyCnt] = useState(0);
   const [allReady, setAllReady] = useState("");
+  const round = useRef(0);
 
   useEffect(async () => {
     initGame();
@@ -67,17 +58,52 @@ const JoMode = (props) => {
   useEffect(() => {
     addListeners();
   }, [Problem, accuracy, isFail]);
-  useEffect(() => {
-    const res = allReadyCheck();
-    console.log(res);
-  },[])
+
+  /**
+   * [시작 가능한가?]
+   * 1. realtimeDB 속, participants 안의 요소들 전부를 탐색.
+   * 2-1. 각 유저들의 모든 isReady값이 true라면 return true
+   * 2-2. 각 유저들의 모든 isReady값이 하나라도 true라면 return false
+   */
+  async function canIStartGame() {
+    var _result = true;
+    console.log("canIStartGame : ", roomRef.current);
+    for (const element of Object.keys(props.participants)) {
+      console.log("user : ", element);
+      await roomRef.current
+        .child("participants")
+        .child(element)
+        .child("isReady")
+        .get()
+        .then((_iR) => {
+          if (!_iR.exists()) {
+            console.log("ready가 없는 놈이 있어서 시작 못함");
+            _result = false;
+          } else {
+            if (_iR.val() === false) {
+              console.log("ready가 false인 놈이 있어서 시작 못함");
+              _result = false;
+            }
+          }
+        });
+      if (_result === false) {
+        return false;
+      }
+    }
+    console.log("모든 참가자의 ready가 true라서 시작 가능");
+    return true;
+  }
+
+  function askMaxRound() {
+    var _v = prompt("최대 라운드 설정", "3");
+    return parseInt(_v);
+  }
+
   /**
    * [게임 초기화]
    * 1. Mode 를 '조준영모드' 으로 설정
    * 2. 참가자라면, 참가한 방의 위치를 설정
    */
-
-  
   function initGame() {
     roomRef.current = rId ? db.database().ref(rId) : firepadRef;
     roomRef.current
@@ -88,7 +114,6 @@ const JoMode = (props) => {
         if (!snapshot.exists()) {
           console.log("방 DB 초기화!");
           roomRef.current.child("state").set("wait");
-          roomRef.current.child("allReady").set("false");
           roomRef.current.child("gameMode").set("jo");
           roomRef.current.child("currentSentence").set("NO_CURRENT_SENTENCE");
           roomRef.current.child("speakedSentence").set("NO_SPEAK_SENTENCE");
@@ -97,6 +122,8 @@ const JoMode = (props) => {
           roomRef.current.child("isFail").set("NO_IS_FAIL");
           roomRef.current.child("turn").set(0);
           roomRef.current.child("ranking").set("");
+          roomRef.current.child("round").set(0);
+          roomRef.current.child("maxRound").set(askMaxRound());
           roomRef.current
             .child("participants")
             .child(Object.keys(props.currentUser)[0])
@@ -175,6 +202,11 @@ const JoMode = (props) => {
       scoreRef.get().then((snapshot) => {
         if (!snapshot.exists()) {
           scoreRef.set(100);
+        } else {
+          console.log("유야호");
+          var _originalScore = snapshot.val();
+          var _newScore = _originalScore + 100;
+          scoreRef.set(_newScore);
         }
       });
     } else {
@@ -190,28 +222,6 @@ const JoMode = (props) => {
         }
       });
     }
-  }
-  function allReadyCheck() {
-
-    //ready카운트 초기화
-    setReadyCnt(0);
-    setAllReady("false")
-    console.log(readyCnt)
-    console.log("레디 체크 함수 실행")
-    roomRef.current.child("participants").get().then((snapshot) => { 
-      const data = snapshot.val()
-      console.log(Object.entries(data))
-      for (let index = 0; index < Object.entries(data).length; index++) {
-        const element = Object.entries(data)[index];
-        console.log("유저 : ",element[0],"상태 : ",element[1].isReady) 
-        
-      }
-    })
-    roomRef.current.child("allReady").get().then((snapshot) => { 
-      const data = snapshot.val()
-      console.log(data)
-    })
-    return allReady
   }
 
   const isStart = async () => {
@@ -237,19 +247,40 @@ const JoMode = (props) => {
   const getOrder = async () => {
     console.log("순서 받기");
     const userId = Object.keys(props.currentUser)[0];
+    console.log("inOrder 체크1", inOrder.current);
     await roomRef.current
       .child("turn")
       .get()
       .then((snap) => {
         inOrder.current = snap.val();
       });
-    if (Object.keys(props.participants).length === inOrder.current) {
+    await roomRef.current
+      .child("round")
+      .get()
+      .then((snap) => {
+        round.current = snap.val();
+      });
+
+    console.log("inOrder 체크2", inOrder.current);
+    //종료 조건을 maxRound로 변경
+    var _mR;
+    await roomRef.current
+      .child("maxRound")
+      .get()
+      .then((snap) => {
+        _mR = snap.val();
+      });
+    if (_mR === round.current) {
       await roomRef.current.update({
         state: "wait",
       });
       await roomRef.current.update({
         turn: 0,
       });
+      await roomRef.current.update({
+        round: 0,
+      });
+      round.current = 0;
       //여기서 전부 초기화 갈기자
       setIsOrder(false);
       setIsShow(false);
@@ -285,23 +316,29 @@ const JoMode = (props) => {
     }
   };
 
-
-  const startGame = () => {
-    isbegin = true;
-    setHost(false);
-    setIsShow(true);
-    makeOrder();
-    roomRef.current
-      .child("state")
-      .get()
-      .then((snapshot) => {
-        if ("wait" === snapshot.val()) {
-          roomRef.current.child("state").set("inGame");
-        }
-      })
-      .catch((error) => {
-        console.log("에러 : ", error);
-      });
+  const startGame = async () => {
+    var v = await canIStartGame();
+    if (v) {
+      console.log("YES");
+      isbegin = true;
+      setHost(false);
+      setIsShow(true);
+      makeOrder();
+      roomRef.current
+        .child("state")
+        .get()
+        .then((snapshot) => {
+          if ("wait" === snapshot.val()) {
+            roomRef.current.child("state").set("inGame");
+          }
+        })
+        .catch((error) => {
+          console.log("에러 : ", error);
+        });
+    } else {
+      console.log("NO");
+      alert("모두가 준비되지 않았어요");
+    }
   };
 
   const startHandler = () => {
@@ -312,7 +349,7 @@ const JoMode = (props) => {
     clearInterval(countRef.current);
     countRef.current = setInterval(() => setCount((c) => c + 1), 100); // 주구장창
     SetProblem();
-    setIsRecording(true)
+    setIsRecording(true);
   };
 
   const stopHandler = async () => {
@@ -324,15 +361,22 @@ const JoMode = (props) => {
     roomRef.current.child("time").set(Count);
     if (interimResult != null)
       roomRef.current.child("speakedSentence").set(interimResult);
-    SetRate(Problem);
     SetIncrease();
-    setIsRecording(false)
+    SetRate(Problem);
+    setIsRecording(false);
   };
 
   const SetIncrease = async () => {
+    const moduler = Object.keys(props.participants).length;
+    if (inOrder.current + 1 === moduler) {
+      await roomRef.current.update({
+        round: round.current + 1,
+      });
+    }
     await roomRef.current.update({
-      turn: inOrder.current + 1,
+      turn: (inOrder.current + 1) % moduler,
     });
+    inOrder.current = (inOrder.current + 1) % moduler;
   };
 
   const openModal = async () => {
@@ -398,17 +442,10 @@ const JoMode = (props) => {
     if (avg > 70) {
       roomRef.current.child("isFail").set("성공");
       setIsFail("성공");
-
       sendScoreToDB(Count);
-      // [승관]
-      // const userId = Object.keys(props.currentUser)[0];
-      // await roomRef.current.child("ranking").set();
-      // await roomRef.current.child("accuracy").set(avg);
-      // await roomRef.current.child("user").set(props.participants[userId].name);
     } else {
       roomRef.current.child("isFail").set("실패");
       setIsFail("실패");
-
       sendScoreToDB("실패");
     }
   };
@@ -431,7 +468,7 @@ const JoMode = (props) => {
       {isModalOpen && (
         <ResModal open={isModalOpen} close={closeModal} ref={res} />
       )}
-      {/* <p id="gameState">gameState : {gameState}</p> */}
+      <p id="gameState">gameState : {gameState}</p>
       {/* 게임중, 대기중 */}
       <div className="top">
         <div className="onoff">
@@ -467,6 +504,7 @@ const JoMode = (props) => {
             <div className="screen__item--result">{isFail} !!</div>
           </div>
           }
+          {isOrder && <p>{round.current + 1} 라운드</p>}
         </div>
         <div className="controls">
           <div className="logo">
@@ -481,26 +519,25 @@ const JoMode = (props) => {
               <div className="down-key"></div>
             </div>
             <div className="buttons">
-            {isUser ?
-              <div className="button-start" onClick={startHandler}></div>
-              :
-              <div className="button-start"></div>
-              }
+              {isUser ? (
+                <div className="button-start" onClick={startHandler}></div>
+              ) : (
+                <div className="button-start"></div>
+              )}
               {/* 내차례가 아니면 안눌러지게끔 */}
-            {isUser ?
-              <div className="button-end" onClick={stopHandler}></div>
-              :
-              <div className="button-end"></div>
-              }
+              {isUser ? (
+                <div className="button-end" onClick={stopHandler}></div>
+              ) : (
+                <div className="button-end"></div>
+              )}
             </div>
             <div className="selections">
               <div className="select"></div>
-              {host ?
-                <div className="start" onClick={startGame}></div>
-              :
+              {host ? (
+                !isOrder && <div className="start" onClick={startGame}></div>
+              ) : (
                 <div className="start"></div>
-              
-              }
+              )}
             </div>
           </div>
           <div className="speakers">
@@ -510,7 +547,7 @@ const JoMode = (props) => {
             <div className="grill"></div>
             <div className="grill"></div>
             <div className="grill"></div>
-          </div>          
+          </div>
         </div>
       </div>
     </div>
@@ -537,8 +574,3 @@ const mapDispatchToProps = (dispatch) => {
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(JoMode);
-
-/**
- * 지금 해야 되는 것.
- * 1. 방장이 '게임시작' 을 눌럿
- */

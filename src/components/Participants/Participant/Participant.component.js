@@ -23,6 +23,7 @@ export const Participant = (props) => {
   const urlparams = new URLSearchParams(window.location.search);
   const roomId = urlparams.get("id");
   const [isReadyCheck, setIsReadyCheck] = useState("");
+  const [isstate, setIsstate] = useState("");
   const roomRef = db.database().ref(roomId)
   const curUser = roomRef.child("participants")
   
@@ -33,9 +34,11 @@ export const Participant = (props) => {
   useEffect(() => {
 
     // console.log(isReadyCheck)
+
+    ingame()
     
     //여기서 db에 있는 isReady 값을 업데이트 받아야 함
-    curUser.on('value', (snapshot) => {
+    curUser.on('value',(snapshot) => {
       const data = snapshot.val();
       // console.log("확인 필요", Object.keys(data))
       // console.log(data)
@@ -51,7 +54,7 @@ export const Participant = (props) => {
           // } else {
             if (Object.entries(data)[index][1].userName == currentParticipant?.name) {
               // console.log(!Object.entries(data)[index][1].isReady)
-              setIsReadyCheck(!Object.entries(data)[index][1].isReady)
+              setIsReadyCheck(Object.entries(data)[index][1].isReady)
             }
           // }
         // }
@@ -61,7 +64,18 @@ export const Participant = (props) => {
     })
 
     // console.log(isReadyCheck)
-  },[]);
+  }, []);
+  
+  function ingame() {
+    roomRef.on('value', (snapshot) => {
+      const data = snapshot.val()
+      console.log(data)
+      if (data.state == "inGame") {
+        return setIsstate(false);
+      }
+      return setIsstate(true);
+    })
+  }
 
   //Ready 클릭 이벤트
   const On_ready = () => {
@@ -89,7 +103,7 @@ export const Participant = (props) => {
               // console.log("두 값이 일치합니다")
               // console.log("변한 값의 키 값 : ", element)
               curUser.child(element).update({
-                isReady: true,
+                isReady: false,
               });
             } else {
               // console.log("두 값이 일치하지 않습니다")
@@ -111,11 +125,11 @@ export const Participant = (props) => {
             // console.log()
             // console.log(currentParticipant.name)
 
-            if (data.userName == currentParticipant.name) {
+            if (data.userName == currentParticipant?.name) {
               // console.log("두 값이 일치합니다()")
               // console.log("변한 값의 키 값 : ", element)
               curUser.child(element).update({
-                isReady: false,
+                isReady: true,
               });
             } else {
               // console.log("두 값이 일치하지 않습니다")
@@ -180,7 +194,10 @@ export const Participant = (props) => {
           </div>
         )}
         {/* <div onClick={On_ready} > */}
-        <img className="ready" onClick={On_ready} src={isReadyCheck ? Ready : Not_ready} />
+        {/* {isstate ? (<img className="ready" onClick={On_ready} src={isReadyCheck ? Ready : Not_ready} />) : } */}
+        {isstate ? (
+            <img className="ready" onClick={On_ready} src={isReadyCheck ? Ready : Not_ready} />
+          ) :(<div></div>)}
         {/* <img className="ready_2" src={!!res ? Ready : Not_ready} /> */}
         {/* </div> */}
         <div className="name">
