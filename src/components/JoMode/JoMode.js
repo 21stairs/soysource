@@ -1,4 +1,5 @@
 import React, { useRef, useState, useEffect } from "react";
+import { CopyToClipboard } from "react-copy-to-clipboard";
 import "./JoMode.css";
 import JoModeData from "./JoModeData";
 import "../btn.css";
@@ -19,6 +20,7 @@ let isbegin = false;
 
 const JoMode = (props) => {
   var roomRef = useRef(); // 참가자가 참가한 방의 위치
+  const url = window.document.location.href;
   const countRef = useRef(null);
   const [Count, setCount] = useState(0); //타이머 결과 값
   const [Problem, setProblem] = useState("시작"); //문제
@@ -469,94 +471,101 @@ const JoMode = (props) => {
     });
   if (error) return <p>Chrome에서 실행 부탁드립니다!!!!🤷 </p>;
   return (
-    <div className="gameboy">
-      {isModalOpen && (
-        <ResModal open={isModalOpen} close={closeModal} ref={res} />
-      )}
-      {/* 게임중, 대기중 */}
-      <div className="top">
-        <div className="onoff">
-          <span className="arrow-left"></span>
-          <span className="onoff-label">on/off</span>
-          <span className="arrow-right"></span>
-        </div>
-        {isOrder ? (
-          <div className="turn">{orderName}님의 차례입니다.</div>
-        ) : (
-          <div className="turn"></div>
-        )}
+    <div>
+      <div>
+        <CopyToClipboard text={url}>
+          <button>링크 복사</button>
+        </CopyToClipboard>
       </div>
-      <div className="gameboy-component">
-        <div className="screen">
-          {/* 대기중일땐 안보이고 게임시작하면 보이게끔 */}
-          {isRecording ? (
-            // 내 차례
-            <div className="screen__item">
-              {" "}
-              {currentSentence}
-              <br />
-              <br />
-              <p>{interimResult}</p>
-            </div>
+      <div className="gameboy">
+        {isModalOpen && (
+          <ResModal open={isModalOpen} close={closeModal} ref={res} />
+        )}
+        {/* 게임중, 대기중 */}
+        <div className="top">
+          <div className="onoff">
+            <span className="arrow-left"></span>
+            <span className="onoff-label">on/off</span>
+            <span className="arrow-right"></span>
+          </div>
+          {isOrder ? (
+            <div className="turn">{orderName}님의 차례입니다.</div>
           ) : (
-            // 남의 차례
-            <div className="screen__item">
-              {speakedSentence === -1 ? (
-                <p>{currentSentence}</p>
-              ) : (
-                <div>
-                  <p>{speakedSentence}</p>
-                  <br />
-                  <p>정확도 : {accuracy}%</p>
-                  <p>소요시간 : {time / 10}초</p>
-                  <div className="screen__item--result">{isFail} !!</div>
-                </div>
-              )}
-            </div>
+            <div className="turn"></div>
           )}
-          {isOrder && <p>{round.current + 1} 라운드</p>}
         </div>
-        <div className="controls">
-          <div className="logo">
-            <div className="logo-text"></div>
-            <div className="logo-gameboy"></div>
+        <div className="gameboy-component">
+          <div className="screen">
+            {/* 대기중일땐 안보이고 게임시작하면 보이게끔 */}
+            {isRecording ? (
+              // 내 차례
+              <div className="screen__item">
+                {" "}
+                {currentSentence}
+                <br />
+                <br />
+                <p>{interimResult}</p>
+              </div>
+            ) : (
+              // 남의 차례
+              <div className="screen__item">
+                {speakedSentence === -1 ? (
+                  <p>{currentSentence}</p>
+                ) : (
+                  <div>
+                    <p>{speakedSentence}</p>
+                    <br />
+                    <p>정확도 : {accuracy}%</p>
+                    <p>소요시간 : {time / 10}초</p>
+                    <div className="screen__item--result">{isFail} !!</div>
+                  </div>
+                )}
+              </div>
+            )}
+            {isOrder && <p>{round.current + 1} 라운드</p>}
           </div>
-          <div className="inputs">
-            <div className="dpad">
-              <div className="left-key"></div>
-              <div className="up-key"></div>
-              <div className="right-key"></div>
-              <div className="down-key"></div>
+          <div className="controls">
+            <div className="logo">
+              <div className="logo-text"></div>
+              <div className="logo-gameboy"></div>
             </div>
-            <div className="buttons">
-              {isUser ? (
-                <div className="button-start" onClick={startHandler}></div>
-              ) : (
-                <div className="button-start"></div>
-              )}
-              {/* 내차례가 아니면 안눌러지게끔 */}
-              {isUser ? (
-                <div className="button-end" onClick={stopHandler}></div>
-              ) : (
-                <div className="button-end"></div>
-              )}
+            <div className="inputs">
+              <div className="dpad">
+                <div className="left-key"></div>
+                <div className="up-key"></div>
+                <div className="right-key"></div>
+                <div className="down-key"></div>
+              </div>
+              <div className="buttons">
+                {isUser ? (
+                  <div className="button-start" onClick={startHandler}></div>
+                ) : (
+                  <div className="button-start"></div>
+                )}
+                {/* 내차례가 아니면 안눌러지게끔 */}
+                {isUser ? (
+                  <div className="button-end" onClick={stopHandler}></div>
+                ) : (
+                  <div className="button-end"></div>
+                )}
+              </div>
+              <div className="selections">
+                <div className="select"></div>
+                {host ? (
+                  !isOrder && <div className="start" onClick={startGame}></div>
+                ) : (
+                  <div className="start"></div>
+                )}
+              </div>
             </div>
-            <div className="selections">
-              <div className="select"></div>
-              {host ? (
-                !isOrder && <div className="start" onClick={startGame}></div>
-              ) : (
-                <div className="start"></div>
-              )}
+            <div className="speakers">
+              <div className="grill"></div>
+              <div className="grill"></div>
+              <div className="grill"></div>
+              <div className="grill"></div>
+              <div className="grill"></div>
+              <div className="grill"></div>
             </div>
-          </div>
-          <div className="speakers">
-            <div className="grill"></div>
-            <div className="grill"></div>
-            <div className="grill"></div>
-            <div className="grill"></div>
-            <div className="grill"></div>
-            <div className="grill"></div>
           </div>
         </div>
       </div>
