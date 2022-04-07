@@ -57,7 +57,7 @@ const Participants = (props) => {
           );
           if (videElement) videElement.srcObject = remoteStream;
         };
-       
+      }
 
     return (
       <Participant
