@@ -14,7 +14,7 @@ const MeetingFooter = (props) => {
     video: false,
   });
 
-  
+
 
   const micClick = () => {
     setStreamState((currentState) => {
@@ -62,6 +62,8 @@ const MeetingFooter = (props) => {
       </div>
       {/* <button className='ready-btn' >준비!!</button> */}
       <ReactTooltip />
+
+
     </div>
   );
 };

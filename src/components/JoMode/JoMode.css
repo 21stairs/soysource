@@ -26,7 +26,7 @@
     justify-content: center;
     align-items: center;
     border-radius: 24px;
-    color: #d2ddcd;
+    color: #463f3f;
     box-shadow: inset -1px 1px 10px 1px rgba(0, 0, 0, 0.1);
 }
 
@@ -502,6 +502,22 @@
     font-weight: bold;
 }
 
+.copyText {
+    color: red;
+    margin-left: 10px;
+  }
+  
+
+.gamepack {
+    background-image: url('./링크복사.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    width: 200px;
+    height: 200px;
+    margin-left: 25%;
+}
+  
+
 @media screen and (max-height:900px) {
     .gameboy {
         height: 500px;
@@ -529,7 +545,7 @@
         border-bottom: 5px solid transparent;  
         border-left: 5px solid #d2ddcd;  
     }
-    .onoff-label {
+    .onoff .onoff-label {
         font-size: 8pt;
         font-weight: bold;
     }

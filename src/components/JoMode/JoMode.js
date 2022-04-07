@@ -19,6 +19,7 @@ import {
 let isbegin = false;
 
 const JoMode = (props) => {
+
   var roomRef = useRef(); // 참가자가 참가한 방의 위치
   const url = window.document.location.href;
   const countRef = useRef(null);
@@ -42,7 +43,10 @@ const JoMode = (props) => {
   const [isRecording, setIsRecording] = useState(null);
   const [readyCnt, setReadyCnt] = useState(0);
   const [allReady, setAllReady] = useState("");
+  const [copied, setCopied] = useState(false);
   const round = useRef(0);
+
+
 
   useEffect(async () => {
     initGame();
@@ -472,11 +476,7 @@ const JoMode = (props) => {
   if (error) return <p>Chrome에서 실행 부탁드립니다!!!!🤷 </p>;
   return (
     <div>
-      <div>
-        <CopyToClipboard text={url}>
-          <button>링크 복사</button>
-        </CopyToClipboard>
-      </div>
+
       <div className="gameboy">
         {isModalOpen && (
           <ResModal open={isModalOpen} close={closeModal} ref={res} />
@@ -485,7 +485,11 @@ const JoMode = (props) => {
         <div className="top">
           <div className="onoff">
             <span className="arrow-left"></span>
-            <span className="onoff-label">on/off</span>
+            <div>
+              <CopyToClipboard text={url} onCopy={() => setCopied(true)} >
+                <span className='onoff-label'>링크 복사</span>
+              </CopyToClipboard>
+            </div >
             <span className="arrow-right"></span>
           </div>
 
@@ -575,9 +579,11 @@ const JoMode = (props) => {
           </div>
         </div>
       </div>
-    </div>
+    </div >
   );
 };
+
+
 
 // 넣은 정보가 props에 담김
 const mapStateToProps = (state) => {
