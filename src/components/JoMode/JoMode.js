@@ -213,11 +213,11 @@ const JoMode = (props) => {
       scoreRef.get().then((snapshot) => {
         if (!snapshot.exists()) {
           console.log("무야호");
-          scoreRef.set(_time);
+          scoreRef.set(_time/10);
         } else {
           console.log("유야호");
           var _originalScore = snapshot.val();
-          var _newScore = _originalScore + _time;
+          var _newScore = _originalScore + _time/10;
           scoreRef.set(_newScore);
         }
       });
