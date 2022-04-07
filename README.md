@@ -1,106 +1,166 @@
-# 구미 특화 2반 3팀 간장공장공장장 (작성중)
-<p align="center"> 
-  <h3 align="center">간장공장공장장</h3>
+# 간장공장공장장 👋
 
-  <p align="center">
-    <br />  
-     어색한 분위기를 아이스브레이킹하기 위한 돕는 서비스
-    <br />
-  </p>
-</p>
+<img src="https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB" alt="React"/><img src="https://img.shields.io/badge/firebase-FFCA28?style=for-the-badge&logo=firebase&logoColor=FFF" alt="Firebase" style="zoom:100%;" /><img src="https://img.shields.io/badge/WEBRTC-57BCAD?style=for-the-badge&logo=WEBRTC&logoColor=FFF" alt="WebRTC" />
 
-<!-- 주 기술 스택 -->
-## 주 기술 스택
+[![GitLab](https://img.shields.io/badge/gitlab-%23181717.svg?style=for-the-badge&logo=gitlab&logoColor=white)](https://img.shields.io/badge/gitlab-%23181717.svg?style=for-the-badge&logo=gitlab&logoColor=white)[![Jira](https://img.shields.io/badge/jira-%230A0FFF.svg?style=for-the-badge&logo=jira&logoColor=white)](https://img.shields.io/badge/jira-%230A0FFF.svg?style=for-the-badge&logo=jira&logoColor=white)[![Notion](https://img.shields.io/badge/Notion-%23000000.svg?style=for-the-badge&logo=notion&logoColor=white)](https://img.shields.io/badge/Notion-%23000000.svg?style=for-the-badge&logo=notion&logoColor=white)[![Discord](https://img.shields.io/badge/Discord-%237289DA.svg?style=for-the-badge&logo=discord&logoColor=white)](https://img.shields.io/badge/Discord-%237289DA.svg?style=for-the-badge&logo=discord&logoColor=white)[![img](https://img.shields.io/badge/Mattermost-blue)](https://img.shields.io/badge/Mattermost-blue)[![img](https://img.shields.io/badge/Webex-darkblue)](https://img.shields.io/badge/Webex-darkblue)
 
-* [React]
-* [Firebase]
-* [Kospeech]
+-----------
 
-<!-- 주요기능 -->
-
-## 주요기능
-
-### 1. 닉네임 설정
-
-  * 대기실 참여하기 전 유저 닉네임 설정과 카메라, 마이크 설정을 할 수 있다.
-
-### 2. 대기실 생성
-
-  #### └ 게임모드 설정
-
-  1. 조준영 모드
-
-    * 문장이 주어진다.
-
-    * 버튼을 눌러 문장을 녹음한다.
-
-    * 녹음본을 텍스트로 변환해서 체크
-
-    * 정답률을 넘었는지 체크, 타이머는 시작버튼을 누르고부터 돌고, 종료 버튼 클릭 시 타이머도 종료.
-
-    * 걸린 시간 체크
-
-    * 정답률을 넘긴 것 중에서 시간순으로 순위 지정
-
-    * 미리 정한 라운드(3,5,7) 수 만큼 누적 시간을 매겨 순위 지정
-
-  2. 윤승일 모드
-
-    * 사용하지 않았던 문장 중에서 랜덤하게 문장이 주어진다.
-
-    * 버튼을 눌러 문장을 녹음한다.
-
-    * 녹음본을 텍스트로 변환
-
-    * 정답률을 넘었는 지와 문장 별로 지정된 제한시간 내에 마쳤는지 확인
-
-    * 위의 조건을 만족하면 해당 플레이어는 생존. 만족하지 못한 경우 사망
-
-    * 생존자 인원수 체크 
-
-      몰살엔딩, “정말 못하시네요” 메시지 출력 후 게임 종료
-
-      1명 : 승리엔딩, 승자얼굴 클로즈업 후 게임종료
-
-      2명이상 : 다음라운드 진행, 모든 문장의 제한시간을 n초 줄인다 (단, 최소시간 밑으로는 불가능)
-
-  #### └ 최대 인원수 설정
-
-  #### └ 대기실 제목 설정
-
-  ### 3. 대기실 참가
-
-    * 대기실 목록에서 입장하기
-
-    * 대기실 코드를 통해 입장하기
-
-      * 대기실을 생성하게 되면 자동으로 만들어지는 코드 값을 친구에게 보내 입장
-
-  ### 4. 대기실 나가기
-
-    * 방장이 나갈 경우
-
-      1.	방장 외의 사람이 있음 : 랜덤하게 다른 유저에게 방장 권한 이임.
-
-      2.	방장 외의 사람이 없음 : 방 제거
+<img src=".\public\작은간장공장공장장.png" alt="간장공장공장장.png" style="zoom:100%;" />
 
 
-  ### 5. 게임 준비 및 시작
 
-    * 방장 : 강퇴 및 모두가 준비완료 시 게임시작 활성화
 
-    * 참가자 : 준비와 준비해제 가능
 
- 
-## 테스트 화면 (WebRTC)
+- ### 🤔 프로젝트 배경 및 의도
 
-* Desktop View
-![](screenshots/Desktop%20View.jpg)
+  - 🧉 [간장공장공장장 Homepage](https://j6d203.p.ssafy.io)
+  - **<span style="color:red">대학 친구 없어요...</span>**
+  - 코로나의 확산으로 많은 교육 및 모임이 비대면으로 실시되고 있습니다. 많은 사람들이 비대면 환경에서 함께 수업을 듣는 친구들과 친해지기 **어려움**을 느끼고 있습니다. 코로나 19의 장기화로 생긴 우울감, 무기력증이라는 의미의 [`코로나 블루`](https://terms.naver.com/entry.naver?docId=5931743&cid=43667&categoryId=43667)라는 단어 또한 생길 정도로 사회적으로 대두되고 있고, 실제 코로나 이후 우울증 관련 검색어가 유의하게 증가되었다는 연구논문도 발표됐습니다.
+  - 저희 팀 또한 SSAFY에서 비대면 수업을 듣고 있으며 친구들과 친해지지 못한 아쉬움을 가지고 있었습니다.
+  - 이에 웹 화상 게임을 통해 자연스럽게 다가가고 적응할 수 있도록 돕는 프로그램을 제작하고자 했습니다.
+  
 
-* Desktop Sharing View
-![](screenshots/Screenshare.jpg)
 
-* Mobile View
-<br />
 
-![](screenshots/Mobile%20View.jpg)
+- ### 📅 프로젝트 기간
+
+  - 2022.02.28 ~ 2022.04.08
+
+
+
+
+- ### 🚅 핵심 기능 💨
+
+  - Web RTC
+    - 비대면 환경에서 같이 있는듯한 화상 기반의 플랫폼을 구현합니다.
+  - Speech To Text
+    - 마이크로 입력된 음성을 텍스트로 바꿔 잰말놀이의 인식률을 체크합니다.
+
+
+
+
+- ### 🛠 기술 스택
+
+  ###### [ Frontend, WebRTC ]
+
+  - React
+  - Redux
+  - Sass
+  - Firebase
+
+  ###### [ devOps ]
+
+  - Jenkins
+  - AWS EC2
+  - Nginx
+
+  ###### [ AI (음성인식🔊) ]
+
+  - ~~kospeech~~  
+    - End to End 한국어 Speech To Text 오픈소스
+    - 1000시간의 음성데이터로 19epoch(약 200시간) 학습 후 CER 0.22로 목표했던 인식률이 나오지 않아 `파기`
+    - [학습 과정](https://2106.notion.site/kospeech-473ecc9d75554c31af6190208c8842e4)
+  - react-hook-speech-to-text
+  
+  ###### [ team cooperation ]
+  
+  - GitLab
+  - Jira
+  - Notion
+
+
+
+
+
+- ### 🗂 시스템 아키텍쳐
+
+  ![아키텍처](.\public\아키텍처.png)
+
+
+
+- ### ⭐ 주요 기능
+
+  - #### 1. 방 생성하기
+
+    - 닉네임, 게임 라운드 설정하기
+    
+    ![roomcreate](.\public\roomcreate.gif)
+  	
+  	- 링크 복사
+  	
+    ![linkpaste](.\public\linkpaste.gif)
+  
+  
+  - #### 2. 게임 모드 선택
+  
+    - **조준영 모드**  (현재 디폴트)
+  
+      ```
+      * 잰말놀이 걸린 시간 체크
+      
+      * 정답시 +소요 시간(초), 오답시 +100초
+      
+      * 모든 라운드가 진행된 후 누적 시간을 합하여 순위 지정
+      ```
+  
+    - **윤승일 모드** (개발 전)
+  
+      ```
+      * 문장 별로 지정된 제한시간 내에 발음해야하며 인식률 70% 이상인지 체크
+      
+      * 위의 조건을 만족하면 해당 플레이어는 생존, 그렇지 않은 경우 탈락
+      
+      * 인원수 체크
+      
+      	1명 이하 : 게임종료
+      
+      	2명이상 : 다음라운드 진행, 모든 문장의 제한시간을 n초 줄인다 
+      		(단, 최소시간 밑으로는 불가능)
+      ```
+  
+  - #### 3. 게임 시작
+  
+    - 모든 참가자 준비 완료, 호스트의 게임 시작
+  
+      모두 레디하고 호스트가 시작하는 GIF
+  
+  - #### 4. 게임 진행
+  
+    - 플레이어 차례
+  
+      차례 바뀌는 GIF
+  
+    - 시작 버튼을 누르면 타이머와 음성인식이 시작된다. 문장이 끝난 후 종료 버튼을 누르면 소요 시간과 음성인식 인식률을 반환한다.
+  
+      실시간 음성 인식되는 GIF
+  
+  - #### 5. 결과 화면
+  
+    - 모든 라운드가 진행된 후 소요시간을 합하여 랭킹을 반환한다
+    
+      결과 페이지 이미지
+  
+  
+  
+- ### 👨‍👩‍👦‍👦 팀원 소개
+  ```
+  👦 최성석 : 팀장 / WebRTC
+  
+  😮 윤승일 : Frontend
+  
+  😎 이승관 : Frontend
+  
+  🧔 임기태 : Frontend
+  
+  🧑 정경훈 : WebRTC
+  
+  🤔 조준영 : AI
+  ```
+
+
+
+- ### ☎ 문의
+
+  tjdtjr234@gmail.com
+
