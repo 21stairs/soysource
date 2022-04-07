@@ -501,7 +501,6 @@ const JoMode = (props) => {
             :
             // 남의 차례
             <div className="screen__item">
-              <p>{currentSentence}</p>
               {(speakedSentence === -1) ?
                 <p></p>
                 :
