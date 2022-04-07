@@ -198,7 +198,7 @@ const JoMode = (props) => {
   function sendScoreToDB(_time) {
     var _myName = props.participants[Object.keys(props.currentUser)[0]].name;
     var scoreRef = roomRef.current.child("ranking").child(_myName);
-    if (_time === "실패") {
+    if (_time === "Fail") {
       scoreRef.get().then((snapshot) => {
         if (!snapshot.exists()) {
           scoreRef.set(100);
@@ -442,13 +442,13 @@ const JoMode = (props) => {
     setAccuracy(avg);
 
     if (avg > 70) {
-      roomRef.current.child("isFail").set("성공");
-      setIsFail("성공");
+      roomRef.current.child("isFail").set("Success");
+      setIsFail("Success");
       sendScoreToDB(Count);
     } else {
-      roomRef.current.child("isFail").set("실패");
-      setIsFail("실패");
-      sendScoreToDB("실패");
+      roomRef.current.child("isFail").set("Fail");
+      setIsFail("Fail");
+      sendScoreToDB("Fail");
     }
   };
 
@@ -477,15 +477,7 @@ const JoMode = (props) => {
           <span className="onoff-label">on/off</span>
           <span className="arrow-right"></span>
         </div>
-        {isOrder ? 
-        <div className="turn">
-          {orderName}님의 차례입니다.
-        </div>
-        :
-        <div className="turn">
-          
-        </div>
-        }
+        
         
       </div>
       <div className="gameboy-component">
@@ -514,7 +506,7 @@ const JoMode = (props) => {
               }
             </div>
           }
-          {isOrder && <p>{round.current + 1} 라운드</p>}
+          {isOrder && <p className='round'>{round.current + 1} 라운드</p>}
         </div>
         <div className="controls">
           <div className="logo">
@@ -544,13 +536,24 @@ const JoMode = (props) => {
             <div className="selections">
               <div className="select"></div>
               {host ? (
-                !isOrder && <div className="start" onClick={startGame}></div>
+                !isOrder && <div className="start_allready" onClick={startGame}></div>
               ) : (
                 <div className="start"></div>
               )}
+              <div className='whosturn'>누구차례? <div className="arrow"></div></div>
             </div>
           </div>
           <div className="speakers">
+            <div className='nametag'>
+            {isOrder ? 
+              <div className="turn">
+                {orderName}
+              </div>
+              :
+              <div className="turn">
+              </div>
+        }
+            </div>
             <div className="grill"></div>
             <div className="grill"></div>
             <div className="grill"></div>
