@@ -10,8 +10,7 @@ const resModal = (props, ref) => {
     let name = Object.keys(ref.current)[i];
     ressort.push({ [name]: Object.values(ref.current)[i] });
   }
- 
-  console.log(first)
+
   ressort.sort((a, b) => {
     console.log(Object.keys(a)[0]);
     console.log(Object.values(a)[0]);
