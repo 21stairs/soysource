@@ -213,11 +213,11 @@ const JoMode = (props) => {
       scoreRef.get().then((snapshot) => {
         if (!snapshot.exists()) {
           console.log("무야호");
-          scoreRef.set(Math.round(_time/10));
+          scoreRef.set(Math.round(_time / 10));
         } else {
           console.log("유야호");
           var _originalScore = snapshot.val();
-          var _newScore = _originalScore + _time/10;
+          var _newScore = _originalScore + _time / 10;
           scoreRef.set(Math.round(_newScore));
         }
       });
@@ -355,13 +355,13 @@ const JoMode = (props) => {
   const stopHandler = async () => {
     onFlip(); //중복 클릭 방지
     stopSpeechToText();
+    await SetIncrease();
     clearInterval(countRef.current);
     countRef.current = null;
     setProblem((c) => (c = <h1>{Count}ms</h1>));
     roomRef.current.child("time").set(Count);
     if (interimResult != null)
       roomRef.current.child("speakedSentence").set(interimResult);
-    SetIncrease();
     SetRate(Problem);
     setIsRecording(false);
   };
@@ -407,7 +407,7 @@ const JoMode = (props) => {
     setProblem((c) => (c = sentence));
     roomRef.current.child("currentSentence").set(sentence);
     roomRef.current.child("speakedSentence").set(-1);
-    setSpeakedSentence(-1)
+    setSpeakedSentence(-1);
   };
 
   const SetRate = async (problem) => {
@@ -477,43 +477,40 @@ const JoMode = (props) => {
           <span className="onoff-label">on/off</span>
           <span className="arrow-right"></span>
         </div>
-        {isOrder ? 
-        <div className="turn">
-          {orderName}님의 차례입니다.
-        </div>
-        :
-        <div className="turn">
-          
-        </div>
-        }
-        
+        {isOrder ? (
+          <div className="turn">{orderName}님의 차례입니다.</div>
+        ) : (
+          <div className="turn"></div>
+        )}
       </div>
       <div className="gameboy-component">
         <div className="screen">
           {/* 대기중일땐 안보이고 게임시작하면 보이게끔 */}
-          {isRecording ? 
+          {isRecording ? (
             // 내 차례
-            <div className="screen__item"> {currentSentence} 
-              <br/>
-              <br/>
+            <div className="screen__item">
+              {" "}
+              {currentSentence}
+              <br />
+              <br />
               <p>{interimResult}</p>
             </div>
-            :
+          ) : (
             // 남의 차례
             <div className="screen__item">
-              {(speakedSentence === -1) ?
+              {speakedSentence === -1 ? (
                 <p>{currentSentence}</p>
-                :
+              ) : (
                 <div>
                   <p>{speakedSentence}</p>
-                  <br/>
+                  <br />
                   <p>정확도 : {accuracy}%</p>
-                  <p>소요시간 : {time/10}초</p>
+                  <p>소요시간 : {time / 10}초</p>
                   <div className="screen__item--result">{isFail} !!</div>
                 </div>
-              }
+              )}
             </div>
-          }
+          )}
           {isOrder && <p>{round.current + 1} 라운드</p>}
         </div>
         <div className="controls">
