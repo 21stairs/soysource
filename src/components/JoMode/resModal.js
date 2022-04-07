@@ -10,7 +10,7 @@ const resModal = (props, ref) => {
     let name = Object.keys(ref.current)[i];
     ressort.push({ [name]: Object.values(ref.current)[i] });
   }
-  const first = ressort.shift();
+ 
   console.log(first)
   ressort.sort((a, b) => {
     console.log(Object.keys(a)[0]);
@@ -19,7 +19,7 @@ const resModal = (props, ref) => {
     
     return Object.values(a)[0] - Object.values(b)[0];
   });
-
+  const first = ressort.shift();
   const { open, close } = props;
   return (
     <div className={open ? "bg" : ""}>
