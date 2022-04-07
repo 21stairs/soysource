@@ -406,6 +406,8 @@ const JoMode = (props) => {
     const sentence = JoModeData.JoModeData[rand];
     setProblem((c) => (c = sentence));
     roomRef.current.child("currentSentence").set(sentence);
+    roomRef.current.child("speakedSentence").set(-1);
+    setSpeakedSentence(-1)
   };
 
   const SetRate = async (problem) => {
@@ -490,22 +492,28 @@ const JoMode = (props) => {
         <div className="screen">
           {/* 대기중일땐 안보이고 게임시작하면 보이게끔 */}
           {isRecording ? 
-          // 내 차례
-          <div className="screen__item"> {currentSentence} 
-            <br/>
-            <br/>
-            <p>{interimResult}</p>
-          </div>
-          :
-          // 남의 차례
-          <div className="screen__item">
-            <p>{currentSentence}</p>
-            <p>{speakedSentence}</p>
-            <br/>
-            <p>정확도 : {accuracy}%</p>
-            <p>소요시간 : {time/10}초</p>
-            <div className="screen__item--result">{isFail} !!</div>
-          </div>
+            // 내 차례
+            <div className="screen__item"> {currentSentence} 
+              <br/>
+              <br/>
+              <p>{interimResult}</p>
+            </div>
+            :
+            // 남의 차례
+            <div className="screen__item">
+              <p>{currentSentence}</p>
+              {(speakedSentence === -1) ?
+                <p></p>
+                :
+                <div>
+                  <p>{speakedSentence}</p>
+                  <br/>
+                  <p>정확도 : {accuracy}%</p>
+                  <p>소요시간 : {time/10}초</p>
+                  <div className="screen__item--result">{isFail} !!</div>
+                </div>
+              }
+            </div>
           }
           {isOrder && <p>{round.current + 1} 라운드</p>}
         </div>
