@@ -69,7 +69,7 @@ export const Participant = (props) => {
   function ingame() {
     roomRef.on('value', (snapshot) => {
       const data = snapshot.val()
-      console.log(data)
+      // console.log(data)
       if (data.state == "inGame") {
         return setIsstate(false);
       }
