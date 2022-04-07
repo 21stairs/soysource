@@ -493,6 +493,7 @@ const JoMode = (props) => {
           {isRecording ? 
           <div className="screen__item"> {currentSentence} 
             <br/>
+            <br/>
             <p>{interimResult}</p>
           </div>
           :
