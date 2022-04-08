@@ -1,0 +1,172 @@
+body {
+  background: #F0F8FF;
+}
+
+.container {
+  display: flex;
+  flex-flow: column nowrap;
+  align-items: center;
+  width: 70%;
+  margin: 0 auto;
+}
+
+.div-section {
+  display: inline-flex;
+  width: 100%;
+  flex-wrap: nowrap;
+  justify-content: space-around;
+  background: #F0F8FF;
+  margin: 50px 0;
+  
+  img {
+    width: 90%;
+  }
+}
+
+.tech {
+  text-decoration: underline;
+  text-decoration-color: #FFD700;
+  text-decoration-thickness: 4px;
+  text-underline-offset: 4px;
+}
+
+.section {
+  display: flex;
+  width: 330px;
+  flex-flow: column wrap;
+  align-items: flex-start;
+  .section--btn {
+    width: 100%;
+    display: flex;
+    margin-top: 10px;
+    justify-content: space-around;
+    button {
+      height: 35px;
+      padding: 0 10px;
+      background-color: #FFD700;
+      border: none;
+      border-radius: 5px;
+      font-weight: bold;
+      color: #3c3c3c;
+      cursor: pointer;
+    };
+  }
+  h1 {
+    margin: 0;
+    font-size: 40px;
+    white-space: nowrap;
+  }
+  p:nth-child(1) {
+    color: #FFD700;
+    font-weight: bold; 
+  } 
+  p {
+    color: gray;
+    margin: 0;
+    white-space: pre-line;
+  }
+}
+article {
+  display: flex;
+  width: 600px;
+  height: 300px;
+  margin: 20px 0;
+  background: #fff;
+  border-radius: 20px;
+  
+  div {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 50%;
+    height: 100%;
+  };
+  
+  p {
+    color: #3c3c3c;
+    margin-left: 15px;
+  };
+  
+  img {
+    width: 90%;
+    margin-left: 0
+  };
+}
+
+footer {
+  p {
+    color: grey;
+  }
+}
+@media screen and (max-width: 1200px){
+  .div-section {
+    flex-direction: column; 
+    align-items: center;
+    .section {
+      margin-bottom: 40px;
+    }
+    div {
+      margin: 0 auto;
+    }
+    img {
+      width: 90%;
+    }
+  }
+  h1 {
+    margin: 0;
+  }
+  article {
+    width: 400px;
+    height: 200px;
+    p {
+      color: gray;
+    }
+  }
+}
+
+@media screen and (max-width:576px) {
+  article {
+    width: 300px;
+    height: 150px;
+    p {
+      display: none;
+    }
+    h1 {
+      font-size: 1.2rem;
+    }
+  }
+  .div-section {    
+    img {
+      width: 100%;
+    }
+  }
+}
+
+@media screen and (max-width:376px) {
+  .section {
+    h1 {
+      font-size: 10vw;
+    }
+    p {
+      font-size: 5vw;
+    }
+    button {
+      font-size: 4vw;
+    }
+  }
+  .div-section {
+    margin: 20px 0 50px 0;
+  }
+  article {
+    width: 80vw;
+    height: 40vw;
+    margin: 10px 0;
+    h1 {
+      font-size: 6vw;
+    }
+  }
+  footer p {
+    font-size: 3vw;
+  }
+}

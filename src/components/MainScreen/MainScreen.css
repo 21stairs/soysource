@@ -1,0 +1,35 @@
+.wrapper{
+    display: flex;
+    flex-direction: column;
+    background-color: #fff;
+}
+
+.main-scream-total{
+    display: flex;
+    height: calc(90vh - 70px);
+}
+
+.main-screen-left{
+    width: calc(100% - 430px);
+}
+.main-screen-right {
+    width: 430px;
+}
+.footer {
+    height: 10vh;
+}
+
+@media screen and (max-height:900px) {
+    .main-screen-left {
+        width: calc(100% - 330px);
+    }
+    .main-screen-right {
+        width: 330px;
+    }
+}
+
+@media screen and (max-width:768px) {
+    .main-scream-total{
+        height: calc(90vh - 60px);
+    }
+}

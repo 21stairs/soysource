@@ -1,0 +1,93 @@
+.video {
+  background-color: #353b48;
+  height: 100%;
+  width: 100%;
+  position: relative;
+  object-fit: cover;
+  border-radius: 5px;
+}
+
+.your {
+  background-color: #353b48;
+  height: 100%;
+  width: 100%;
+  position: relative;
+  object-fit: cover;
+  border-radius: 5px;
+}
+
+.participant {
+  background-color: #353b48;
+  height: 100%;
+  width: 100%;
+  position: relative;
+  border-radius: 5px;
+  min-height: 200px;
+}
+
+.muted {
+  color: #fff;
+  right: 10px;
+  position: absolute;
+  top: 10px;
+  background: #353b48;
+  border-radius: 50%;
+  height: 22px;
+  width: 22px !important;
+}
+
+.hide {
+  display: none;
+}
+
+.avatar {
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  font-size: 150px;
+  font-family: roboto, arial;
+  color: white;
+  text-align: center;
+  background: orange;
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-transform: uppercase;
+}
+
+.name {
+  color: white;
+  bottom: 10px;
+  width: 40%;
+  position: absolute;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  left: 20px;
+}
+
+.ready {
+  color: white;
+  bottom: 10px;
+  position: absolute;
+  right: 20px;
+}
+.ready_2 {
+  color: white;
+  bottom: 10px;
+  position: absolute;
+  right: 200px;
+}
+
+@media (max-width: 800px) {
+  .participant {
+    min-height: 0px;
+  }
+  .avatar {
+    width: 80px;
+    height: 80px;
+    font-size: 50px;
+  }
+}

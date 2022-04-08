@@ -1,0 +1,72 @@
+.room {
+  display: flex;
+  margin: auto;
+  justify-content: center;
+  align-items: center;
+  width: 80%;
+  height: calc(100% - 70px);
+  overflow: hidden;
+  :hover {
+    background: #dcdcdc;
+  }
+  div {
+    display: flex;
+    flex-flow: column nowrap;
+    position: relative;
+    align-items: center;
+    border-radius: 50px;
+    overflow: hidden;
+    width: 500px;
+    height: 500px;
+    cursor: pointer;
+    h1 {
+      position: absolute;
+    }
+    .left-img {
+      width: 120%;
+      transition: transform 0.3s ease-in;
+      &:hover {
+        transform: scale(1.05);
+      }  
+    }
+    .right-img{
+      width: 110%;
+      transition: transform 0.3s ease-in;
+      &:hover {
+        transform: scale(1.05);
+      }  
+    }
+  }
+}
+
+@media screen and (max-width: 1200px) {
+  .room {
+    width: 90%;
+    div {
+      height: 50%;
+    }
+  }
+}
+
+@media screen and (max-width: 768px){
+  .room{
+    flex-direction: column;
+    width: 100%;
+    margin-top: 10px;
+    height: auto;
+    .left {
+      margin-bottom: 10px;
+      width: 90%;
+      height: 90%;
+    }
+  }
+}
+
+@media screen and (max-width: 376px) {
+  .room {
+    margin-top: 20px;
+    div h1 {
+      font-size: 9vw;
+    }
+  }
+}
