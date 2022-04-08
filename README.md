@@ -6,8 +6,8 @@
 
 -----------
 
-<img src="/public/작은간장공장공장장.png" alt="간장공장공장장.png" style="zoom:100%;" />
-
+<!-- <img src="/public/작은간장공장공장장.png" alt="간장공장공장장.png" style="zoom:100%;" /> -->
+![작은간장공장공장장](/public/작은간장공장공장장.png)
 
 
 
