@@ -89,7 +89,7 @@
   	
   	- 링크 복사
   	
-    ![linkpaste](/public\linkpaste.gif)
+    ![linkpaste](/public/linkpaste.gif)
   
   
   - #### 2. 게임 모드 선택
@@ -123,7 +123,7 @@
   
     - 모든 참가자 준비 완료되면 호스트가 게임 시작을 합니다.
   
-      ![ready](/public\ready.gif)
+      ![ready](/public/ready.gif)
   
   - #### 4. 게임 진행
   
@@ -131,13 +131,13 @@
   
     - 시작 버튼을 누르면 타이머와 음성인식이 시작됨. 문장이 끝난 후 종료 버튼을 누르면 소요 시간과 음성인식 인식률을 반환합니다.
   
-      ![gameboyready](/public\gameboyready.gif)
+      ![gameboyready](/public/gameboyready.gif)
   
   - #### 5. 결과 화면
   
     - 모든 라운드가 진행된 후 소요시간을 합하여 랭킹을 반환한다
     
-      ![result](/public\result.png)
+      ![result](/public/result.png)
   
   
   
