@@ -85,7 +85,7 @@
 
     - 닉네임, 게임 라운드 설정하기
     
-    ![roomcreate](.\public\roomcreate.gif)
+    ![roomcreate](/public/roomcreate.gif)
   	
   	- 링크 복사
   	
