@@ -69,8 +69,7 @@ const JoMode = (props) => {
     addListeners();
   }, [Problem, accuracy, isFail]);
 
-<<<<<<< HEAD
-=======
+
   /**
    * [시작 가능한가?]
    * 1. realtimeDB 속, participants 안의 요소들 전부를 탐색.
