@@ -47,7 +47,7 @@ const JoMode = (props) => {
   const round = useRef(0)
 
   const [copied, setCopied] = useState(false);
-  const round = useRef(0);
+ 
 
   useEffect(async () => {
     initGame();
