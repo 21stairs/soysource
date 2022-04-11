@@ -43,14 +43,11 @@ const JoMode = (props) => {
   const [isRecording, setIsRecording] = useState(null);
   const [readyCnt, setReadyCnt] = useState(0);
   const [allReady, setAllReady] = useState("");
-<<<<<<< HEAD
+
   const round = useRef(0)
-=======
+
   const [copied, setCopied] = useState(false);
   const round = useRef(0);
-
-
->>>>>>> 8351c48168ca1f4ae8764c2a8706b86793cf121d
 
   useEffect(async () => {
     initGame();
@@ -105,7 +102,6 @@ const JoMode = (props) => {
     return true;
   }
 
->>>>>>> 8351c48168ca1f4ae8764c2a8706b86793cf121d
   function askMaxRound() {
     var _v = prompt("최대 라운드 설정", "3");
     return parseInt(_v);
@@ -116,10 +112,7 @@ const JoMode = (props) => {
    * 1. Mode 를 '조준영모드' 으로 설정
    * 2. 참가자라면, 참가한 방의 위치를 설정
    */
-<<<<<<< HEAD
 
-=======
->>>>>>> 8351c48168ca1f4ae8764c2a8706b86793cf121d
   function initGame() {
     roomRef.current = rId ? db.database().ref(rId) : firepadRef;
     roomRef.current
@@ -239,7 +232,7 @@ const JoMode = (props) => {
       });
     }
   }
-<<<<<<< HEAD
+
   function allReadyCheck() {
     //ready카운트 초기화
     setReadyCnt(0);
@@ -266,8 +259,7 @@ const JoMode = (props) => {
       });
     return allReady;
   }
-=======
->>>>>>> 8351c48168ca1f4ae8764c2a8706b86793cf121d
+
 
   const isStart = async () => {
     var temp = "temp";
@@ -361,7 +353,6 @@ const JoMode = (props) => {
     }
   };
 
-<<<<<<< HEAD
   const startGame = () => {
     isbegin = true;
     setHost(false);
@@ -377,7 +368,7 @@ const JoMode = (props) => {
       })
       .catch((error) => {
         console.log("에러 : ", error);
-=======
+
   const startGame = async () => {
     var v = await canIStartGame();
     if (v) {
@@ -388,7 +379,6 @@ const JoMode = (props) => {
       makeOrder();
       await roomRef.current.update({
         ranking: "",
->>>>>>> 8351c48168ca1f4ae8764c2a8706b86793cf121d
       });
       roomRef.current
         .child("state")
@@ -532,7 +522,7 @@ const JoMode = (props) => {
     });
   if (error) return <p>Chrome에서 실행 부탁드립니다!!!!🤷 </p>;
   return (
-<<<<<<< HEAD
+
     <div className="gameboy">
       {isModalOpen && (
         <ResModal open={isModalOpen} close={closeModal} ref={res} />
@@ -599,7 +589,7 @@ const JoMode = (props) => {
               ) : (
                 <div className="start"></div>
               )}
-=======
+
     <div>
 
       <div className="gameboy">
@@ -700,7 +690,7 @@ const JoMode = (props) => {
               <div className="grill"></div>
               <div className="grill"></div>
               <div className="grill"></div>
->>>>>>> 8351c48168ca1f4ae8764c2a8706b86793cf121d
+
             </div>
           </div>
         </div>
@@ -730,8 +720,7 @@ const mapDispatchToProps = (dispatch) => {
   };
 };
 
-<<<<<<< HEAD
+
 export default connect(mapStateToProps, mapDispatchToProps)(JoMode);
-=======
+
 export default connect(mapStateToProps, mapDispatchToProps)(JoMode);
->>>>>>> 8351c48168ca1f4ae8764c2a8706b86793cf121d
